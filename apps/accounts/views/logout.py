@@ -1,0 +1,31 @@
+from django.contrib.auth import logout
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+
+from apps.accounts.serializers import DetailResponseSerializer, ErrorResponseSerializer
+
+
+class LogoutAPIView(APIView):
+    @extend_schema(
+        tags=['Auth'],
+        summary='Logout current user',
+        description='Invalidate the current session and log out the authenticated user.',
+        responses={
+            200: OpenApiResponse(
+                response=DetailResponseSerializer,
+                description='Logout successful.',
+            ),
+            401: OpenApiResponse(
+                response=ErrorResponseSerializer,
+                description='Authentication required.',
+            ),
+        },
+    )
+    def post(self, request):
+        logout(request)
+        
+        response = DetailResponseSerializer(message='detail out.')
+        return Response(response.data, status=status.HTTP_200_OK)

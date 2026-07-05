@@ -1,0 +1,131 @@
+/* ===== RTL / Persian Admin Overrides for Unfold ===== */
+
+:root {
+    --font-fa: Vazirmatn, IRANSansX, IRANSans, "Segoe UI", Tahoma, sans-serif;
+}
+
+html {
+    direction: rtl;
+}
+
+body {
+    direction: rtl;
+    font-family: var(--font-fa);
+}
+
+.related-widget-wrapper {
+    gap: .5rem;
+}
+
+/* ===== ADMIN INDEX: App-list table alignment ===== */
+
+/* app_list_default.html hardcodes text-left on caption and th */
+.module caption,
+.module table th[scope="row"] {
+    text-align: right !important;
+}
+
+/* ===== TABLE: List-view header alignment ===== */
+
+/* Override Tailwind's hardcoded text-left on <th> */
+#result_list thead th {
+    text-align: right !important;
+}
+
+/* In RTL, flex row already flows right→left, so just push content to the start (right) */
+#result_list thead th > div.flex {
+    justify-content: flex-start;
+}
+
+/* Sort options: swap ml-2 → mr-2 so gap sits between text and icon */
+#result_list thead th .sortoptions {
+    margin-left: 0 !important;
+    margin-right: 0.5rem !important;
+}
+
+/* Remove icon inside sortoptions: swap ml-1 → mr-1 */
+#result_list thead th .sortremove {
+    margin-left: 0 !important;
+    margin-right: 0.25rem !important;
+}
+
+/* Sort priority badge: swap ml-2 → mr-2 */
+#result_list thead th .sortpriority {
+    margin-left: 0 !important;
+    margin-right: 0.5rem !important;
+}
+
+/* ===== TABLE: Body cells ===== */
+
+/* Django generates td/th with text-left; override for RTL */
+#result_list tbody td,
+#result_list tbody th {
+    text-align: right !important;
+}
+
+/* Mobile data-label pseudo-element: swap mr-auto → ml-auto */
+#result_list tbody td::before {
+    margin-right: 0 !important;
+    margin-left: auto !important;
+}
+
+/* ===== SIDEBAR: Icon-text gap in RTL ===== */
+
+/* Unfold puts mr-3 on icons; in RTL the gap must be on the left (between icon and text) */
+#nav-sidebar-inner ol a .material-symbols-outlined {
+    margin-right: 0 !important;
+    margin-left: 0.75rem !important;
+}
+
+/* Group title collapsible chevron: swap ml-auto → mr-auto */
+#nav-sidebar-inner h2 .material-symbols-outlined {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+/* ===== SIDEBAR: Item padding ===== */
+#nav-sidebar-inner ol a {
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+}
+
+/* ===== DATE/TIME INPUTS: Fix shortcut icon overlap in RTL ===== */
+
+/* Unfold absolutely positions .datetimeshortcuts at right:1px.
+   In RTL the placeholder is also right-aligned → they overlap.
+   Move the shortcuts to the left side so they don't clash with text. */
+.datetimeshortcuts {
+    right: auto !important;
+    left: 1px !important;
+}
+
+/* Give the inputs room on the left for the shortcut icon (~28px) */
+.vDateField,
+.vTimeField {
+    padding-left: 2rem !important;
+}
+
+/* ===== BUTTONS: Comfortable horizontal padding ===== */
+
+.unfold button,
+.unfold [type="submit"],
+.unfold [type="button"],
+.unfold a.button,
+.unfold .button {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+}
+
+@font-face {
+	font-family: 'YekanBakh';
+	src: url("/static/fonts/YekanBakh-Bold.woff2") format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+body {
+	font-family: 'YekanBakh' !important;
+}

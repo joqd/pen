@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR rodxa@proton.me, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-05 17:26+0330\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: apps/accounts/admin.py:20
+msgid "Account"
+msgstr "حساب"
+
+#: apps/accounts/admin.py:29
+msgid "Permissions"
+msgstr "مجوزها"
+
+#: apps/accounts/admin.py:41
+msgid "Important dates"
+msgstr "تاریخ‌های مهم"
+
+#: apps/accounts/models.py:13 apps/accounts/models.py:25
+msgid "phone"
+msgstr "شماره"
+
+#: apps/accounts/models.py:14
+msgid "full name"
+msgstr "نام کامل"
+
+#: program/settings.py:134
+msgid "Persian"
+msgstr "فارسی"
+
+#: program/settings.py:148
+msgid "admin panel"
+msgstr "پنل مدیریت"
+
+#: program/settings.py:149
+msgid "shop management"
+msgstr "مدیریت فروشگاه"
+
+#: program/settings.py:161
+msgid "users and permissions"
+msgstr "کاربران و مجوزها"
+
+#: program/settings.py:164
+msgid "users"
+msgstr "کاربران"
+
+#: program/settings.py:169
+msgid "groups"
+msgstr "گروه‌ها"
+
