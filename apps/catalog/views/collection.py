@@ -17,6 +17,8 @@ class StandardPagination(PageNumberPagination):
 
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for reading Collection objects."""
+    permission_classes = []
+
     queryset = Collection.objects.filter(is_active=True)
     pagination_class = StandardPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]

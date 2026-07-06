@@ -59,6 +59,7 @@ class TagSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     collections_list = serializers.StringRelatedField(source='collections', many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    variants = ProductVariantSerializer(many=True, read_only=True)
     
     class Meta:
         model = Product
@@ -71,6 +72,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'featured',
             'published_at',
             'images',
+            'variants',
             'collections_list',
         ]
         read_only_fields = fields

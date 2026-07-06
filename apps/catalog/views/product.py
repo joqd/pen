@@ -18,6 +18,8 @@ class StandardPagination(PageNumberPagination):
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for reading Product objects."""
+    permission_classes = []
+    
     queryset = Product.objects.filter(status='active')
     pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
