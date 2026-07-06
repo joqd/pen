@@ -1,6 +1,6 @@
 /* ===== RTL / Persian Admin Overrides for Unfold ===== */
 
-:root {
+/* :root {
     --font-fa: Vazirmatn, IRANSansX, IRANSans, "Segoe UI", Tahoma, sans-serif;
 }
 
@@ -124,7 +124,7 @@ body {
 	font-weight: 100 900;
 	font-style: normal;
 	font-display: swap;
-}
+} */
 
 body {
 	font-family: 'YekanBakh' !important;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 17:26+0330\n"
+"POT-Creation-Date: 2026-07-06 16:41+0330\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgstr "مجوزها"
 msgid "Important dates"
 msgstr "تاریخ‌های مهم"
 
-#: apps/accounts/models.py:13 apps/accounts/models.py:25
+#: apps/accounts/models.py:13 apps/accounts/models.py:31
 msgid "phone"
 msgstr "شماره"
 
@@ -38,27 +38,178 @@ msgstr "شماره"
 msgid "full name"
 msgstr "نام کامل"
 
-#: program/settings.py:134
+#: apps/catalog/models.py:14
+msgid "tag"
+msgstr "تگ"
+
+#: apps/catalog/models.py:15 program/settings.py:211
+msgid "tags"
+msgstr "تگ‌ها"
+
+#: apps/catalog/models.py:38 apps/catalog/models.py:67
+#: apps/catalog/models.py:68
+msgid "collection"
+msgstr "کالکشن"
+
+#: apps/catalog/models.py:39 program/settings.py:206
+msgid "collections"
+msgstr "کالکشن‌ها"
+
+#: apps/catalog/models.py:62
+msgid "title"
+msgstr "عنوان"
+
+#: apps/catalog/models.py:63
+msgid "slug"
+msgstr "اسلاگ"
+
+#: apps/catalog/models.py:64
+msgid "short description"
+msgstr "توضیحات کوتاه"
+
+#: apps/catalog/models.py:65
+msgid "description"
+msgstr "توضیحات"
+
+#: apps/catalog/models.py:70
+msgid "status"
+msgstr "وضعیت"
+
+#: apps/catalog/models.py:71
+msgid "published at"
+msgstr "منتشر شده در"
+
+#: apps/catalog/models.py:72
+msgid "featured"
+msgstr "ویژه"
+
+#: apps/catalog/models.py:74
+msgid "created at"
+msgstr "ساخته شده در"
+
+#: apps/catalog/models.py:75
+msgid "updated at"
+msgstr "به‌روز شده در"
+
+#: apps/catalog/models.py:78 apps/catalog/models.py:97
+#: apps/catalog/models.py:147
+msgid "product"
+msgstr "محصول"
+
+#: apps/catalog/models.py:79 program/settings.py:201
+msgid "products"
+msgstr "محصولات"
+
+#: apps/catalog/models.py:98
+msgid "image"
+msgstr "تصویر"
+
+#: apps/catalog/models.py:99
+msgid "media kind"
+msgstr "نوع مدیا"
+
+#: apps/catalog/models.py:100
+msgid "caption"
+msgstr "کپشن"
+
+#: apps/catalog/models.py:101
+msgid "alt text"
+msgstr "متن جایگزین"
+
+#: apps/catalog/models.py:102
+msgid "is primary"
+msgstr "اصلی است؟"
+
+#: apps/catalog/models.py:103 apps/catalog/models.py:130
+msgid "sort order"
+msgstr "ترتیب مرتب سازی"
+
+#: apps/catalog/models.py:109
+msgid "product image"
+msgstr "تصویر محصول"
+
+#: apps/catalog/models.py:110
+msgid "product images"
+msgstr "تصاویر محصول"
+
+#: apps/catalog/models.py:129
+msgid "name"
+msgstr "نام"
+
+#: apps/catalog/models.py:131 apps/catalog/models.py:154
+msgid "is_active"
+msgstr "فعال است؟"
+
+#: apps/catalog/models.py:137
+msgid "product size"
+msgstr "سایز محصول"
+
+#: apps/catalog/models.py:138
+msgid "product sizes"
+msgstr "سایزهای محصول"
+
+#: apps/catalog/models.py:149
+msgid "sku"
+msgstr "شناسه"
+
+#: apps/catalog/models.py:150
+msgid "size"
+msgstr "سایز"
+
+#: apps/catalog/models.py:151
+msgid "price"
+msgstr "قیمت"
+
+#: apps/catalog/models.py:152
+msgid "compare price"
+msgstr "مقایسه قیمت با"
+
+#: apps/catalog/models.py:153
+msgid "stock"
+msgstr "موجودی"
+
+#: apps/catalog/models.py:160
+msgid "product variant"
+msgstr "نوع محصول"
+
+#: apps/catalog/models.py:161
+msgid "product variants"
+msgstr "انواع محصول"
+
+#: program/settings.py:149
 msgid "Persian"
 msgstr "فارسی"
 
-#: program/settings.py:148
+#: program/settings.py:170
 msgid "admin panel"
 msgstr "پنل مدیریت"
 
-#: program/settings.py:149
+#: program/settings.py:171
 msgid "shop management"
 msgstr "مدیریت فروشگاه"
 
-#: program/settings.py:161
+#: program/settings.py:183
 msgid "users and permissions"
 msgstr "کاربران و مجوزها"
 
-#: program/settings.py:164
+#: program/settings.py:186
 msgid "users"
 msgstr "کاربران"
 
-#: program/settings.py:169
+#: program/settings.py:191
 msgid "groups"
 msgstr "گروه‌ها"
 
+#: program/settings.py:198
+msgid "catalog"
+msgstr "کاتالوگ"
+
+msgid "No results found"
+msgstr "هیچ نتیجه‌ای یافت نشد"
+
+msgid ""
+"This page yielded into no results. Create a new item or reset your "
+"filters."
+msgstr ""
+"این صفحه هیچ نتیجه‌ای نداشت. یک مورد جدید ایجاد کنید یا فیلترهای خود را "
+"مجدداً تنظیم کنید."

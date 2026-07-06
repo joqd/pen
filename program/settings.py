@@ -71,6 +71,7 @@ INSTALLED_APPS = [
 
 	# my own
     'apps.accounts',
+    'apps.catalog',
 ]
 
 MIDDLEWARE = [
@@ -190,6 +191,26 @@ UNFOLD = {
 						'title': _('groups'),
 						'icon': 'groups',
 						'link': reverse_lazy('admin:auth_group_changelist'),
+					},
+				],
+			},
+            {
+				'title': _('catalog'),
+				'items': [
+					{
+						'title': _('products'),
+						'icon': 'inventory_2',
+						'link': reverse_lazy('admin:catalog_product_changelist'),
+					},
+					{
+						'title': _('collections'),
+						'icon': 'category',
+						'link': reverse_lazy('admin:catalog_collection_changelist'),
+					},
+                    {
+						'title': _('tags'),
+						'icon': 'label',
+						'link': reverse_lazy('admin:catalog_tag_changelist'),
 					},
 				],
 			},

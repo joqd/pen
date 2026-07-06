@@ -5,3 +5,4 @@ drf-spectacular[sidecar]==0.29.0
 smsir-python==1.0.8
 Pillow>=11.0
 django-cors-headers>=4.9.0
+requests>=2.34.2
