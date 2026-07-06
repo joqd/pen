@@ -256,7 +256,7 @@ msgstr "برگشت به سایت"
 msgid "Welcome back to"
 msgstr "خوش آمدید به"
 
-msgid "Parent"
+msgid "parent"
 msgstr "والد"
 
 msgid "Select value"
