@@ -16,12 +16,12 @@ from .models import (
 
 
 @admin.register(Collection)
-class CollectionAdmin(admin.ModelAdmin):
+class CollectionAdmin(ModelAdmin):
     search_fields = ['title', 'slug']
     list_display = ['title', 'slug', 'is_active', 'created_at']
 
 @admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+class TagAdmin(ModelAdmin):
     search_fields = ["name"]
 
 class ProductImageInline(TabularInline):
@@ -155,15 +155,15 @@ class ProductAdmin(ModelAdmin):
             },
         ),
         (
-			_("Metadata"),
-			{
-				"classes": ("tab",),
-				"fields": (
-					"created_at",
-					"updated_at",
-				),
-			},
-		),
+            _("Metadata"),
+            {
+                "classes": ("tab",),
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                ),
+            },
+        ),
     )
 
     def get_queryset(self, request):
@@ -215,7 +215,6 @@ class ProductAdmin(ModelAdmin):
 
     @display(description=_('Price'))
     def price_range(self, obj):
-
         if obj.min_price is None:
             return "—"
 
@@ -279,15 +278,15 @@ class ProductVariantAdmin(ModelAdmin):
             },
         ),
         (
-			"Metadata",
-			{
-				"classes": ("tab",),
-				"fields": (
-					"created_at",
-					"updated_at",
-				),
-			},
-		)
+            "Metadata",
+            {
+                "classes": ("tab",),
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                ),
+            },
+        )
     )
 
 
@@ -343,15 +342,15 @@ class ProductImageAdmin(ModelAdmin):
             },
         ),
         (
-			"Metadata",
-			{
-				"classes": ("tab",),
-				"fields": (
-					"created_at",
-					"updated_at",
-				),
-			},
-		)
+            "Metadata",
+            {
+                "classes": ("tab",),
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                ),
+            },
+        )
     )
 
     @display(description="Preview")
