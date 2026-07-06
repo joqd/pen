@@ -247,5 +247,17 @@ msgstr "فیلترها"
 msgid "Reset filters"
 msgstr "تنظیم مجدد فیلترها"
 
-msgid "variants"
-msgstr "تنوع"
+msgid "You have been successfully logged out from the administration"
+msgstr "شما با موفقیت از مدیریت خارج شدید"
+
+msgid "Return to site"
+msgstr "برگشت به سایت"
+
+msgid "Welcome back to"
+msgstr "خوش آمدید به"
+
+msgid "Parent"
+msgstr "والد"
+
+msgid "Select value"
+msgstr "انتخاب کنید"
