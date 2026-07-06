@@ -188,11 +188,11 @@ UNFOLD = {
 						'icon': 'person',
 						'link': reverse_lazy('admin:accounts_user_changelist'),
 					},
-					{
-						'title': _('groups'),
-						'icon': 'groups',
-						'link': reverse_lazy('admin:auth_group_changelist'),
-					},
+					# {
+					# 	'title': _('groups'),
+					# 	'icon': 'groups',
+					# 	'link': reverse_lazy('admin:auth_group_changelist'),
+					# },
 				],
 			},
             {
