@@ -108,6 +108,11 @@ body {
     padding-left: 1rem !important;
 }
 
+input {
+	margin-left: 0.5rem;
+}
+
+
 @font-face {
 	font-family: 'YekanBakh';
 	src: url("/static/fonts/YekanBakh-Bold.woff2") format('woff2');

@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin
+from unfold.admin import ModelAdmin
 
 from .models import User
 
 
 @admin.register(User)
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(ModelAdmin):
     ordering = ("-date_joined",)
 
     list_display = ("phone", "date_joined")
@@ -44,22 +45,6 @@ class CustomUserAdmin(UserAdmin):
                     "last_login",
                     "date_joined",
                 )
-            },
-        ),
-    )
-
-    add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": (
-                    "phone",
-                    "password1",
-                    "password2",
-                    "is_active",
-                    "is_staff",
-                ),
             },
         ),
     )
