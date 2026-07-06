@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'corsheaders',
+    'django_filters',
 
 	# my own
     'apps.accounts',

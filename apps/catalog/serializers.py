@@ -36,7 +36,7 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'media_kind', 'caption', 'alt_text', 'is_primary', 'sort_order']
+        fields = ['id', 'image', 'media_kind', 'caption', 'alt_text', 'is_primary']
         read_only_fields = fields
 
 
@@ -57,8 +57,8 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
-    primary_image = serializers.SerializerMethodField()
     collections_list = serializers.StringRelatedField(source='collections', many=True, read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True)
     
     class Meta:
         model = Product
@@ -70,16 +70,10 @@ class ProductListSerializer(serializers.ModelSerializer):
             'status',
             'featured',
             'published_at',
-            'primary_image',
+            'images',
             'collections_list',
         ]
         read_only_fields = fields
-    
-    def get_primary_image(self, obj):
-        primary_image = obj.images.filter(is_primary=True).first()
-        if primary_image:
-            return ProductImageSerializer(primary_image).data
-        return None
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
