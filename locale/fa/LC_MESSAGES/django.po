@@ -213,3 +213,21 @@ msgid ""
 msgstr ""
 "این صفحه هیچ نتیجه‌ای نداشت. یک مورد جدید ایجاد کنید یا فیلترهای خود را "
 "مجدداً تنظیم کنید."
+
+msgid "General"
+msgstr "عمومی"
+
+msgid "Content"
+msgstr "محتوا"
+
+msgid "Publishing"
+msgstr "انتشارات"
+
+msgid "Metadata"
+msgstr "متادیتا"
+
+msgid "accounts"
+msgstr "کاربران"
+
+msgid "is active"
+msgstr "فعال است؟"

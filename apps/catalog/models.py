@@ -18,21 +18,22 @@ class Tag(models.Model):
         return self.title
 
 class Collection(models.Model):
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True)
+    title = models.CharField(_('title'), max_length=255)
+    slug = models.SlugField(_('slug'), max_length=255, unique=True)
     parent = models.ForeignKey(
         "self",
         on_delete=models.PROTECT,
         related_name="children",
         blank=True,
         null=True,
+        verbose_name=_('parent'),
     )
-    short_description = models.CharField(max_length=320, blank=True)
-    description = models.TextField(blank=True)
-    is_active = models.BooleanField(default=True)
+    short_description = models.CharField(_('short description'), max_length=320, blank=True)
+    description = models.TextField(_('description'), blank=True)
+    is_active = models.BooleanField(_('is active'), default=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     class Meta:
         verbose_name = _('collection')
@@ -148,13 +149,16 @@ class ProductVariant(models.Model):
     )
     sku = models.CharField(_('sku'), max_length=64, unique=True)
     size = models.ForeignKey(ProductSize, on_delete=models.PROTECT, verbose_name=_('size'))
-    price = models.PositiveIntegerField(_('price'), )
+    price = models.PositiveIntegerField(_('price'))
     compare_price = models.PositiveIntegerField(_('compare price'), blank=True, null=True)
     stock = models.PositiveIntegerField(_('stock'), default=0)
     is_active = models.BooleanField(_('is_active'), default=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.product.title} - {self.sku}'
 
     class Meta:
         verbose_name = _('product variant')

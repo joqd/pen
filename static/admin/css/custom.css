@@ -1,6 +1,4 @@
-/* ===== RTL / Persian Admin Overrides for Unfold ===== */
-
-/* :root {
+:root {
     --font-fa: Vazirmatn, IRANSansX, IRANSans, "Segoe UI", Tahoma, sans-serif;
 }
 
@@ -17,22 +15,14 @@ body {
     gap: .5rem;
 }
 
-/* ===== ADMIN INDEX: App-list table alignment ===== */
-
-/* app_list_default.html hardcodes text-left on caption and th */
-.module caption,
 .module table th[scope="row"] {
     text-align: right !important;
 }
 
-/* ===== TABLE: List-view header alignment ===== */
-
-/* Override Tailwind's hardcoded text-left on <th> */
 #result_list thead th {
     text-align: right !important;
 }
 
-/* In RTL, flex row already flows right→left, so just push content to the start (right) */
 #result_list thead th > div.flex {
     justify-content: flex-start;
 }
@@ -124,7 +114,7 @@ body {
 	font-weight: 100 900;
 	font-style: normal;
 	font-display: swap;
-} */
+}
 
 body {
 	font-family: 'YekanBakh' !important;

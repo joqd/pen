@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import display
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Count, Min, Max, Sum, Prefetch
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
@@ -16,7 +17,8 @@ from .models import (
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    search_fields = ["name"]
+    search_fields = ['title', 'slug']
+    list_display = ['title', 'slug', 'is_active', 'created_at']
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -27,7 +29,7 @@ class ProductImageInline(TabularInline):
     extra = 0
 
     fields = (
-        "preview",
+        # "preview",
         "image",
         "media_kind",
         "is_primary",
@@ -120,7 +122,7 @@ class ProductAdmin(ModelAdmin):
 
     fieldsets = (
         (
-            "General",
+            _("General"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -132,7 +134,7 @@ class ProductAdmin(ModelAdmin):
             },
         ),
         (
-            "Content",
+            _("Content"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -142,7 +144,7 @@ class ProductAdmin(ModelAdmin):
             },
         ),
         (
-            "Publishing",
+            _("Publishing"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -153,7 +155,7 @@ class ProductAdmin(ModelAdmin):
             },
         ),
         (
-			"Metadata",
+			_("Metadata"),
 			{
 				"classes": ("tab",),
 				"fields": (
@@ -180,7 +182,7 @@ class ProductAdmin(ModelAdmin):
             )
         )
 
-    @display(description="Image")
+    @display(description=_('Image'))
     def thumbnail(self, obj):
         image = next(
             (
@@ -203,15 +205,15 @@ class ProductAdmin(ModelAdmin):
             image.image.url,
         )
 
-    @display(description="Variants", ordering="variants_count")
+    @display(description=_("Variants"), ordering="variants_count")
     def variant_count(self, obj):
         return obj.variants_count or 0
 
-    @display(description="Stock", ordering="stock_sum")
+    @display(description=_("Stock"), ordering="stock_sum")
     def total_stock(self, obj):
         return obj.stock_sum or 0
 
-    @display(description="Price")
+    @display(description=_('Price'))
     def price_range(self, obj):
 
         if obj.min_price is None:

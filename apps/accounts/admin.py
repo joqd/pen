@@ -9,10 +9,10 @@ from .models import User
 class CustomUserAdmin(UserAdmin):
     ordering = ("-date_joined",)
 
-    list_display = ("phone", 'full_name', "date_joined")
-    list_display_links = ("phone", 'full_name')
+    list_display = ("phone", "date_joined")
+    list_display_links = ("phone",)
     list_filter = ()
-    search_fields = ("phone", 'full_name')
+    search_fields = ("phone",)
     readonly_fields = ("last_login", "date_joined")
 
     fieldsets = (
