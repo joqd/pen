@@ -205,15 +205,15 @@ class ProductAdmin(ModelAdmin):
             image.image.url,
         )
 
-    @display(description=_("Variants"), ordering="variants_count")
+    @display(description=_('variants'), ordering="variants_count")
     def variant_count(self, obj):
         return obj.variants_count or 0
 
-    @display(description=_("Stock"), ordering="stock_sum")
+    @display(description=_('stock'), ordering="stock_sum")
     def total_stock(self, obj):
         return obj.stock_sum or 0
 
-    @display(description=_('Price'))
+    @display(description=_('price'))
     def price_range(self, obj):
         if obj.min_price is None:
             return "—"

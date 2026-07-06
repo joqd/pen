@@ -231,3 +231,21 @@ msgstr "کاربران"
 
 msgid "is active"
 msgstr "فعال است؟"
+
+msgid "Type to search"
+msgstr "برای جستجو تایپ کنید"
+
+msgid "Navigate"
+msgstr "پیمایش"
+
+msgid "Search apps and models..."
+msgstr "جستجوی برنامه‌ها و مدل‌ها..."
+
+msgid "Filters"
+msgstr "فیلترها"
+
+msgid "Reset filters"
+msgstr "تنظیم مجدد فیلترها"
+
+msgid "variants"
+msgstr "تنوع"
