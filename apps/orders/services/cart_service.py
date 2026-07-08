@@ -4,6 +4,9 @@ from rest_framework.exceptions import ValidationError
 from ..models import CartItem, Cart
 
 class CartService:
+    MAX_CART_ITEMS = 100
+    MAX_ITEM_QUANTITY = 100
+    
     @classmethod
     def get_or_create_cart(cls, user=None, token=None):
         if user and user.is_authenticated:
@@ -23,28 +26,53 @@ class CartService:
 
     @classmethod
     def add_item(cls, cart, variant, quantity):
+        if quantity > cls.MAX_ITEM_QUANTITY:
+            raise ValidationError(
+                f'Maximum quantity is {cls.MAX_ITEM_QUANTITY}.'
+            )
+
         if quantity > variant.stock:
-            raise ValidationError('Insufficient stock')
-        
-        item, created = CartItem.objects.get_or_create(
+            raise ValidationError(
+                'Insufficient stock.'
+            )
+
+        item = CartItem.objects.filter(
             cart=cart,
             variant=variant,
-            defaults={
-                'quantity': quantity
-            }
-        )
+        ).first()
 
-        if not created:
+        if item:
             requested = item.quantity + quantity
+
+            if requested > cls.MAX_ITEM_QUANTITY:
+                raise ValidationError(
+                    f'Maximum quantity is {cls.MAX_ITEM_QUANTITY}.'
+                )
+
             if requested > variant.stock:
-                raise ValidationError('Insufficient stock')
-            
+                raise ValidationError(
+                    'Insufficient stock.'
+                )
+
             item.quantity = requested
             item.save(
                 update_fields=['quantity']
             )
 
-        return item
+            return item
+
+        cart_items_count = cart.items.count()
+
+        if cart_items_count >= cls.MAX_CART_ITEMS:
+            raise ValidationError(
+                'Cart item limit reached.'
+            )
+
+        return CartItem.objects.create(
+            cart=cart,
+            variant=variant,
+            quantity=quantity,
+        )
 
 
     @classmethod
