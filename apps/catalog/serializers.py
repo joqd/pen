@@ -108,9 +108,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_is_in_wishlist(self, obj):
-        wishlist_product_ids = self.context.get(
-            'wishlist_product_ids',
-            set(),
-        )
+        request = self.context.get('request')
 
-        return obj.id in wishlist_product_ids
+        if not request or not request.user.is_authenticated:
+            return False
+
+        return request.user.wishlist_items.filter(
+            product_id=obj.id
+        ).exists()

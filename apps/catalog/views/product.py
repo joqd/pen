@@ -33,7 +33,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return ProductDetailSerializer
         return ProductListSerializer
-
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         if self.action == 'retrieve':
