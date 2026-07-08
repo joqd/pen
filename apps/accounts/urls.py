@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views.login import LoginAPIView, VerifyOTPAPIView
-from .views.logout import LogoutAPIView
-from .views.me import MeAPIView
+from .views.login_views import LoginAPIView, VerifyOTPAPIView
+from .views.logout_views import LogoutAPIView
+from .views.me_views import MeAPIView
 
 
 urlpatterns = [

@@ -6,12 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiExample
 
-from apps.accounts.serializers import (
-	LoginSerializer,
-	VerifyOTPSerializer, ErrorResponseSerializer,
-)
+from apps.accounts.serializers import LoginSerializer, VerifyOTPSerializer
 from apps.accounts.services.otp_service import OTPService
 from apps.accounts.services.sms_service import SMSService
+from apps.orders.models import Cart
+from apps.orders.services.cart_service import CartService
 
 User = get_user_model()
 
@@ -22,19 +21,19 @@ class LoginAPIView(APIView):
 
 	@extend_schema(
         tags=['Auth'],
-        summary="Request login OTP",
+        summary='Request login OTP',
         description=(
-			"Send a one-time password (OTP) to the specified phone number.\n\n"
-			"The OTP is required to complete authentication using the "
-			"`/auth/verify/` endpoint."
+			'Send a one-time password (OTP) to the specified phone number.\n\n'
+			'The OTP is required to complete authentication using the '
+			'`/auth/verify/` endpoint.'
 		),
 		request=LoginSerializer,
 		examples=[
 			OpenApiExample(
-				name="Request Example",
-				summary="Request OTP",
+				name='Request Example',
+				summary='Request OTP',
 				value={
-					"phone": "9123456789",
+					'phone': '9123456789',
 				},
 				request_only=True,
 			),
@@ -71,15 +70,15 @@ class VerifyOTPAPIView(APIView):
 	@extend_schema(
         tags=['Auth'],
         summary='Verify otp',
-        description="Verify the one-time password (OTP).\n",
+        description='Verify the one-time password (OTP).\n',
 		request=VerifyOTPSerializer,
 		examples=[
 			OpenApiExample(
-				name="Request Example",
-				summary="Verify OTP",
+				name='Request Example',
+				summary='Verify OTP',
 				value={
-					"phone": "9123456789",
-					"code": 123456
+					'phone': '9123456789',
+					'code': 123456
 				},
 				request_only=True,
 			),
@@ -101,5 +100,13 @@ class VerifyOTPAPIView(APIView):
 
 		login(request, user)
 
+		# merging cart
+		cart_token = request.COOKIES.get('cart_token')
+		if cart_token:
+			CartService.merge_cart_from_token(user=user, token=cart_token)
+
 		d = {'id': user.id, 'phone': user.phone}
-		return Response(d, status=status.HTTP_200_OK)
+		response = Response(d, status=status.HTTP_200_OK)
+		response.delete_cookie('cart_token')
+	
+		return response

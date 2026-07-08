@@ -27,5 +27,5 @@ class LogoutAPIView(APIView):
     def post(self, request):
         logout(request)
         
-        response = DetailResponseSerializer(message='detail out.')
+        response = DetailResponseSerializer(detail='logged out.')
         return Response(response.data, status=status.HTTP_200_OK)
