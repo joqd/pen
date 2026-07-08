@@ -17,7 +17,6 @@ class StandardPagination(PageNumberPagination):
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for reading Product objects."""
     permission_classes = []
     
     queryset = Product.objects.filter(status='active')
@@ -31,13 +30,11 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     tags = ['Products']
 
     def get_serializer_class(self):
-        """Return list or detail serializer based on action."""
         if self.action == 'retrieve':
             return ProductDetailSerializer
         return ProductListSerializer
 
     def get_queryset(self):
-        """Optimize queryset with select_related and prefetch_related."""
         queryset = super().get_queryset()
         if self.action == 'retrieve':
             queryset = queryset.prefetch_related(

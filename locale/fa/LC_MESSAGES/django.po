@@ -274,10 +274,10 @@ msgstr "سبدخرید کاربران"
 msgid "quantity"
 msgstr "تعداد"
 
-msgid "Cart Item"
+msgid "cart item"
 msgstr "آیتم سبدخرید"
 
-msgid "Cart Items"
+msgid "cart items"
 msgstr "آیتم‌های سبدخرید"
 
 msgid "ID"

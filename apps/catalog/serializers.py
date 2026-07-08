@@ -84,6 +84,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
+    is_in_wishlist = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
@@ -100,7 +101,16 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'tags',
             'images',
             'variants',
+            'is_in_wishlist',
             'created_at',
             'updated_at',
         ]
         read_only_fields = fields
+
+    def get_is_in_wishlist(self, obj):
+        wishlist_product_ids = self.context.get(
+            'wishlist_product_ids',
+            set(),
+        )
+
+        return obj.id in wishlist_product_ids
