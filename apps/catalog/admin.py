@@ -18,7 +18,18 @@ from .models import (
 @admin.register(Collection)
 class CollectionAdmin(ModelAdmin):
     search_fields = ['title', 'slug']
-    list_display = ['title', 'slug', 'is_active', 'created_at']
+    list_display = ['thumbnail', 'title', 'slug', 'is_active', 'created_at']
+    
+    @display(description=_('Image'))
+    def thumbnail(self, obj):
+        if not obj.pk or not obj.image:
+            return "—"
+
+        return format_html(
+            '<img src="{}" style="width:54px;height:54px;'
+            'object-fit:cover;border-radius:10px;" />',
+            obj.image.url,
+        )
 
 @admin.register(Tag)
 class TagAdmin(ModelAdmin):

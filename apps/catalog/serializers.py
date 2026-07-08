@@ -6,7 +6,7 @@ from .models import Product, Collection, ProductImage, ProductVariant, Tag, Prod
 class CollectionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['id', 'title', 'slug', 'short_description', 'is_active', 'parent']
+        fields = ['id', 'title', 'slug', 'short_description', 'image', 'is_active', 'parent']
         read_only_fields = fields
 
 
@@ -25,6 +25,7 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
             'short_description',
             'description',
             'is_active',
+            'image',
             'children',
             'created_at',
             'updated_at',

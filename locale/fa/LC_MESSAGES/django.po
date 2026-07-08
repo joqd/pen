@@ -321,3 +321,15 @@ msgstr "یک عملیات انتخاب کنید"
 
 msgid "Run"
 msgstr "اجرا"
+
+msgid "Choose file to upload"
+msgstr "انتخاب فایل برای آپلود"
+
+msgid "Light"
+msgstr "روشن"
+
+msgid "Dark"
+msgstr "تاریک"
+
+msgid "System"
+msgstr "سیستم"
