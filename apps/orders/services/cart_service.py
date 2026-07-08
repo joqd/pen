@@ -76,12 +76,23 @@ class CartService:
 
 
     @classmethod
+    @classmethod
     def update_quantity(cls, item, quantity):
+
+        if quantity > cls.MAX_ITEM_QUANTITY:
+            raise ValidationError(
+                f'Maximum quantity is {cls.MAX_ITEM_QUANTITY}.'
+            )
+
         if quantity > item.variant.stock:
-            raise ValidationError('Insufficient stock')
-        
+            raise ValidationError(
+                'Insufficient stock.'
+            )
+
         item.quantity = quantity
-        item.save(update_fields=['quantity'])
+        item.save(
+            update_fields=['quantity']
+        )
         
 
     @classmethod
