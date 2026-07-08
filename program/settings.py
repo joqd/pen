@@ -189,11 +189,6 @@ UNFOLD = {
 						'icon': 'person',
 						'link': reverse_lazy('admin:accounts_user_changelist'),
 					},
-					# {
-					# 	'title': _('groups'),
-					# 	'icon': 'groups',
-					# 	'link': reverse_lazy('admin:auth_group_changelist'),
-					# },
 				],
 			},
             {
@@ -213,6 +208,16 @@ UNFOLD = {
 						'title': _('tags'),
 						'icon': 'label',
 						'link': reverse_lazy('admin:catalog_tag_changelist'),
+					},
+				],
+			},
+            {
+				'title': _('Cart and orders'),
+				'items': [
+					{
+						'title': _('cart'),
+						'icon': 'orders',
+						'link': reverse_lazy('admin:orders_cart_changelist'),
 					},
 				],
 			},

@@ -261,3 +261,57 @@ msgstr "والد"
 
 msgid "Select value"
 msgstr "انتخاب کنید"
+
+msgid "token"
+msgstr "توکن"
+
+msgid "cart"
+msgstr "سبدخرید"
+
+msgid "carts"
+msgstr "سبدخرید کاربران"
+
+msgid "quantity"
+msgstr "تعداد"
+
+msgid "Cart Item"
+msgstr "آیتم سبدخرید"
+
+msgid "Cart Items"
+msgstr "آیتم‌های سبدخرید"
+
+msgid "ID"
+msgstr "آیدی"
+
+msgid "unit price"
+msgstr "قیمت هر آیتم"
+
+msgid "total"
+msgstr "جمع"
+
+msgid "owner"
+msgstr "مالک"
+
+msgid "items"
+msgstr "آیتم‌ها"
+
+msgid "is guest"
+msgstr "میهمان است؟"
+
+msgid "yes"
+msgstr "بله"
+
+msgid "no"
+msgstr "خیر"
+
+msgid "guest"
+msgstr "کاربر میهمان"
+
+msgid "Cart and orders"
+msgstr "سبدخرید و سفارشات"
+
+msgid "orders"
+msgstr "سفارشات"
+
+msgid "Please correct the errors below."
+msgstr "لطفا خطاهای زیر را اصلاح کنید"
