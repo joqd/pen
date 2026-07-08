@@ -333,3 +333,6 @@ msgstr "تاریک"
 
 msgid "System"
 msgstr "سیستم"
+
+msgid "variants"
+msgstr "انواع"
