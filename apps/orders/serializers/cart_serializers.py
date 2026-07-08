@@ -4,7 +4,7 @@ from ..models import CartItem, Cart
 
 
 class AddCartItemSerializer(serializers.Serializer):
-	variant_id = serializers.IntegerField()
+	sku = serializers.CharField(max_length=64)
 	quantity = serializers.IntegerField(min_value=1)
 
 
@@ -13,6 +13,7 @@ class UpdateCartItemSerializer(serializers.Serializer):
 
 
 class CartItemSerializer(serializers.ModelSerializer):
+    sku = serializers.CharField(source='variant.sku', read_only=True)
     product_title = serializers.CharField(source='variant.product.title', read_only=True)
     size = serializers.CharField(source='variant.size.name', read_only=True)
     price = serializers.IntegerField(source='variant.price', read_only=True)
@@ -20,7 +21,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = (
-            'id', 'quantity',
+            'sku', 'quantity',
             'product_title',
             'size', 'price',
         )

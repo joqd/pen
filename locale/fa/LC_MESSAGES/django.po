@@ -315,3 +315,9 @@ msgstr "سفارشات"
 
 msgid "Please correct the errors below."
 msgstr "لطفا خطاهای زیر را اصلاح کنید"
+
+msgid "Select action"
+msgstr "یک عملیات انتخاب کنید"
+
+msgid "Run"
+msgstr "اجرا"

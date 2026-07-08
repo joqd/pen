@@ -41,6 +41,7 @@ body {
     margin-right: 0.5rem !important;
 }
 
+
 /* ===== TABLE: Body cells ===== */
 
 /* Django generates td/th with text-left; override for RTL */
