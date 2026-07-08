@@ -5,7 +5,7 @@ from ..models import CartItem, Cart
 
 class CartService:
     MAX_CART_ITEMS = 100
-    MAX_ITEM_QUANTITY = 100
+    MAX_ITEM_QUANTITY = 20
     
     @classmethod
     def get_or_create_cart(cls, user=None, token=None):
