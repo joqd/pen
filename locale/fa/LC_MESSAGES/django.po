@@ -336,3 +336,33 @@ msgstr "سیستم"
 
 msgid "variants"
 msgstr "انواع"
+
+msgid "recipient name"
+msgstr "نام گیرنده"
+
+msgid "recipient"
+msgstr "گیرنده"
+
+msgid "province"
+msgstr "استان"
+
+msgid "city"
+msgstr "شهر"
+
+msgid "postal code"
+msgstr "کدپستی"
+
+msgid "address"
+msgstr "آدرس"
+
+msgid "default"
+msgstr "پیشفرض"
+
+msgid "City does not belong to selected province."
+msgstr "شهر متعلق به استان انتخابی نیست."
+
+msgid "addresses"
+msgstr "آدرس‌ها"
+
+msgid "location"
+msgstr "موقعیت"

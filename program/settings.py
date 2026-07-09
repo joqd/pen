@@ -164,6 +164,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 SMS_IR_API_KEY = os.environ.get("SMS_IR_API_KEY")
 SMS_IR_LINE_NUMBER = os.environ.get("SMS_IR_LINE_NUMBER")
 
+JQUERY_URL = True
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -188,6 +189,11 @@ UNFOLD = {
 						'title': _('users'),
 						'icon': 'person',
 						'link': reverse_lazy('admin:accounts_user_changelist'),
+					},
+                    {
+						'title': _('addresses'),
+						'icon': 'location_on',
+						'link': reverse_lazy('admin:accounts_address_changelist'),
 					},
 				],
 			},
