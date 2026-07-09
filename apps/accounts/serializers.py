@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from .models import Address
+
 User = get_user_model()
 
 
@@ -30,3 +32,33 @@ class ErrorResponseSerializer(serializers.Serializer):
 class VerifyOTPSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=11)
     code = serializers.CharField(max_length=6)
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = [
+            'id', 'title', 'recipient_name',
+            'phone', 'province', 'city',
+            'postal_code', 'address_line',
+            'is_default', 'created_at', 'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def validate(self, attrs):
+        province = attrs.get(
+            'province',
+            getattr(self.instance, 'province', None),
+        )
+
+        city = attrs.get(
+            'city',
+            getattr(self.instance, 'city', None),
+        )
+
+        if city and province and city.province_id != province.id:
+            raise serializers.ValidationError({
+                'city': 'Selected city does not belong to selected province.'
+            })
+
+        return attrs
