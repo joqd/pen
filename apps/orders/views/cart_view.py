@@ -10,7 +10,7 @@ from drf_spectacular.utils import (
     OpenApiParameter,
 )
 
-from ..serializers.cart_serializers import (
+from ..serializers.cart_serializer import (
     CartSerializer,
     AddCartItemSerializer,
     UpdateCartItemSerializer,

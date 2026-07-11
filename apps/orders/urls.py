@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .views.cart_views import (
+from .views.cart_view import (
     CartView,
     CartItemCreateView,
     CartItemView,
 )
-from .views.wishlist_views import (
+from .views.wishlist_view import (
     WishlistView,
 	WishlistItemCreateView,
 	WishlistItemView,

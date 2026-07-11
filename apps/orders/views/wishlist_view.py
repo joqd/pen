@@ -11,7 +11,7 @@ from drf_spectacular.utils import (
 
 from ..models import WishlistItem, Product
 from ..services.wishlist_service import WishlistService
-from ..serializers.wishlist_serializers import (
+from ..serializers.wishlist_serializer import (
     WishlistItemSerializer,
     AddWishlistItemSerializer,
 )
