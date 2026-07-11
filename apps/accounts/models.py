@@ -71,6 +71,9 @@ class Address(models.Model):
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
+    def __str__(self):
+        return f'{self.title} - {self.recipient_name}'
+
     def clean(self):
         if self.city and self.province:
             if self.city.province_id != self.province_id:
