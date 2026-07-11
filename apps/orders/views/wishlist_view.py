@@ -9,9 +9,10 @@ from drf_spectacular.utils import (
     OpenApiParameter,
 )
 
-from ..models import WishlistItem, Product
-from ..services.wishlist_service import WishlistService
-from ..serializers.wishlist_serializer import (
+from apps.catalog.models import Product
+from apps.orders.models import WishlistItem
+from apps.orders.services.wishlist_service import WishlistService
+from apps.orders.serializers.wishlist_serializer import (
     WishlistItemSerializer,
     AddWishlistItemSerializer,
 )
