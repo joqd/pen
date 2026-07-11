@@ -222,8 +222,13 @@ UNFOLD = {
 				'items': [
 					{
 						'title': _('cart'),
-						'icon': 'orders',
+						'icon': 'shopping_cart',
 						'link': reverse_lazy('admin:orders_cart_changelist'),
+					},
+                    {
+						'title': _('orders'),
+						'icon': 'receipt_long',
+						'link': reverse_lazy('admin:orders_order_changelist'),
 					},
 				],
 			},
