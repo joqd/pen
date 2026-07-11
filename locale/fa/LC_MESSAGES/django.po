@@ -430,9 +430,6 @@ msgstr "یادداشت مشتری"
 msgid "admin note"
 msgstr "یادداشت ادمین"
 
-msgid "expires at"
-msgstr "منقضی میشود در"
-
 msgid "paid at"
 msgstr "پرداخت شده در"
 
@@ -474,3 +471,6 @@ msgstr "تحویل داده شده"
 
 msgid "returned"
 msgstr "مرجوع داده شده"
+
+msgid "expires at"
+msgstr "منقضی می‌شود در"

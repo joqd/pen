@@ -40,7 +40,7 @@ class Order(models.Model):
     customer_note = models.TextField(_('customer note'), blank=True)
     admin_note = models.TextField(_('admin note'), blank=True)
 
-    expires_at = models.DateTimeField()
+    expires_at = models.DateTimeField(_('expires at'))
     paid_at = models.DateTimeField(_('paid at'), null=True, blank=True)
     shipped_at = models.DateTimeField(_('shipped at'), null=True, blank=True)
     delivered_at = models.DateTimeField(_('delivered at'), null=True, blank=True)
