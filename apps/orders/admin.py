@@ -221,7 +221,7 @@ class OrderAdmin(ModelAdmin):
 
     fieldsets = (
         (
-            _("Order"),
+            _("order"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -234,7 +234,7 @@ class OrderAdmin(ModelAdmin):
             },
         ),
         (
-            _("Amounts"),
+            _("amounts"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -246,7 +246,7 @@ class OrderAdmin(ModelAdmin):
             },
         ),
         (
-            _("Shipping"),
+            _("shipping"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -258,7 +258,7 @@ class OrderAdmin(ModelAdmin):
             },
         ),
         (
-            _("Notes"),
+            _("notes"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -268,7 +268,7 @@ class OrderAdmin(ModelAdmin):
             },
         ),
         (
-            _("Payment"),
+            _("payment"),
             {
                 "classes": ("tab",),
                 "fields": (
@@ -306,7 +306,7 @@ class OrderAdmin(ModelAdmin):
     def item_count(self, obj):
         return obj.items.count()
     
-    @admin.action(description="Mark selected orders as paid")
+    @admin.action(description=_("mark selected orders as paid"))
     def mark_as_paid(self, request, queryset):
         updated = queryset.update(
             status=Order.Status.PAID,
@@ -319,7 +319,7 @@ class OrderAdmin(ModelAdmin):
             messages.SUCCESS,
         )
 
-    @admin.action(description="Mark selected orders as shipped")
+    @admin.action(description=_("mark selected orders as shipped"))
     def mark_as_shipped(self, request, queryset):
         updated = queryset.update(
             shipping_status=Order.ShippingStatus.SHIPPED,

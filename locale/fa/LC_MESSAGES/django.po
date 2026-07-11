@@ -337,6 +337,9 @@ msgstr "سیستم"
 msgid "variants"
 msgstr "انواع"
 
+msgid "variant"
+msgstr "نوع محصول"
+
 msgid "recipient name"
 msgstr "نام گیرنده"
 
@@ -366,3 +369,108 @@ msgstr "آدرس‌ها"
 
 msgid "location"
 msgstr "موقعیت"
+
+msgid "order"
+msgstr "سفارش"
+
+msgid "amounts"
+msgstr "مبلغ‌ها"
+
+msgid "shipping"
+msgstr "حمل و نقل"
+
+msgid "notes"
+msgstr "یادداشت‌ها"
+
+msgid "payment"
+msgstr "پرداخت"
+
+msgid "order number"
+msgstr "شماره سفارش"
+
+msgid "shipping status"
+msgstr "وضعیت حمل و نقل"
+
+msgid "order items"
+msgstr "آیتم‌های سفارش"
+
+msgid "total price"
+msgstr "مبلغ کل"
+
+msgid "order item"
+msgstr "آیتم سفارش"
+
+msgid "subtotal amount"
+msgstr "جمع مبلغ کالاها"
+
+msgid "discount amount"
+msgstr "مبلغ تخفیف"
+
+msgid "shipping amount"
+msgstr "هزینه حمل و نقل"
+
+msgid "total amount"
+msgstr "مبلغ نهایی"
+
+msgid "shipping company"
+msgstr "شرکت حمل و نقل"
+
+msgid "tracking code"
+msgstr "کد رهگیری"
+
+msgid "shipped at"
+msgstr "ارسال شده در"
+
+msgid "delivered at"
+msgstr "تحویل داده شده در"
+
+msgid "customer note"
+msgstr "یادداشت مشتری"
+
+msgid "admin note"
+msgstr "یادداشت ادمین"
+
+msgid "expires at"
+msgstr "منقضی میشود در"
+
+msgid "paid at"
+msgstr "پرداخت شده در"
+
+msgid "Date"
+msgstr "تاریخ"
+
+msgid "mark selected orders as paid"
+msgstr "علامت‌گذاری سفارش‌های انتخاب‌شده به عنوان پرداخت‌شده"
+
+msgid "mark selected orders as shipped"
+msgstr "علامت‌گذاری سفارش‌های انتخاب‌شده به عنوان ارسال‌شده"
+
+msgid "pending payment"
+msgstr "در انتظار پرداخت"
+
+msgid "paid"
+msgstr "پرداخت شده"
+
+msgid "cancelled"
+msgstr "کنسل شده"
+
+msgid "expired"
+msgstr "منقضی شده"
+
+msgid "refunded"
+msgstr "بازپرداخت شده"
+
+msgid "pending"
+msgstr "در انتظار"
+
+msgid "processing"
+msgstr "درحال پردازش"
+
+msgid "shipped"
+msgstr "ارسال شده"
+
+msgid "delivered"
+msgstr "تحویل داده شده"
+
+msgid "returned"
+msgstr "مرجوع داده شده"
