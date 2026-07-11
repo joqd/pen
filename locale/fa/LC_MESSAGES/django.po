@@ -262,6 +262,9 @@ msgstr "والد"
 msgid "Select value"
 msgstr "انتخاب کنید"
 
+msgid "Select"
+msgstr "انتخاب"
+
 msgid "token"
 msgstr "توکن"
 
