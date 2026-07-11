@@ -153,6 +153,7 @@ class ProductVariant(models.Model):
     price = models.PositiveIntegerField(_('price'))
     compare_price = models.PositiveIntegerField(_('compare price'), blank=True, null=True)
     stock = models.PositiveIntegerField(_('stock'), default=0)
+    reserved_stock = models.PositiveIntegerField(_('reserved stock'), default=0)
     is_active = models.BooleanField(_('is_active'), default=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -160,6 +161,10 @@ class ProductVariant(models.Model):
 
     def __str__(self):
         return f'{self.product.title} - {self.sku}'
+
+    @property
+    def available_stock(self):
+        return self.stock - self.reserved_stock
 
     class Meta:
         verbose_name = _('product variant')
