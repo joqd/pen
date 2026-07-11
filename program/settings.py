@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.catalog',
     'apps.orders',
+    'apps.gallery',
 ]
 
 MIDDLEWARE = [
@@ -229,6 +230,16 @@ UNFOLD = {
 						'title': _('orders'),
 						'icon': 'receipt_long',
 						'link': reverse_lazy('admin:orders_order_changelist'),
+					},
+				],
+			},
+            {
+				'title': _('Content'),
+				'items': [
+					{
+						'title': _('gallery'),
+						'icon': 'photo_library',
+						'link': reverse_lazy('admin:gallery_customergallery_changelist'),
 					},
 				],
 			},
