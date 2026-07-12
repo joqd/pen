@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiExample
 
@@ -16,8 +17,7 @@ User = get_user_model()
 
 
 class LoginAPIView(APIView):
-	authentication_classes = []
-	permission_classes = []
+	permission_classes = [AllowAny]
 
 	@extend_schema(
         tags=['Auth'],
@@ -56,8 +56,7 @@ class LoginAPIView(APIView):
 
 
 class VerifyOTPAPIView(APIView):
-	authentication_classes = []
-	permission_classes = []
+	permission_classes = [AllowAny]
 
 	def _create_user_if_not_exist(self, phone):
 		try:
