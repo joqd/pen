@@ -263,4 +263,8 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_DIST': 'SIDECAR',
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
+    
+	'TITLE': 'Adagio Style Commerce API',
+    'VERSION': '1.0.0',
+    'DESCRIPTION': 'Backend API powering the **Adagio Style** online store.',
 }
