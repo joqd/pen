@@ -316,9 +316,6 @@ msgstr "سبدخرید و سفارشات"
 msgid "orders"
 msgstr "سفارشات"
 
-msgid "Please correct the errors below."
-msgstr "لطفا خطاهای زیر را اصلاح کنید"
-
 msgid "Select action"
 msgstr "یک عملیات انتخاب کنید"
 
@@ -492,3 +489,6 @@ msgstr "گالری مشتریان"
 
 msgid "information"
 msgstr "اطلاعات"
+
+msgid "score"
+msgstr "امتیاز"

@@ -10,6 +10,6 @@ class CustomerGallerySerializer(serializers.ModelSerializer):
 		model = CustomerGallery
 		fields = [
 			'id', 'image', 'customer_name',
-			'caption', 'created_at',
+			'caption', 'score', 'created_at',
 			# 'product_title',
 		]

@@ -35,7 +35,7 @@ class CustomerGalleryAdmin(ModelAdmin):
         'preview',
         'product',
         'customer_name',
-        'caption',
+        'score',
         'is_active',
         'sort_order',
         'created_at',
@@ -69,6 +69,7 @@ class CustomerGalleryAdmin(ModelAdmin):
                 'fields': (
                     'customer_name',
                     'caption',
+                    'score',
                     'is_active',
                     'sort_order',
                 ),
