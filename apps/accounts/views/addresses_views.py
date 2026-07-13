@@ -1,10 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveAPIView, ListAPIView
 
 from drf_spectacular.utils import extend_schema
 
-from ..models import Address
-from ..serializers import AddressSerializer
+from ..models import Address, Province, City
+from ..serializers import AddressSerializer, ProvinceSerializer, CitySerializer
 
 
 @extend_schema(tags=['Addresses'])
@@ -49,3 +50,29 @@ class AddressViewSet(viewsets.ModelViewSet):
             ).update(
                 is_default=False,
             )
+            
+
+@extend_schema(tags=['Province and City'])
+class ProvinceListAPIView(ListAPIView):
+    queryset = Province.objects.all()
+    serializer_class = ProvinceSerializer
+
+
+@extend_schema(tags=['Province and City'])
+class ProvinceCityListAPIView(ListAPIView):
+    serializer_class = CitySerializer
+
+    def get_queryset(self):
+        province_id = self.kwargs['province_id']
+
+        return (
+            City.objects
+            .select_related('province')
+            .filter(province_id=province_id)
+        )
+
+
+@extend_schema(tags=['Province and City'])
+class CityListAPIView(ListAPIView):
+    queryset = City.objects.select_related('province')
+    serializer_class = CitySerializer

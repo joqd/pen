@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Address
+from .models import Address, Province, City
 
 User = get_user_model()
 
@@ -34,7 +34,24 @@ class VerifyOTPSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=6)
 
 
+class ProvinceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = ('id', 'name')
+
+
+class CitySerializer(serializers.ModelSerializer):
+    province_id = serializers.IntegerField(source='province.id', read_only=True)
+
+    class Meta:
+        model = City
+        fields = ('id', 'name', 'province_id')
+
+
 class AddressSerializer(serializers.ModelSerializer):
+    province = ProvinceSerializer()
+    city = CitySerializer()
+
     class Meta:
         model = Address
         fields = [
