@@ -62,20 +62,12 @@ class AddressSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-    def validate(self, attrs):
-        province = attrs.get(
-            'province',
-            getattr(self.instance, 'province', None),
-        )
 
-        city = attrs.get(
-            'city',
-            getattr(self.instance, 'city', None),
-        )
-
-        if city and province and city.province_id != province.id:
-            raise serializers.ValidationError({
-                'city': 'Selected city does not belong to selected province.'
-            })
-
-        return attrs
+class AddressWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = [
+            'title', 'recipient_name', 'phone',
+            'province', 'city', 'postal_code',
+            'address_line', 'is_default',
+        ]

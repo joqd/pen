@@ -6,6 +6,7 @@ from drf_spectacular.utils import extend_schema
 
 from ..models import Address, Province, City
 from ..serializers import AddressSerializer, ProvinceSerializer, CitySerializer
+from ..serializers import AddressWriteSerializer
 
 
 @extend_schema(tags=['Addresses'])
@@ -50,6 +51,12 @@ class AddressViewSet(viewsets.ModelViewSet):
             ).update(
                 is_default=False,
             )
+            
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return AddressWriteSerializer
+
+        return AddressSerializer
             
 
 @extend_schema(tags=['Province and City'])
