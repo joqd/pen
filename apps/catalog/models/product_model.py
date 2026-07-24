@@ -18,7 +18,9 @@ class Product(models.Model):
     short_description = models.CharField(_('short description'), max_length=320)
     description = models.TextField(_('description'), blank=True)
 
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', blank=True, null=True, verbose_name=_('category'))
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, related_name='products', blank=True, null=True, verbose_name=_('category')
+    )
     collections = models.ManyToManyField(Collection, related_name='products', blank=True, verbose_name=_('collection'))
     tags = models.ManyToManyField(Tag, related_name='products', blank=True, verbose_name=_('collection'))
 
