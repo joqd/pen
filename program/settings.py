@@ -205,8 +205,13 @@ UNFOLD = {
                     },
                     {
                         'title': _('collections'),
-                        'icon': 'category',
+                        'icon': 'folder_special',
                         'link': reverse_lazy('admin:catalog_collection_changelist'),
+                    },
+                    {
+                        'title': _('categories'),
+                        'icon': 'category',
+                        'link': reverse_lazy('admin:catalog_category_changelist'),
                     },
                     {
                         'title': _('tags'),

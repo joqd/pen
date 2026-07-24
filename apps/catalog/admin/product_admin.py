@@ -69,6 +69,7 @@ class ProductAdmin(ModelAdmin):
     }
 
     autocomplete_fields = (
+        'category',
         'collections',
         'tags',
     )
@@ -82,6 +83,7 @@ class ProductAdmin(ModelAdmin):
     list_filter = (
         'status',
         'featured',
+        'category',
         'collections',
         'tags',
     )
@@ -115,6 +117,7 @@ class ProductAdmin(ModelAdmin):
                 'fields': (
                     'title',
                     'slug',
+                    'category',
                     'collections',
                     'tags',
                 ),

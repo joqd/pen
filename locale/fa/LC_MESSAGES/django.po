@@ -492,3 +492,9 @@ msgstr "اطلاعات"
 
 msgid "score"
 msgstr "امتیاز"
+
+msgid "category"
+msgstr "کتگوری"
+
+msgid "categories"
+msgstr "کتگوری‌ها"
