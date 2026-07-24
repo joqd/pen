@@ -5,35 +5,12 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin, TabularInline
 
-from .models import (
-    Collection,
+from ..models import (
     Product,
     ProductImage,
     ProductSize,
     ProductVariant,
-    Tag,
 )
-
-
-@admin.register(Collection)
-class CollectionAdmin(ModelAdmin):
-    search_fields = ['title', 'slug']
-    list_display = ['thumbnail', 'title', 'slug', 'is_active', 'created_at']
-
-    @display(description=_('Image'))
-    def thumbnail(self, obj):
-        if not obj.pk or not obj.image:
-            return '—'
-
-        return format_html(
-            '<img src="{}" style="width:54px;height:54px;object-fit:cover;border-radius:10px;" />',
-            obj.image.url,
-        )
-
-
-@admin.register(Tag)
-class TagAdmin(ModelAdmin):
-    search_fields = ['name']
 
 
 class ProductImageInline(TabularInline):
