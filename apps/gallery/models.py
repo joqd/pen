@@ -1,12 +1,19 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 from apps.catalog.models import Product
 
 
 class CustomerGallery(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='customer_gallery', verbose_name=_('product'), null=True, blank=True)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='customer_gallery',
+        verbose_name=_('product'),
+        null=True,
+        blank=True,
+    )
     image = models.ImageField(_('image'), upload_to='gallery/customers/')
     customer_name = models.CharField(_('customer name'), max_length=100, blank=True)
     caption = models.CharField(_('caption'), max_length=255, blank=True)
@@ -16,7 +23,7 @@ class CustomerGallery(models.Model):
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10),
-        ]
+        ],
     )
     is_active = models.BooleanField(_('is active'), default=True)
     sort_order = models.PositiveIntegerField(_('sort order'), default=0)

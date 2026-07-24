@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Product, Collection, ProductImage, ProductVariant, Tag, ProductSize
+
+from .models import Collection, Product, ProductImage, ProductVariant, Tag
 
 
 # Collection Serializers
@@ -13,7 +14,7 @@ class CollectionListSerializer(serializers.ModelSerializer):
 class CollectionDetailSerializer(serializers.ModelSerializer):
     children = CollectionListSerializer(many=True, read_only=True)
     parent_detail = CollectionListSerializer(source='parent', read_only=True)
-    
+
     class Meta:
         model = Collection
         fields = [
@@ -43,7 +44,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     size_name = serializers.CharField(source='size.name', read_only=True)
-    
+
     class Meta:
         model = ProductVariant
         fields = ['id', 'sku', 'size', 'size_name', 'price', 'compare_price', 'stock', 'is_active']
@@ -61,7 +62,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     collections_list = serializers.StringRelatedField(source='collections', many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
-    
+
     class Meta:
         model = Product
         fields = [
@@ -85,7 +86,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     is_in_wishlist = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Product
         fields = [
@@ -113,6 +114,4 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
 
-        return request.user.wishlist_items.filter(
-            product_id=obj.id
-        ).exists()
+        return request.user.wishlist_items.filter(product_id=obj.id).exists()

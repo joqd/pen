@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from ..models import CartItem, Cart
+from ..models import Cart, CartItem
 
 
 class AddCartItemSerializer(serializers.Serializer):
-	sku = serializers.CharField(max_length=64)
-	quantity = serializers.IntegerField(min_value=1)
+    sku = serializers.CharField(max_length=64)
+    quantity = serializers.IntegerField(min_value=1)
 
 
 class UpdateCartItemSerializer(serializers.Serializer):
@@ -21,9 +21,11 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = (
-            'sku', 'quantity',
+            'sku',
+            'quantity',
             'product_title',
-            'size', 'price',
+            'size',
+            'price',
         )
 
 
@@ -41,7 +43,4 @@ class CartSerializer(serializers.ModelSerializer):
         )
 
     def get_total_price(self, obj):
-        return sum(
-            item.variant.price * item.quantity
-            for item in obj.items.all()
-        )
+        return sum(item.variant.price * item.quantity for item in obj.items.all())

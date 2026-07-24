@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('catalog', '0003_collection_image'),
         ('orders', '0002_alter_cart_created_at_alter_cart_updated_at_and_more'),
@@ -23,14 +22,32 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='catalog.product', verbose_name='product')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='wishlist_items', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                (
+                    'product',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to='catalog.product', verbose_name='product'
+                    ),
+                ),
+                (
+                    'user',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='wishlist_items',
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name='user',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': ('wishlist item',),
                 'verbose_name_plural': 'wishlist items',
-                'indexes': [models.Index(fields=['user'], name='orders_wish_user_id_44d072_idx'), models.Index(fields=['user', 'created_at'], name='orders_wish_user_id_013f62_idx')],
-                'constraints': [models.UniqueConstraint(fields=('user', 'product'), name='unique_user_product_wishlist')],
+                'indexes': [
+                    models.Index(fields=['user'], name='orders_wish_user_id_44d072_idx'),
+                    models.Index(fields=['user', 'created_at'], name='orders_wish_user_id_013f62_idx'),
+                ],
+                'constraints': [
+                    models.UniqueConstraint(fields=('user', 'product'), name='unique_user_product_wishlist')
+                ],
             },
         ),
     ]

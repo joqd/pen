@@ -1,21 +1,21 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+)
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
-from drf_spectacular.utils import (
-    extend_schema,
-    OpenApiResponse,
-    OpenApiParameter,
-)
+from rest_framework.views import APIView
 
 from apps.catalog.models import Product
 from apps.orders.models import WishlistItem
-from apps.orders.services.wishlist_service import WishlistService
 from apps.orders.serializers.wishlist_serializer import (
-    WishlistItemSerializer,
     AddWishlistItemSerializer,
+    WishlistItemSerializer,
 )
+from apps.orders.services.wishlist_service import WishlistService
 
 
 class WishlistView(APIView):
@@ -24,25 +24,17 @@ class WishlistView(APIView):
     @extend_schema(
         tags=['Wishlist'],
         summary='Get wishlist',
-        description=(
-            'Returns all products saved in the authenticated '
-            'user wishlist.'
-        ),
+        description=('Returns all products saved in the authenticated user wishlist.'),
         responses={
             200: WishlistItemSerializer(many=True),
         },
     )
     def get(self, request):
-        items = (
-            WishlistItem.objects
-            .filter(user=request.user)
-            .select_related('product')
-            .order_by('-created_at')
-        )
+        items = WishlistItem.objects.filter(user=request.user).select_related('product').order_by('-created_at')
 
         serializer = WishlistItemSerializer(items, many=True)
         return Response(serializer.data)
-    
+
 
 class WishlistItemCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -80,12 +72,7 @@ class WishlistItemCreateView(APIView):
 
         WishlistService.add_item(user=request.user, product=product)
 
-        items = (
-            request.user
-            .wishlist_items
-            .select_related('product')
-            .order_by('-created_at')
-        )
+        items = request.user.wishlist_items.select_related('product').order_by('-created_at')
 
         return Response(
             WishlistItemSerializer(
@@ -94,7 +81,7 @@ class WishlistItemCreateView(APIView):
             ).data,
             status=status.HTTP_201_CREATED,
         )
-    
+
 
 class WishlistItemView(APIView):
     permission_classes = [IsAuthenticated]
@@ -102,10 +89,7 @@ class WishlistItemView(APIView):
     @extend_schema(
         tags=['Wishlist'],
         summary='Remove product from wishlist',
-        description=(
-            'Removes a product from the authenticated '
-            'user wishlist.'
-        ),
+        description=('Removes a product from the authenticated user wishlist.'),
         parameters=[
             OpenApiParameter(
                 name='slug',
@@ -132,12 +116,7 @@ class WishlistItemView(APIView):
             product=product,
         )
 
-        items = (
-            request.user
-            .wishlist_items
-            .select_related("product")
-            .order_by("-created_at")
-        )
+        items = request.user.wishlist_items.select_related('product').order_by('-created_at')
 
         return Response(
             WishlistItemSerializer(

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('catalog', '0001_initial'),
     ]
@@ -17,15 +16,27 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='product',
-            options={'ordering': ['-published_at', '-id'], 'verbose_name': 'product', 'verbose_name_plural': 'products'},
+            options={
+                'ordering': ['-published_at', '-id'],
+                'verbose_name': 'product',
+                'verbose_name_plural': 'products',
+            },
         ),
         migrations.AlterModelOptions(
             name='productimage',
-            options={'ordering': ['sort_order', 'id'], 'verbose_name': 'product image', 'verbose_name_plural': 'product images'},
+            options={
+                'ordering': ['sort_order', 'id'],
+                'verbose_name': 'product image',
+                'verbose_name_plural': 'product images',
+            },
         ),
         migrations.AlterModelOptions(
             name='productsize',
-            options={'ordering': ['sort_order', 'id'], 'verbose_name': 'product size', 'verbose_name_plural': 'product sizes'},
+            options={
+                'ordering': ['sort_order', 'id'],
+                'verbose_name': 'product size',
+                'verbose_name_plural': 'product sizes',
+            },
         ),
         migrations.AlterModelOptions(
             name='productvariant',
@@ -53,7 +64,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='collection',
             name='parent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='children', to='catalog.collection', verbose_name='parent'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name='children',
+                to='catalog.collection',
+                verbose_name='parent',
+            ),
         ),
         migrations.AlterField(
             model_name='collection',

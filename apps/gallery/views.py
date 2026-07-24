@@ -1,7 +1,7 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
-from drf_spectacular.utils import extend_schema
 
 from .models import CustomerGallery
 from .serializers import CustomerGallerySerializer
@@ -19,9 +19,4 @@ class CustomerGalleryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CustomerGallerySerializer
     pagination_class = StandardPagination
 
-    queryset = (
-        CustomerGallery.objects
-        .filter(is_active=True)
-        .select_related('product')
-        .order_by('sort_order', '-id')
-    )
+    queryset = CustomerGallery.objects.filter(is_active=True).select_related('product').order_by('sort_order', '-id')

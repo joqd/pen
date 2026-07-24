@@ -28,7 +28,9 @@ class Order(models.Model):
     order_number = models.CharField(_('order number'), max_length=32, unique=True)
 
     status = models.CharField(_('status'), max_length=30, choices=Status.choices, default=Status.PENDING_PAYMENT)
-    shipping_status = models.CharField(_('shipping status'), max_length=30, choices=ShippingStatus.choices, default=ShippingStatus.PENDING)
+    shipping_status = models.CharField(
+        _('shipping status'), max_length=30, choices=ShippingStatus.choices, default=ShippingStatus.PENDING
+    )
 
     subtotal_amount = models.PositiveIntegerField(_('subtotal amount'), default=0)
     shipping_amount = models.PositiveIntegerField(_('shipping amount'), default=0)
@@ -54,7 +56,7 @@ class Order(models.Model):
 
     def __str__(self):
         return self.order_number
-    
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
@@ -63,11 +65,10 @@ class Order(models.Model):
             super().save(update_fields=['order_number'])
 
 
-
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name=_('order'))
     variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT, verbose_name=_('variant'))
-    
+
     quantity = models.PositiveIntegerField(_('quantity'), default=1)
     unit_price = models.PositiveIntegerField(_('price'))
     total_price = models.PositiveIntegerField(_('total price'))

@@ -1,11 +1,10 @@
-from django.core.management.base import BaseCommand
-from django.db import transaction
-from django.conf import settings
-
-from apps.accounts.models import Province, City
-
 import json
 
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.db import transaction
+
+from apps.accounts.models import City, Province
 
 
 class Command(BaseCommand):
@@ -38,11 +37,7 @@ class Command(BaseCommand):
 
             province_map[province.id] = province
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f'{len(province_map)} provinces imported.'
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f'{len(province_map)} provinces imported.'))
 
         self.stdout.write('Importing cities...')
 
@@ -52,11 +47,7 @@ class Command(BaseCommand):
             province = province_map.get(item['ostan'])
 
             if not province:
-                self.stdout.write(
-                    self.style.WARNING(
-                        f"Province {item['ostan']} not found."
-                    )
-                )
+                self.stdout.write(self.style.WARNING(f'Province {item["ostan"]} not found.'))
                 continue
 
             cities.append(
@@ -72,12 +63,6 @@ class Command(BaseCommand):
             ignore_conflicts=True,
         )
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f'{len(cities)} cities imported.'
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f'{len(cities)} cities imported.'))
 
-        self.stdout.write(
-            self.style.SUCCESS('Import completed.')
-        )
+        self.stdout.write(self.style.SUCCESS('Import completed.'))

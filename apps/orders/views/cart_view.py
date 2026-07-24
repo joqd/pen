@@ -1,23 +1,24 @@
-from django.shortcuts import get_object_or_404
 from django.conf import settings
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework import status
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import (
-    extend_schema,
-    OpenApiResponse,
     OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
 )
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from apps.catalog.models import ProductVariant
+
+from ..models import CartItem
 from ..serializers.cart_serializer import (
-    CartSerializer,
     AddCartItemSerializer,
+    CartSerializer,
     UpdateCartItemSerializer,
 )
 from ..services.cart_service import CartService
-from apps.catalog.models import ProductVariant
-from ..models import CartItem
 from .mixins import CartMixin
 
 
@@ -51,11 +52,11 @@ class CartView(CartMixin, APIView):
             )
 
         return response
-    
+
 
 class CartItemCreateView(CartMixin, APIView):
     permission_classes = [AllowAny]
-    
+
     @extend_schema(
         tags=['Carts'],
         summary='Add item to cart',
@@ -70,12 +71,8 @@ class CartItemCreateView(CartMixin, APIView):
                 response=CartSerializer,
                 description='Cart updated successfully.',
             ),
-            400: OpenApiResponse(
-                description='Invalid quantity or insufficient stock.'
-            ),
-            404: OpenApiResponse(
-                description='Product variant not found.'
-            ),
+            400: OpenApiResponse(description='Invalid quantity or insufficient stock.'),
+            404: OpenApiResponse(description='Product variant not found.'),
         },
     )
     def post(self, request):
@@ -93,18 +90,15 @@ class CartItemCreateView(CartMixin, APIView):
         cart.refresh_from_db()
         serializer = CartSerializer(cart)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
 
 class CartItemView(CartMixin, APIView):
     permission_classes = [AllowAny]
-    
+
     @extend_schema(
         tags=['Carts'],
         summary='Update cart item quantity',
-        description=(
-            'Updates quantity of an existing cart item. '
-            'SKU is used to identify the product variant.'
-        ),
+        description=('Updates quantity of an existing cart item. SKU is used to identify the product variant.'),
         parameters=[
             OpenApiParameter(
                 name='sku',
@@ -119,9 +113,7 @@ class CartItemView(CartMixin, APIView):
                 response=CartSerializer,
                 description='Cart updated successfully.',
             ),
-            404: OpenApiResponse(
-                description='Cart item not found.'
-            ),
+            404: OpenApiResponse(description='Cart item not found.'),
         },
     )
     def patch(self, request, sku):
@@ -131,10 +123,7 @@ class CartItemView(CartMixin, APIView):
         cart = self.get_cart(request)
         item = get_object_or_404(CartItem, variant__sku=sku, cart=cart)
 
-        CartService.update_quantity(
-            item=item,
-            quantity=serializer.validated_data['quantity']
-        )
+        CartService.update_quantity(item=item, quantity=serializer.validated_data['quantity'])
 
         cart.refresh_from_db()
         serializer = CartSerializer(cart)
@@ -143,9 +132,7 @@ class CartItemView(CartMixin, APIView):
     @extend_schema(
         tags=['Carts'],
         summary='Remove item from cart',
-        description=(
-            'Removes a product variant completely from the current cart.'
-        ),
+        description=('Removes a product variant completely from the current cart.'),
         parameters=[
             OpenApiParameter(
                 name='sku',
@@ -159,9 +146,7 @@ class CartItemView(CartMixin, APIView):
                 response=CartSerializer,
                 description='Cart updated successfully.',
             ),
-            404: OpenApiResponse(
-                description='Cart item not found.'
-            ),
+            404: OpenApiResponse(description='Cart item not found.'),
         },
     )
     def delete(self, request, sku):

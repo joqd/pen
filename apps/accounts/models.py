@@ -1,20 +1,20 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _
-from django.db import models
-from django.utils import timezone
-from django.db.models import Q
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models import Q
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from .managers import UserManager
-
-from datetime import timedelta
 
 
 class User(AbstractUser):
     username = None
     phone = models.CharField(_('phone'), max_length=10, unique=True)
     full_name = models.CharField(_('full name'), max_length=150)
-    
+
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = []
     objects = UserManager()
@@ -77,9 +77,7 @@ class Address(models.Model):
     def clean(self):
         if self.city and self.province:
             if self.city.province_id != self.province_id:
-                raise ValidationError(
-                    _('City does not belong to selected province.')
-                )
+                raise ValidationError(_('City does not belong to selected province.'))
 
     class Meta:
         verbose_name = _('address')

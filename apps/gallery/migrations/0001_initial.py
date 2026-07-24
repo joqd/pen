@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -23,7 +22,17 @@ class Migration(migrations.Migration):
                 ('is_active', models.BooleanField(default=True, verbose_name='is active')),
                 ('sort_order', models.PositiveIntegerField(default=0, verbose_name='sort order')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='customer_gallery', to='catalog.product', verbose_name='gallery')),
+                (
+                    'product',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='customer_gallery',
+                        to='catalog.product',
+                        verbose_name='gallery',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'customer gallery image',

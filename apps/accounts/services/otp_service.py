@@ -1,9 +1,9 @@
+import random
+from datetime import timedelta
+
 from django.utils import timezone
 
 from apps.accounts.models import OTPCode
-
-from datetime import timedelta
-import random
 
 
 class OTPService:
@@ -17,10 +17,7 @@ class OTPService:
     def create_otp(cls, phone: str):
         code = cls.generate_code()
 
-        otp = OTPCode.objects.create(
-            phone=phone,
-            code=code
-        )
+        otp = OTPCode.objects.create(phone=phone, code=code)
 
         return otp
 
@@ -34,12 +31,7 @@ class OTPService:
 
     @staticmethod
     def verify(phone: str, code: str):
-        otp = (
-            OTPCode.objects
-            .filter(phone=phone, code=code)
-            .order_by("-created_at")
-            .first()
-        )
+        otp = OTPCode.objects.filter(phone=phone, code=code).order_by('-created_at').first()
 
         if not otp:
             return None

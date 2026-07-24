@@ -9,14 +9,9 @@ from .models import CustomerGallery
 
 @admin.register(CustomerGallery)
 class CustomerGalleryAdmin(ModelAdmin):
+    autocomplete_fields = ('product',)
 
-    autocomplete_fields = (
-        'product',
-    )
-
-    list_select_related = (
-        'product',
-    )
+    list_select_related = ('product',)
 
     search_fields = (
         'customer_name',
@@ -79,19 +74,13 @@ class CustomerGalleryAdmin(ModelAdmin):
             _('Metadata'),
             {
                 'classes': ('tab',),
-                'fields': (
-                    'created_at',
-                ),
+                'fields': ('created_at',),
             },
         ),
     )
 
     def get_queryset(self, request):
-        return (
-            super()
-            .get_queryset(request)
-            .select_related('product')
-        )
+        return super().get_queryset(request).select_related('product')
 
     @display(description=_('image'))
     def preview(self, obj):
@@ -99,7 +88,6 @@ class CustomerGalleryAdmin(ModelAdmin):
             return '—'
 
         return format_html(
-            '<img src="{}" style="width:72px;height:72px;'
-            'object-fit:cover;border-radius:12px;" />',
+            '<img src="{}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;" />',
             obj.image.url,
         )

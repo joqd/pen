@@ -1,9 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin import display
-from django.db.models import Count, Sum, F
-from django.utils.translation import gettext_lazy as _
+from django.db.models import Count, F, Sum
 from django.utils import timezone
-from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin, TabularInline
 
 from apps.orders.models import Cart, CartItem, Order, OrderItem
@@ -27,7 +26,7 @@ class CartItemInline(TabularInline):
         if not obj.pk:
             return '—'
         return f'{obj.variant.price * obj.quantity:,}'
-    
+
 
 @admin.register(Cart)
 class CartAdmin(ModelAdmin):
@@ -67,10 +66,7 @@ class CartAdmin(ModelAdmin):
             .annotate(
                 items_count=Count('items'),
                 quantity_sum=Sum('items__quantity'),
-                total_sum=Sum(
-                    F('items__quantity') *
-                    F('items__variant__price')
-                ),
+                total_sum=Sum(F('items__quantity') * F('items__variant__price')),
             )
         )
 
@@ -101,11 +97,11 @@ class CartAdmin(ModelAdmin):
     )
     def total_price(self, obj):
         return f'{(obj.total_sum or 0):,}'
-    
+
     @display(description=_('is guest'))
     def guest_status(self, obj):
         return _('Yes') if obj.is_guest else _('No')
-    
+
 
 @admin.register(CartItem)
 class CartItemAdmin(ModelAdmin):
@@ -137,153 +133,146 @@ class CartItemAdmin(ModelAdmin):
     @display(description=_('total'))
     def line_total(self, obj):
         return f'{obj.variant.price * obj.quantity:,}'
-    
+
 
 class OrderItemInline(TabularInline):
     model = OrderItem
     extra = 0
 
-    autocomplete_fields = (
-        "variant",
-    )
+    autocomplete_fields = ('variant',)
 
     fields = (
-        "variant",
-        "quantity",
-        "unit_price",
-        "total_price",
+        'variant',
+        'quantity',
+        'unit_price',
+        'total_price',
     )
 
-    readonly_fields = (
-        "total_price",
-    )
-    
+    readonly_fields = ('total_price',)
+
 
 @admin.register(Order)
 class OrderAdmin(ModelAdmin):
-
-    inlines = (
-        OrderItemInline,
-    )
+    inlines = (OrderItemInline,)
 
     actions = (
-        "mark_as_paid",
-        "mark_as_shipped",
+        'mark_as_paid',
+        'mark_as_shipped',
     )
 
     autocomplete_fields = (
-        "user",
-        "address",
+        'user',
+        'address',
     )
 
     list_select_related = (
-        "user",
-        "address",
+        'user',
+        'address',
     )
 
     search_fields = (
-        "order_number",
-        "tracking_code",
-        "user__phone",
-        "user__full_name",
+        'order_number',
+        'tracking_code',
+        'user__phone',
+        'user__full_name',
     )
 
     list_filter = (
-        "status",
-        "shipping_status",
-        "created_at",
-        "paid_at",
+        'status',
+        'shipping_status',
+        'created_at',
+        'paid_at',
     )
 
     list_display = (
-        "order_number",
-        "user",
-        "item_count",
-        "total_amount",
-        "status",
-        "shipping_status",
-        "tracking_code",
-        "created_at",
+        'order_number',
+        'user',
+        'item_count',
+        'total_amount',
+        'status',
+        'shipping_status',
+        'tracking_code',
+        'created_at',
     )
 
     readonly_fields = (
-        "order_number",
-        "subtotal_amount",
-        "discount_amount",
-        "shipping_amount",
-        "total_amount",
-        "created_at",
-        "updated_at",
-        "paid_at",
-        "shipped_at",
-        "delivered_at",
+        'order_number',
+        'subtotal_amount',
+        'discount_amount',
+        'shipping_amount',
+        'total_amount',
+        'created_at',
+        'updated_at',
+        'paid_at',
+        'shipped_at',
+        'delivered_at',
     )
 
     fieldsets = (
         (
-            _("order"),
+            _('order'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "order_number",
-                    "user",
-                    "address",
-                    "status",
-                    "shipping_status",
+                'classes': ('tab',),
+                'fields': (
+                    'order_number',
+                    'user',
+                    'address',
+                    'status',
+                    'shipping_status',
                 ),
             },
         ),
         (
-            _("amounts"),
+            _('amounts'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "subtotal_amount",
-                    "discount_amount",
-                    "shipping_amount",
-                    "total_amount",
+                'classes': ('tab',),
+                'fields': (
+                    'subtotal_amount',
+                    'discount_amount',
+                    'shipping_amount',
+                    'total_amount',
                 ),
             },
         ),
         (
-            _("shipping"),
+            _('shipping'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "shipping_company",
-                    "tracking_code",
-                    "shipped_at",
-                    "delivered_at",
+                'classes': ('tab',),
+                'fields': (
+                    'shipping_company',
+                    'tracking_code',
+                    'shipped_at',
+                    'delivered_at',
                 ),
             },
         ),
         (
-            _("notes"),
+            _('notes'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "customer_note",
-                    "admin_note",
+                'classes': ('tab',),
+                'fields': (
+                    'customer_note',
+                    'admin_note',
                 ),
             },
         ),
         (
-            _("payment"),
+            _('payment'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "expires_at",
-                    "paid_at",
+                'classes': ('tab',),
+                'fields': (
+                    'expires_at',
+                    'paid_at',
                 ),
             },
         ),
         (
-            _("Metadata"),
+            _('Metadata'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "created_at",
-                    "updated_at",
+                'classes': ('tab',),
+                'fields': (
+                    'created_at',
+                    'updated_at',
                 ),
             },
         ),
@@ -294,19 +283,19 @@ class OrderAdmin(ModelAdmin):
             super()
             .get_queryset(request)
             .select_related(
-                "user",
-                "address",
+                'user',
+                'address',
             )
             .prefetch_related(
-                "items",
+                'items',
             )
         )
 
-    @display(description=_("items"))
+    @display(description=_('items'))
     def item_count(self, obj):
         return obj.items.count()
-    
-    @admin.action(description=_("mark selected orders as paid"))
+
+    @admin.action(description=_('mark selected orders as paid'))
     def mark_as_paid(self, request, queryset):
         updated = queryset.update(
             status=Order.Status.PAID,
@@ -315,11 +304,11 @@ class OrderAdmin(ModelAdmin):
 
         self.message_user(
             request,
-            f"{updated} orders marked as paid.",
+            f'{updated} orders marked as paid.',
             messages.SUCCESS,
         )
 
-    @admin.action(description=_("mark selected orders as shipped"))
+    @admin.action(description=_('mark selected orders as shipped'))
     def mark_as_shipped(self, request, queryset):
         updated = queryset.update(
             shipping_status=Order.ShippingStatus.SHIPPED,
@@ -328,37 +317,34 @@ class OrderAdmin(ModelAdmin):
 
         self.message_user(
             request,
-            f"{updated} orders marked as shipped.",
+            f'{updated} orders marked as shipped.',
             messages.SUCCESS,
         )
-    
+
 
 @admin.register(OrderItem)
 class OrderItemAdmin(ModelAdmin):
-
     autocomplete_fields = (
-        "order",
-        "variant",
+        'order',
+        'variant',
     )
 
     list_select_related = (
-        "order",
-        "variant",
+        'order',
+        'variant',
     )
 
     search_fields = (
-        "order__order_number",
-        "variant__sku",
+        'order__order_number',
+        'variant__sku',
     )
 
     list_display = (
-        "order",
-        "variant",
-        "quantity",
-        "unit_price",
-        "total_price",
+        'order',
+        'variant',
+        'quantity',
+        'unit_price',
+        'total_price',
     )
 
-    readonly_fields = (
-        "total_price",
-    )
+    readonly_fields = ('total_price',)

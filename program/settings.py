@@ -1,10 +1,9 @@
+import os
+from pathlib import Path
+
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.templatetags.static import static
-
-from pathlib import Path
-import os
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +19,7 @@ def load_env_file(path: Path) -> None:
 
         key, value = line.split('=', 1)
         key = key.strip()
-        value = value.strip().strip(''').strip(''')
+        value = value.strip().strip(""").strip(""")
         os.environ.setdefault(key, value)
 
 
@@ -46,12 +45,12 @@ DEBUG = env_bool('DJANGO_DEBUG', True)
 ALLOWED_HOSTS = ['*']
 # CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
 CSRF_TRUSTED_ORIGINS = [
-    "http://*",
-    "https://*",
+    'http://*',
+    'https://*',
 ]
 
-SESSION_COOKIE_SECURE = False # for dev
-CSRF_COOKIE_SECURE = False # for dev
+SESSION_COOKIE_SECURE = False  # for dev
+CSRF_COOKIE_SECURE = False  # for dev
 
 INSTALLED_APPS = [
     'unfold',
@@ -63,14 +62,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
-    
-	# 3rd party
+    # 3rd party
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'corsheaders',
     'django_filters',
-
-	# my own
+    # my own
     'apps.accounts',
     'apps.catalog',
     'apps.orders',
@@ -162,8 +159,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-SMS_IR_API_KEY = os.environ.get("SMS_IR_API_KEY")
-SMS_IR_LINE_NUMBER = os.environ.get("SMS_IR_LINE_NUMBER")
+SMS_IR_API_KEY = os.environ.get('SMS_IR_API_KEY')
+SMS_IR_LINE_NUMBER = os.environ.get('SMS_IR_LINE_NUMBER')
 
 JQUERY_URL = True
 
@@ -184,65 +181,65 @@ UNFOLD = {
         'show_all_applications': False,
         'navigation': [
             {
-				'title': _('users and permissions'),
-				'items': [
-					{
-						'title': _('users'),
-						'icon': 'person',
-						'link': reverse_lazy('admin:accounts_user_changelist'),
-					},
+                'title': _('users and permissions'),
+                'items': [
                     {
-						'title': _('addresses'),
-						'icon': 'location_on',
-						'link': reverse_lazy('admin:accounts_address_changelist'),
-					},
-				],
-			},
-            {
-				'title': _('catalog'),
-				'items': [
-					{
-						'title': _('products'),
-						'icon': 'inventory_2',
-						'link': reverse_lazy('admin:catalog_product_changelist'),
-					},
-					{
-						'title': _('collections'),
-						'icon': 'category',
-						'link': reverse_lazy('admin:catalog_collection_changelist'),
-					},
+                        'title': _('users'),
+                        'icon': 'person',
+                        'link': reverse_lazy('admin:accounts_user_changelist'),
+                    },
                     {
-						'title': _('tags'),
-						'icon': 'label',
-						'link': reverse_lazy('admin:catalog_tag_changelist'),
-					},
-				],
-			},
+                        'title': _('addresses'),
+                        'icon': 'location_on',
+                        'link': reverse_lazy('admin:accounts_address_changelist'),
+                    },
+                ],
+            },
             {
-				'title': _('Cart and orders'),
-				'items': [
-					{
-						'title': _('cart'),
-						'icon': 'shopping_cart',
-						'link': reverse_lazy('admin:orders_cart_changelist'),
-					},
+                'title': _('catalog'),
+                'items': [
                     {
-						'title': _('orders'),
-						'icon': 'receipt_long',
-						'link': reverse_lazy('admin:orders_order_changelist'),
-					},
-				],
-			},
+                        'title': _('products'),
+                        'icon': 'inventory_2',
+                        'link': reverse_lazy('admin:catalog_product_changelist'),
+                    },
+                    {
+                        'title': _('collections'),
+                        'icon': 'category',
+                        'link': reverse_lazy('admin:catalog_collection_changelist'),
+                    },
+                    {
+                        'title': _('tags'),
+                        'icon': 'label',
+                        'link': reverse_lazy('admin:catalog_tag_changelist'),
+                    },
+                ],
+            },
             {
-				'title': _('Content'),
-				'items': [
-					{
-						'title': _('gallery'),
-						'icon': 'photo_library',
-						'link': reverse_lazy('admin:gallery_customergallery_changelist'),
-					},
-				],
-			},
+                'title': _('Cart and orders'),
+                'items': [
+                    {
+                        'title': _('cart'),
+                        'icon': 'shopping_cart',
+                        'link': reverse_lazy('admin:orders_cart_changelist'),
+                    },
+                    {
+                        'title': _('orders'),
+                        'icon': 'receipt_long',
+                        'link': reverse_lazy('admin:orders_order_changelist'),
+                    },
+                ],
+            },
+            {
+                'title': _('Content'),
+                'items': [
+                    {
+                        'title': _('gallery'),
+                        'icon': 'photo_library',
+                        'link': reverse_lazy('admin:gallery_customergallery_changelist'),
+                    },
+                ],
+            },
         ],
     },
 }
@@ -263,8 +260,7 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_DIST': 'SIDECAR',
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
-    
-	'TITLE': 'Adagio Style Commerce API',
+    'TITLE': 'Adagio Style Commerce API',
     'VERSION': '1.0.0',
     'DESCRIPTION': 'Backend API powering the **Adagio Style** online store.',
 }

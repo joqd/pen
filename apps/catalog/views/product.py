@@ -1,12 +1,12 @@
-from rest_framework import viewsets, filters
-from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
+from rest_framework import filters, viewsets
+from rest_framework.pagination import PageNumberPagination
 
 from ..models import Product
 from ..serializers import (
-    ProductListSerializer,
     ProductDetailSerializer,
+    ProductListSerializer,
 )
 
 
@@ -18,7 +18,7 @@ class StandardPagination(PageNumberPagination):
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = []
-    
+
     queryset = Product.objects.filter(status='active')
     pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -33,7 +33,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return ProductDetailSerializer
         return ProductListSerializer
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
         if self.action == 'retrieve':
@@ -54,4 +54,3 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     @extend_schema(tags=['Products'])
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
-

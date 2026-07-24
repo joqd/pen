@@ -5,10 +5,7 @@ from sms_ir import SmsIr
 class SMSService:
     @staticmethod
     def send_otp(phone: str, code: str) -> None:
-        message = (
-            "فروشگاه آداجیو\n"
-            f"کد: {code}"
-        )
+        message = f'فروشگاه آداجیو\nکد: {code}'
 
         SMSService._send_sms(phone, message)
 

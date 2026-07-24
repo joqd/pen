@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.catalog.models import Product
@@ -13,7 +13,7 @@ class WishlistItem(models.Model):
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
 
     class Meta:
-        verbose_name = _('wishlist item'),
+        verbose_name = (_('wishlist item'),)
         verbose_name_plural = _('wishlist items')
         constraints = [
             models.UniqueConstraint(

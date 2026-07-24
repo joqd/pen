@@ -5,25 +5,26 @@ from django.utils.translation import gettext_lazy as _
 class Tag(models.Model):
     title = models.CharField(_('title'), max_length=80, unique=True)
     slug = models.SlugField(_('slug'), max_length=120, unique=True)
-    
+
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     class Meta:
-        ordering = ["title"]
+        ordering = ['title']
         verbose_name = _('tag')
         verbose_name_plural = _('tags')
 
     def __str__(self) -> str:
         return self.title
 
+
 class Collection(models.Model):
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), max_length=255, unique=True)
     parent = models.ForeignKey(
-        "self",
+        'self',
         on_delete=models.PROTECT,
-        related_name="children",
+        related_name='children',
         blank=True,
         null=True,
         verbose_name=_('parent'),
@@ -39,14 +40,14 @@ class Collection(models.Model):
     class Meta:
         verbose_name = _('collection')
         verbose_name_plural = _('collections')
-        ordering = ["title"]
+        ordering = ['title']
         indexes = [
-            models.Index(fields=["parent", "is_active"]),
+            models.Index(fields=['parent', 'is_active']),
         ]
         constraints = [
             models.CheckConstraint(
-                condition=~models.Q(parent=models.F("id")),
-                name="catalog_collection_parent_not_self",
+                condition=~models.Q(parent=models.F('id')),
+                name='catalog_collection_parent_not_self',
             )
         ]
 
@@ -68,7 +69,7 @@ class Product(models.Model):
 
     collections = models.ManyToManyField(Collection, related_name='products', blank=True, verbose_name=_('collection'))
     tags = models.ManyToManyField(Tag, related_name='products', blank=True, verbose_name=_('collection'))
-    
+
     status = models.CharField(_('status'), max_length=20, choices=ProductStatus.choices, default=ProductStatus.DRAFT)
     published_at = models.DateTimeField(_('published at'), blank=True, null=True)
     featured = models.BooleanField(_('featured'), default=False)
@@ -134,7 +135,7 @@ class ProductSize(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name = _('product size')
         verbose_name_plural = _('product sizes')
@@ -142,12 +143,7 @@ class ProductSize(models.Model):
 
 
 class ProductVariant(models.Model):
-    product = models.ForeignKey(
-        Product,
-        related_name='variants',
-        on_delete=models.CASCADE,
-        verbose_name=_('product')
-    )
+    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE, verbose_name=_('product'))
     sku = models.CharField(_('sku'), max_length=64, unique=True)
     size = models.ForeignKey(ProductSize, on_delete=models.PROTECT, verbose_name=_('size'))
     price = models.PositiveIntegerField(_('price'))
@@ -155,7 +151,7 @@ class ProductVariant(models.Model):
     stock = models.PositiveIntegerField(_('stock'), default=0)
     reserved_stock = models.PositiveIntegerField(_('reserved stock'), default=0)
     is_active = models.BooleanField(_('is_active'), default=True)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -170,19 +166,13 @@ class ProductVariant(models.Model):
         verbose_name = _('product variant')
         verbose_name_plural = _('product variants')
         indexes = [
-            models.Index(fields=["product"]),
-            models.Index(fields=["product", "is_active"]),
+            models.Index(fields=['product']),
+            models.Index(fields=['product', 'is_active']),
         ]
         constraints = [
             models.CheckConstraint(
-                condition=(
-                    models.Q(compare_price__isnull=True) |
-                    models.Q(compare_price__gte=models.F("price"))
-                ),
-                name="catalog_variant_compare_price_gte_price",
+                condition=(models.Q(compare_price__isnull=True) | models.Q(compare_price__gte=models.F('price'))),
+                name='catalog_variant_compare_price_gte_price',
             ),
-            models.UniqueConstraint(
-                fields=["product", "size"],
-                name="catalog_variant_unique_size"
-            )
+            models.UniqueConstraint(fields=['product', 'size'], name='catalog_variant_unique_size'),
         ]

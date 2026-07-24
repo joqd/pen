@@ -5,11 +5,9 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
@@ -48,7 +46,16 @@ class Migration(migrations.Migration):
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='children', to='catalog.collection')),
+                (
+                    'parent',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='children',
+                        to='catalog.collection',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['title'],
@@ -62,13 +69,31 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(max_length=255, unique=True, verbose_name='slug')),
                 ('short_description', models.CharField(max_length=320, verbose_name='short description')),
                 ('description', models.TextField(blank=True, verbose_name='description')),
-                ('status', models.CharField(choices=[('draft', 'پیش\u200cنویس'), ('active', 'فعال'), ('archived', 'آرشیو')], default='draft', max_length=20, verbose_name='status')),
+                (
+                    'status',
+                    models.CharField(
+                        choices=[('draft', 'پیش\u200cنویس'), ('active', 'فعال'), ('archived', 'آرشیو')],
+                        default='draft',
+                        max_length=20,
+                        verbose_name='status',
+                    ),
+                ),
                 ('published_at', models.DateTimeField(blank=True, null=True, verbose_name='published at')),
                 ('featured', models.BooleanField(default=False, verbose_name='featured')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('collections', models.ManyToManyField(blank=True, related_name='products', to='catalog.collection', verbose_name='collection')),
-                ('tags', models.ManyToManyField(blank=True, related_name='products', to='catalog.tag', verbose_name='collection')),
+                (
+                    'collections',
+                    models.ManyToManyField(
+                        blank=True, related_name='products', to='catalog.collection', verbose_name='collection'
+                    ),
+                ),
+                (
+                    'tags',
+                    models.ManyToManyField(
+                        blank=True, related_name='products', to='catalog.tag', verbose_name='collection'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-published_at', '-id'],
@@ -79,14 +104,35 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('image', models.ImageField(upload_to='catalog/products/%Y/%m/', verbose_name='image')),
-                ('media_kind', models.CharField(choices=[('gallery', 'گالری'), ('size_chart', 'جدول سایز'), ('fabric_guide', 'راهنمای پارچه'), ('design', 'طرح')], default='gallery', max_length=20, verbose_name='media kind')),
+                (
+                    'media_kind',
+                    models.CharField(
+                        choices=[
+                            ('gallery', 'گالری'),
+                            ('size_chart', 'جدول سایز'),
+                            ('fabric_guide', 'راهنمای پارچه'),
+                            ('design', 'طرح'),
+                        ],
+                        default='gallery',
+                        max_length=20,
+                        verbose_name='media kind',
+                    ),
+                ),
                 ('caption', models.CharField(blank=True, max_length=255, verbose_name='caption')),
                 ('alt_text', models.CharField(max_length=255, verbose_name='alt text')),
                 ('is_primary', models.BooleanField(default=False, verbose_name='is primary')),
                 ('sort_order', models.PositiveIntegerField(default=0, verbose_name='sort order')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='catalog.product', verbose_name='product')),
+                (
+                    'product',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='images',
+                        to='catalog.product',
+                        verbose_name='product',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['sort_order', 'id'],
@@ -103,8 +149,21 @@ class Migration(migrations.Migration):
                 ('is_active', models.BooleanField(default=True, verbose_name='is_active')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='variants', to='catalog.product', verbose_name='product')),
-                ('size', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='catalog.productsize', verbose_name='size')),
+                (
+                    'product',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='variants',
+                        to='catalog.product',
+                        verbose_name='product',
+                    ),
+                ),
+                (
+                    'size',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to='catalog.productsize', verbose_name='size'
+                    ),
+                ),
             ],
         ),
         migrations.AddIndex(
@@ -113,7 +172,9 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='collection',
-            constraint=models.CheckConstraint(condition=models.Q(('parent', models.F('id')), _negated=True), name='catalog_collection_parent_not_self'),
+            constraint=models.CheckConstraint(
+                condition=models.Q(('parent', models.F('id')), _negated=True), name='catalog_collection_parent_not_self'
+            ),
         ),
         migrations.AddIndex(
             model_name='productimage',
@@ -125,7 +186,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='productimage',
-            constraint=models.UniqueConstraint(condition=models.Q(('is_primary', True)), fields=('product',), name='catalog_productimage_single_primary'),
+            constraint=models.UniqueConstraint(
+                condition=models.Q(('is_primary', True)),
+                fields=('product',),
+                name='catalog_productimage_single_primary',
+            ),
         ),
         migrations.AddIndex(
             model_name='productvariant',
@@ -137,7 +202,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='productvariant',
-            constraint=models.CheckConstraint(condition=models.Q(('compare_price__isnull', True), ('compare_price__gte', models.F('price')), _connector='OR'), name='catalog_variant_compare_price_gte_price'),
+            constraint=models.CheckConstraint(
+                condition=models.Q(
+                    ('compare_price__isnull', True), ('compare_price__gte', models.F('price')), _connector='OR'
+                ),
+                name='catalog_variant_compare_price_gte_price',
+            ),
         ),
         migrations.AddConstraint(
             model_name='productvariant',

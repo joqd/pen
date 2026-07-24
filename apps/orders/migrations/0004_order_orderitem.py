@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('accounts', '0002_province_city_address'),
         ('catalog', '0004_productvariant_reserved_stock'),
@@ -20,8 +19,36 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('order_number', models.CharField(max_length=32, unique=True, verbose_name='order number')),
-                ('status', models.CharField(choices=[('pending_payment', 'pending payment'), ('paid', 'paid'), ('cancelled', 'cancelled'), ('expired', 'expired'), ('refunded', 'refunded')], default='pending_payment', max_length=30, verbose_name='status')),
-                ('shipping_status', models.CharField(choices=[('pending', 'pending'), ('processing', 'processing'), ('shipped', 'shipped'), ('delivered', 'delivered'), ('returned', 'returned')], default='pending', max_length=30, verbose_name='shipping status')),
+                (
+                    'status',
+                    models.CharField(
+                        choices=[
+                            ('pending_payment', 'pending payment'),
+                            ('paid', 'paid'),
+                            ('cancelled', 'cancelled'),
+                            ('expired', 'expired'),
+                            ('refunded', 'refunded'),
+                        ],
+                        default='pending_payment',
+                        max_length=30,
+                        verbose_name='status',
+                    ),
+                ),
+                (
+                    'shipping_status',
+                    models.CharField(
+                        choices=[
+                            ('pending', 'pending'),
+                            ('processing', 'processing'),
+                            ('shipped', 'shipped'),
+                            ('delivered', 'delivered'),
+                            ('returned', 'returned'),
+                        ],
+                        default='pending',
+                        max_length=30,
+                        verbose_name='shipping status',
+                    ),
+                ),
                 ('subtotal_amount', models.PositiveIntegerField(default=0, verbose_name='subtotal amount')),
                 ('shipping_amount', models.PositiveIntegerField(default=0, verbose_name='shipping amount')),
                 ('discount_amount', models.PositiveIntegerField(default=0, verbose_name='discount amount')),
@@ -36,8 +63,21 @@ class Migration(migrations.Migration):
                 ('delivered_at', models.DateTimeField(blank=True, null=True, verbose_name='delivered at')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('address', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='accounts.address', verbose_name='address')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='orders', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                (
+                    'address',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to='accounts.address', verbose_name='address'
+                    ),
+                ),
+                (
+                    'user',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='orders',
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name='user',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'order',
@@ -52,8 +92,21 @@ class Migration(migrations.Migration):
                 ('quantity', models.PositiveIntegerField(default=1, verbose_name='quantity')),
                 ('unit_price', models.PositiveIntegerField(verbose_name='price')),
                 ('total_price', models.PositiveIntegerField(verbose_name='total price')),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='orders.order', verbose_name='order')),
-                ('variant', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='catalog.productvariant', verbose_name='variant')),
+                (
+                    'order',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='items',
+                        to='orders.order',
+                        verbose_name='order',
+                    ),
+                ),
+                (
+                    'variant',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to='catalog.productvariant', verbose_name='variant'
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'order item',

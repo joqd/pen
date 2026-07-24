@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('accounts', '0001_initial'),
     ]
@@ -24,7 +23,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
-                ('province', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cities', to='accounts.province')),
+                (
+                    'province',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='cities', to='accounts.province'
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
@@ -39,14 +43,38 @@ class Migration(migrations.Migration):
                 ('is_default', models.BooleanField(default=False, verbose_name='default')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='updated at')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='addresses', to=settings.AUTH_USER_MODEL, verbose_name='user')),
-                ('city', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='accounts.city', verbose_name='city')),
-                ('province', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='accounts.province', verbose_name='province')),
+                (
+                    'user',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='addresses',
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name='user',
+                    ),
+                ),
+                (
+                    'city',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to='accounts.city', verbose_name='city'
+                    ),
+                ),
+                (
+                    'province',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to='accounts.province', verbose_name='province'
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'address',
                 'verbose_name_plural': 'addresses',
-                'constraints': [models.UniqueConstraint(condition=models.Q(('is_default', True)), fields=('user',), name='unique_default_address_per_user')],
+                'constraints': [
+                    models.UniqueConstraint(
+                        condition=models.Q(('is_default', True)),
+                        fields=('user',),
+                        name='unique_default_address_per_user',
+                    )
+                ],
             },
         ),
     ]

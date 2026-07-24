@@ -1,11 +1,11 @@
-from rest_framework import viewsets, filters
-from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import extend_schema
+from rest_framework import filters, viewsets
+from rest_framework.pagination import PageNumberPagination
 
 from ..models import Collection
 from ..serializers import (
-    CollectionListSerializer,
     CollectionDetailSerializer,
+    CollectionListSerializer,
 )
 
 
@@ -17,6 +17,7 @@ class StandardPagination(PageNumberPagination):
 
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for reading Collection objects."""
+
     permission_classes = []
 
     queryset = Collection.objects.filter(is_active=True)
@@ -40,7 +41,7 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             queryset = queryset.prefetch_related('children')
         return queryset
-    
+
     @extend_schema(tags=['Collection'])
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -48,4 +49,3 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     @extend_schema(tags=['Collection'])
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
-

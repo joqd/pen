@@ -14,9 +14,7 @@ class WishlistService:
 
         count = WishlistItem.objects.filter(user=user).count()
         if count >= cls.MAX_ITEMS:
-            raise ValidationError(
-                'Wishlist item limit reached.'
-            )
+            raise ValidationError('Wishlist item limit reached.')
 
         WishlistItem.objects.create(user=user, product=product)
 

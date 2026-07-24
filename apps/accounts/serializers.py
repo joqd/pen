@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Address, Province, City
+from .models import Address, City, Province
 
 User = get_user_model()
 
@@ -55,10 +55,17 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = [
-            'id', 'title', 'recipient_name',
-            'phone', 'province', 'city',
-            'postal_code', 'address_line',
-            'is_default', 'created_at', 'updated_at',
+            'id',
+            'title',
+            'recipient_name',
+            'phone',
+            'province',
+            'city',
+            'postal_code',
+            'address_line',
+            'is_default',
+            'created_at',
+            'updated_at',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
@@ -67,7 +74,12 @@ class AddressWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = [
-            'title', 'recipient_name', 'phone',
-            'province', 'city', 'postal_code',
-            'address_line', 'is_default',
+            'title',
+            'recipient_name',
+            'phone',
+            'province',
+            'city',
+            'postal_code',
+            'address_line',
+            'is_default',
         ]

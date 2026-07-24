@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('orders', '0005_rename_expired_at_order_expires_at'),
     ]

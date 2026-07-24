@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 
-version: '3'
+version: "3"
 
 vars:
   GREETING: Hello, world!
@@ -15,6 +15,13 @@ tasks:
   format:
     desc: Format using ruff
     cmds:
+      - uv run ruff format .
+    silent: true
+
+  fix:
+    desc: Fix lint issues using ruff
+    cmds:
+      - uv run ruff check . --fix
       - uv run ruff format .
     silent: true
 

@@ -1,16 +1,16 @@
 from django.contrib import admin
 from django.contrib.admin import display
-from django.utils.translation import gettext_lazy as _
-from django.db.models import Count, Min, Max, Sum, Prefetch
+from django.db.models import Count, Max, Min, Prefetch, Sum
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin, TabularInline
 
 from .models import (
+    Collection,
     Product,
     ProductImage,
-    ProductVariant,
     ProductSize,
-    Collection,
+    ProductVariant,
     Tag,
 )
 
@@ -19,21 +19,22 @@ from .models import (
 class CollectionAdmin(ModelAdmin):
     search_fields = ['title', 'slug']
     list_display = ['thumbnail', 'title', 'slug', 'is_active', 'created_at']
-    
+
     @display(description=_('Image'))
     def thumbnail(self, obj):
         if not obj.pk or not obj.image:
-            return "—"
+            return '—'
 
         return format_html(
-            '<img src="{}" style="width:54px;height:54px;'
-            'object-fit:cover;border-radius:10px;" />',
+            '<img src="{}" style="width:54px;height:54px;object-fit:cover;border-radius:10px;" />',
             obj.image.url,
         )
 
+
 @admin.register(Tag)
 class TagAdmin(ModelAdmin):
-    search_fields = ["name"]
+    search_fields = ['name']
+
 
 class ProductImageInline(TabularInline):
     model = ProductImage
@@ -41,25 +42,24 @@ class ProductImageInline(TabularInline):
 
     fields = (
         # "preview",
-        "image",
-        "media_kind",
-        "is_primary",
-        "sort_order",
-        "caption",
-        "alt_text",
+        'image',
+        'media_kind',
+        'is_primary',
+        'sort_order',
+        'caption',
+        'alt_text',
     )
 
-    readonly_fields = ("preview",)
-    ordering = ("sort_order", "id")
+    readonly_fields = ('preview',)
+    ordering = ('sort_order', 'id')
 
-    @display(description="Preview")
+    @display(description='Preview')
     def preview(self, obj):
         if not obj.pk or not obj.image:
-            return "—"
+            return '—'
 
         return format_html(
-            '<img src="{}" style="width:72px;height:72px;'
-            'object-fit:cover;border-radius:10px;" />',
+            '<img src="{}" style="width:72px;height:72px;object-fit:cover;border-radius:10px;" />',
             obj.image.url,
         )
 
@@ -69,109 +69,108 @@ class ProductVariantInline(TabularInline):
     extra = 0
 
     fields = (
-        "size",
-        "sku",
-        "price",
-        "compare_price",
-        "stock",
-        "is_active",
+        'size',
+        'sku',
+        'price',
+        'compare_price',
+        'stock',
+        'is_active',
     )
 
-    autocomplete_fields = ("size",)
+    autocomplete_fields = ('size',)
 
 
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
-
     inlines = (
         ProductImageInline,
         ProductVariantInline,
     )
 
     prepopulated_fields = {
-        "slug": ("title",),
+        'slug': ('title',),
     }
 
     autocomplete_fields = (
-        "collections",
-        "tags",
+        'collections',
+        'tags',
     )
 
     search_fields = (
-        "title",
-        "slug",
-        "variants__sku",
+        'title',
+        'slug',
+        'variants__sku',
     )
 
     list_filter = (
-        "status",
-        "featured",
-        "collections",
-        "tags",
+        'status',
+        'featured',
+        'collections',
+        'tags',
     )
 
     list_display = (
-        "thumbnail",
-        "title",
-        "price_range",
-        "variant_count",
-        "total_stock",
-        "featured",
-        "status",
-        "updated_at",
+        'thumbnail',
+        'title',
+        'price_range',
+        'variant_count',
+        'total_stock',
+        'featured',
+        'status',
+        'updated_at',
     )
 
     filter_horizontal = (
-        "collections",
-        "tags",
+        'collections',
+        'tags',
     )
 
     readonly_fields = (
-        "created_at",
-        "updated_at",
+        'created_at',
+        'updated_at',
     )
 
     fieldsets = (
         (
-            _("General"),
+            _('General'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "title",
-                    "slug",
-                    "collections",
-                    "tags",
+                'classes': ('tab',),
+                'fields': (
+                    'title',
+                    'slug',
+                    'collections',
+                    'tags',
                 ),
             },
         ),
         (
-            _("Content"),
+            _('Content'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "short_description",
-                    "description",
+                'classes': ('tab',),
+                'fields': (
+                    'short_description',
+                    'description',
                 ),
             },
         ),
         (
-            _("Publishing"),
+            _('Publishing'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "status",
-                    "featured",
-                    "published_at",
+                'classes': ('tab',),
+                'fields': (
+                    'status',
+                    'featured',
+                    'published_at',
                 ),
             },
         ),
         (
-            _("Metadata"),
+            _('Metadata'),
             {
-                "classes": ("tab",),
-                "fields": (
-                    "created_at",
-                    "updated_at",
+                'classes': ('tab',),
+                'fields': (
+                    'created_at',
+                    'updated_at',
                 ),
             },
         ),
@@ -182,25 +181,21 @@ class ProductAdmin(ModelAdmin):
             super()
             .get_queryset(request)
             .prefetch_related(
-                "images",
-                Prefetch("variants"),
+                'images',
+                Prefetch('variants'),
             )
             .annotate(
-                variants_count=Count("variants"),
-                stock_sum=Sum("variants__stock"),
-                min_price=Min("variants__price"),
-                max_price=Max("variants__price"),
+                variants_count=Count('variants'),
+                stock_sum=Sum('variants__stock'),
+                min_price=Min('variants__price'),
+                max_price=Max('variants__price'),
             )
         )
 
     @display(description=_('Image'))
     def thumbnail(self, obj):
         image = next(
-            (
-                img
-                for img in obj.images.all()
-                if img.is_primary
-            ),
+            (img for img in obj.images.all() if img.is_primary),
             None,
         )
 
@@ -208,193 +203,182 @@ class ProductAdmin(ModelAdmin):
             image = next(iter(obj.images.all()), None)
 
         if image is None:
-            return "—"
+            return '—'
 
         return format_html(
-            '<img src="{}" style="width:54px;height:54px;'
-            'object-fit:cover;border-radius:8px;" />',
+            '<img src="{}" style="width:54px;height:54px;object-fit:cover;border-radius:8px;" />',
             image.image.url,
         )
 
-    @display(description=_('variants'), ordering="variants_count")
+    @display(description=_('variants'), ordering='variants_count')
     def variant_count(self, obj):
         return obj.variants_count or 0
 
-    @display(description=_('stock'), ordering="stock_sum")
+    @display(description=_('stock'), ordering='stock_sum')
     def total_stock(self, obj):
         return obj.stock_sum or 0
 
     @display(description=_('price'))
     def price_range(self, obj):
         if obj.min_price is None:
-            return "—"
+            return '—'
 
         if obj.min_price == obj.max_price:
-            return f"{obj.min_price:,}"
+            return f'{obj.min_price:,}'
 
-        return f"{obj.min_price:,} → {obj.max_price:,}"
+        return f'{obj.min_price:,} → {obj.max_price:,}'
 
 
 @admin.register(ProductVariant)
 class ProductVariantAdmin(ModelAdmin):
-
     autocomplete_fields = (
-        "product",
-        "size",
+        'product',
+        'size',
     )
 
     list_select_related = (
-        "product",
-        "size",
+        'product',
+        'size',
     )
 
     search_fields = (
-        "sku",
-        "product__title",
+        'sku',
+        'product__title',
     )
 
     list_filter = (
-        "size",
-        "is_active",
+        'size',
+        'is_active',
     )
 
     list_display = (
-        "sku",
-        "product",
-        "size",
-        "price",
-        "stock",
-        "is_active",
-        "updated_at",
+        'sku',
+        'product',
+        'size',
+        'price',
+        'stock',
+        'is_active',
+        'updated_at',
     )
 
     readonly_fields = (
-        "created_at",
-        "updated_at",
+        'created_at',
+        'updated_at',
     )
 
     fieldsets = (
         (
             None,
             {
-                "fields": (
-                    "product",
-                    "size",
-                    "sku",
-                    "price",
-                    "compare_price",
-                    "stock",
-                    "is_active",
+                'fields': (
+                    'product',
+                    'size',
+                    'sku',
+                    'price',
+                    'compare_price',
+                    'stock',
+                    'is_active',
                 ),
             },
         ),
         (
-            "Metadata",
+            'Metadata',
             {
-                "classes": ("tab",),
-                "fields": (
-                    "created_at",
-                    "updated_at",
+                'classes': ('tab',),
+                'fields': (
+                    'created_at',
+                    'updated_at',
                 ),
             },
-        )
+        ),
     )
 
 
 @admin.register(ProductImage)
 class ProductImageAdmin(ModelAdmin):
+    autocomplete_fields = ('product',)
 
-    autocomplete_fields = (
-        "product",
-    )
-
-    list_select_related = (
-        "product",
-    )
+    list_select_related = ('product',)
 
     search_fields = (
-        "product__title",
-        "alt_text",
+        'product__title',
+        'alt_text',
     )
 
     list_filter = (
-        "media_kind",
-        "is_primary",
+        'media_kind',
+        'is_primary',
     )
 
     list_display = (
-        "preview",
-        "product",
-        "media_kind",
-        "is_primary",
-        "sort_order",
+        'preview',
+        'product',
+        'media_kind',
+        'is_primary',
+        'sort_order',
     )
 
     readonly_fields = (
-        "preview",
-        "created_at",
-        "updated_at",
+        'preview',
+        'created_at',
+        'updated_at',
     )
 
     fieldsets = (
         (
             None,
             {
-                "fields": (
-                    "product",
-                    "preview",
-                    "image",
-                    "media_kind",
-                    "caption",
-                    "alt_text",
-                    "is_primary",
-                    "sort_order",
+                'fields': (
+                    'product',
+                    'preview',
+                    'image',
+                    'media_kind',
+                    'caption',
+                    'alt_text',
+                    'is_primary',
+                    'sort_order',
                 ),
             },
         ),
         (
-            "Metadata",
+            'Metadata',
             {
-                "classes": ("tab",),
-                "fields": (
-                    "created_at",
-                    "updated_at",
+                'classes': ('tab',),
+                'fields': (
+                    'created_at',
+                    'updated_at',
                 ),
             },
-        )
+        ),
     )
 
-    @display(description="Preview")
+    @display(description='Preview')
     def preview(self, obj):
         if not obj.image:
-            return "—"
+            return '—'
 
         return format_html(
-            '<img src="{}" style="width:70px;height:70px;'
-            'object-fit:cover;border-radius:10px;" />',
+            '<img src="{}" style="width:70px;height:70px;object-fit:cover;border-radius:10px;" />',
             obj.image.url,
         )
 
 
 @admin.register(ProductSize)
 class ProductSizeAdmin(ModelAdmin):
-
     list_display = (
-        "name",
-        "sort_order",
-        "is_active",
+        'name',
+        'sort_order',
+        'is_active',
     )
 
     list_editable = (
-        "sort_order",
-        "is_active",
+        'sort_order',
+        'is_active',
     )
 
-    search_fields = (
-        "name",
-    )
+    search_fields = ('name',)
 
     ordering = (
-        "sort_order",
-        "id",
+        'sort_order',
+        'id',
     )

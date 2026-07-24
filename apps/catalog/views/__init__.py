@@ -1,7 +1,4 @@
-from .product import ProductViewSet
 from .collection import CollectionViewSet
+from .product import ProductViewSet
 
-__all__ = [
-	'ProductViewSet', 
-	'CollectionViewSet'
-]
+__all__ = ['ProductViewSet', 'CollectionViewSet']

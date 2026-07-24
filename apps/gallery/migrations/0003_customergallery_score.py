@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('gallery', '0002_alter_customergallery_product'),
     ]
@@ -14,6 +13,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customergallery',
             name='score',
-            field=models.PositiveIntegerField(default=1, validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(10)], verbose_name='score'),
+            field=models.PositiveIntegerField(
+                default=1,
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(10)],
+                verbose_name='score',
+            ),
         ),
     ]
