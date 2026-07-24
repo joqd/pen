@@ -1,40 +1,11 @@
 from rest_framework import serializers
 
-from .models import Collection, Product, ProductImage, ProductVariant, Tag
+from ..models import Product, ProductImage, ProductVariant
+from .collection_serializer import CollectionListSerializer
+from .tag_serializer import TagSerializer
 
 
-# Collection Serializers
-class CollectionListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Collection
-        fields = ['id', 'title', 'slug', 'short_description', 'image', 'is_active', 'parent']
-        read_only_fields = fields
 
-
-class CollectionDetailSerializer(serializers.ModelSerializer):
-    children = CollectionListSerializer(many=True, read_only=True)
-    parent_detail = CollectionListSerializer(source='parent', read_only=True)
-
-    class Meta:
-        model = Collection
-        fields = [
-            'id',
-            'title',
-            'slug',
-            'parent',
-            'parent_detail',
-            'short_description',
-            'description',
-            'is_active',
-            'image',
-            'children',
-            'created_at',
-            'updated_at',
-        ]
-        read_only_fields = fields
-
-
-# Product Serializers
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
@@ -48,13 +19,6 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
         fields = ['id', 'sku', 'size', 'size_name', 'price', 'compare_price', 'stock', 'is_active']
-        read_only_fields = fields
-
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['id', 'title', 'slug']
         read_only_fields = fields
 
 
