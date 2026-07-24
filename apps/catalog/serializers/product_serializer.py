@@ -5,7 +5,6 @@ from .collection_serializer import CollectionListSerializer
 from .tag_serializer import TagSerializer
 
 
-
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage

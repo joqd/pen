@@ -31,4 +31,3 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
         read_only_fields = fields
-
