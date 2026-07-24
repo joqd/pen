@@ -205,19 +205,19 @@ UNFOLD = {
                     },
                     {
                         'title': _('collections'),
-                        'icon': 'folder_special',
+                        'icon': 'category',
                         'link': reverse_lazy('admin:catalog_collection_changelist'),
                     },
                     {
                         'title': _('categories'),
-                        'icon': 'category',
+                        'icon': 'label',
                         'link': reverse_lazy('admin:catalog_category_changelist'),
                     },
-                    {
-                        'title': _('tags'),
-                        'icon': 'label',
-                        'link': reverse_lazy('admin:catalog_tag_changelist'),
-                    },
+                    # {
+                    #     'title': _('tags'),
+                    #     'icon': 'label',
+                    #     'link': reverse_lazy('admin:catalog_tag_changelist'),
+                    # },
                 ],
             },
             {
