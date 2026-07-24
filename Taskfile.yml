@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  GREETING: Hello, world!
+
+tasks:
+  run:
+    desc: Run development server
+    cmds:
+      - uv run python manage.py runserver
+    silent: true
+
+  format:
+    desc: Format using ruff
+    cmds:
+      - uv run ruff format .
+    silent: true
+
+  lint:
+    desc: Lint using ruff
+    cmds:
+      - uv run ruff check .
+    silent: true
