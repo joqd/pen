@@ -30,3 +30,9 @@ tasks:
     cmds:
       - uv run ruff check .
     silent: true
+
+  export-deps:
+    desc: Export dependencies in requirements-txt
+    cmds:
+      - uv export --format requirements-txt --no-hashes -o requirements.txt
+    silent: true
