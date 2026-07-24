@@ -1,7 +1,9 @@
+from django_filters import rest_framework as django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny
 
 from ..models import Product
 from ..serializers import (
@@ -16,13 +18,33 @@ class StandardPagination(PageNumberPagination):
     max_page_size = 100
 
 
+class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
+    pass
+
+
+class ProductFilter(django_filters.FilterSet):
+    collections = CharInFilter(field_name='collections__slug', lookup_expr='in', label='Collection slugs')
+
+    category = django_filters.CharFilter(field_name='category__slug', label='Category slug')
+
+    featured = django_filters.BooleanFilter(label='Featured products')
+
+    class Meta:
+        model = Product
+        fields = [
+            'featured',
+            'collections',
+            'category',
+        ]
+
+
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = []
+    permission_classes = [AllowAny]
 
     queryset = Product.objects.filter(status='active')
     pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = {'featured': ['exact'], 'collections__slug': ['exact']}
+    filterset_class = ProductFilter
     search_fields = ['title', 'slug', 'short_description']
     ordering_fields = ['created_at', 'published_at', 'title']
     ordering = ['-published_at', '-id']
@@ -36,6 +58,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+
         if self.action == 'retrieve':
             queryset = queryset.prefetch_related(
                 'images',
@@ -45,6 +68,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
             )
         elif self.action == 'list':
             queryset = queryset.prefetch_related('collections', 'images')
+
+        if 'collections' in self.request.query_params:
+            queryset = queryset.distinct()
+
         return queryset
 
     @extend_schema(tags=['Products'])
