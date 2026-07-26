@@ -7,7 +7,6 @@ from unfold.admin import ModelAdmin, TabularInline
 from apps.orders.models import Order, OrderItem
 
 
-
 class OrderItemInline(TabularInline):
     model = OrderItem
     extra = 0

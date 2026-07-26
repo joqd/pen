@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
-from .models import CustomerGallery
+from ..models import CustomerGallery
 
 
 @admin.register(CustomerGallery)

@@ -1,5 +1,5 @@
-from .user_model import OTPCode, User
 from .address_model import Address, City, Province
+from .user_model import OTPCode, User
 
 __all__ = [
     'User',

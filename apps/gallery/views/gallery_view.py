@@ -3,8 +3,8 @@ from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 
-from .models import CustomerGallery
-from .serializers import CustomerGallerySerializer
+from ..models import CustomerGallery
+from ..serializers import CustomerGallerySerializer
 
 
 class StandardPagination(PageNumberPagination):
