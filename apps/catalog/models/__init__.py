@@ -1,7 +1,7 @@
 from .category_model import Category
 from .collection_model import Collection
 from .product_model import Product, ProductImage, ProductSize, ProductStatus, ProductVariant
-from .review_model import Review
+from .review_model import Review, ReviewStatus
 from .tag_model import Tag
 
 __all__ = [
@@ -13,5 +13,5 @@ __all__ = [
     'Collection',
     'Category',
     'Tag',
-    'Review',
+    'Review', 'ReviewStatus'
 ]

@@ -213,11 +213,11 @@ UNFOLD = {
                         'icon': 'label',
                         'link': reverse_lazy('admin:catalog_category_changelist'),
                     },
-                    # {
-                    #     'title': _('tags'),
-                    #     'icon': 'label',
-                    #     'link': reverse_lazy('admin:catalog_tag_changelist'),
-                    # },
+                    {
+                        'title': _('reviews'),
+                        'icon': 'comment',
+                        'link': reverse_lazy('admin:catalog_review_changelist'),
+                    },
                 ],
             },
             {

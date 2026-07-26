@@ -498,3 +498,45 @@ msgstr "کتگوری"
 
 msgid "categories"
 msgstr "کتگوری‌ها"
+
+msgid "rating"
+msgstr "امتیاز"
+
+msgid "comment"
+msgstr "نظر"
+
+msgid "review"
+msgstr "بررسی"
+
+msgid "reviews"
+msgstr "نقد و بررسی‌ها"
+
+msgid "general"
+msgstr "عمومی"
+
+msgid "publishing"
+msgstr "انتشارات"
+
+msgid "datetime"
+msgstr "تاریخ و ساعت"
+
+msgid "Search by comment text, contact number, product slug or product title"
+msgstr "جستجو بر اساس متن نظر، شماره تماس، نامک محصول یا عنوان محصول"
+
+msgid "Confirm selected comments"
+msgstr "تایید نظرات انتخاب‌شده"
+
+msgid "%(count)d comments were successfully approved."
+msgstr "%(count)d نظر با موفقیت تایید شد."
+
+msgid "Reject selected comments"
+msgstr "رد نظرات انتخاب‌شده"
+
+msgid "%(count)d comments were rejected."
+msgstr "%(count)d نظر رد شد."
+
+msgid "approved"
+msgstr "تایید شده"
+
+msgid "rejected"
+msgstr "رد شده"

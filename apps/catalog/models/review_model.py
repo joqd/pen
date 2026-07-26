@@ -21,8 +21,8 @@ class Review(models.Model):
     comment = models.TextField(_('comment'))
     status = models.CharField(_('status'), max_length=20, choices=ReviewStatus.choices, default=ReviewStatus.PENDING)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     class Meta:
         verbose_name = _('review')
