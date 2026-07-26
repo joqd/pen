@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.serializers import DetailResponseSerializer, ErrorResponseSerializer
+from program.core.serializers import DetailResponseSerializer, ErrorResponseSerializer
 
 
 class LogoutAPIView(APIView):

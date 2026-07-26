@@ -1,15 +1,15 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views.addresses_views import (
+from .views.addresses_view import (
     AddressViewSet,
     CityListAPIView,
     ProvinceCityListAPIView,
     ProvinceListAPIView,
 )
-from .views.login_views import LoginAPIView, VerifyOTPAPIView
-from .views.logout_views import LogoutAPIView
-from .views.me_views import MeAPIView
+from .views.login_view import LoginAPIView, VerifyOTPAPIView
+from .views.logout_view import LogoutAPIView
+from .views.me_view import MeAPIView
 
 router = DefaultRouter()
 router.register(r'addresses', AddressViewSet, basename='addresses')
