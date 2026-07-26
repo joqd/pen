@@ -1,10 +1,7 @@
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-
-User = get_user_model()
 
 
 class Province(models.Model):
@@ -27,7 +24,7 @@ class City(models.Model):
 
 
 class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses', verbose_name=_('user'))
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='addresses', verbose_name=_('user'))
     title = models.CharField(_('title'), max_length=50)
     recipient_name = models.CharField(_('recipient name'), max_length=100)
     phone = models.CharField(_('phone'), max_length=20)
