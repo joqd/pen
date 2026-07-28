@@ -572,7 +572,7 @@ msgid "excerpt"
 msgstr "گزیده"
 
 msgid "allow comments"
-msgstr "کانمنت مجاز است؟"
+msgstr "کامنت مجاز است؟"
 
 msgid "meta title"
 msgstr "متا تایتیل"
