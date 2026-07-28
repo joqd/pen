@@ -1,7 +1,6 @@
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
-
 from unfold.admin import ModelAdmin
 from unfold.decorators import action, display
 
@@ -38,19 +37,31 @@ class ReviewAdmin(ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
 
     fieldsets = (
-        (_('general'), {
-            'fields': ('user', 'product'),
-        }),
-        (_('review'), {
-            'fields': ('rating', 'comment'),
-        }),
-        (_('publishing'), {
-            'fields': ('status',),
-        }),
-        (_('datetime'), {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',),
-        }),
+        (
+            _('general'),
+            {
+                'fields': ('user', 'product'),
+            },
+        ),
+        (
+            _('review'),
+            {
+                'fields': ('rating', 'comment'),
+            },
+        ),
+        (
+            _('publishing'),
+            {
+                'fields': ('status',),
+            },
+        ),
+        (
+            _('datetime'),
+            {
+                'fields': ('created_at', 'updated_at'),
+                'classes': ('collapse',),
+            },
+        ),
     )
 
     @display(description=_('user'))
@@ -63,7 +74,7 @@ class ReviewAdmin(ModelAdmin):
 
     @display(description=_('rating'))
     def display_rating(self, obj: Review) -> str:
-        return f"{'☆' * (5 - obj.rating)}{'★' * obj.rating}"
+        return f'{"☆" * (5 - obj.rating)}{"★" * obj.rating}'
 
     @display(
         description=_('status'),

@@ -67,11 +67,13 @@ INSTALLED_APPS = [
     'drf_spectacular_sidecar',
     'corsheaders',
     'django_filters',
+    'unfold_markdown',
     # my own
     'apps.accounts',
     'apps.catalog',
     'apps.orders',
     'apps.gallery',
+    'apps.blog',
 ]
 
 MIDDLEWARE = [
@@ -238,6 +240,11 @@ UNFOLD = {
             {
                 'title': _('Content'),
                 'items': [
+                    {
+                        'title': _('posts'),
+                        'icon': 'post',
+                        'link': reverse_lazy('admin:blog_post_changelist'),
+                    },
                     {
                         'title': _('gallery'),
                         'icon': 'photo_library',

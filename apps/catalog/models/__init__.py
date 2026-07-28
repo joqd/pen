@@ -13,5 +13,6 @@ __all__ = [
     'Collection',
     'Category',
     'Tag',
-    'Review', 'ReviewStatus'
+    'Review',
+    'ReviewStatus',
 ]

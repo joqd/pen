@@ -540,3 +540,90 @@ msgstr "تایید شده"
 
 msgid "rejected"
 msgstr "رد شده"
+
+msgid "blog"
+msgstr "بلاگ"
+
+msgid "post"
+msgstr "پست"
+
+msgid "posts"
+msgstr "پست‌ها"
+
+msgid "post media"
+msgstr "مدیای پست"
+
+msgid "post medias"
+msgstr "مدیاهای پست"
+
+msgid "draft"
+msgstr "پیشنویس"
+
+msgid "published"
+msgstr "منتشر شده"
+
+msgid "archived"
+msgstr "بایگانی شده"
+
+msgid "author"
+msgstr "نویسنده"
+
+msgid "excerpt"
+msgstr "گزیده"
+
+msgid "allow comments"
+msgstr "کانمنت مجاز است؟"
+
+msgid "meta title"
+msgstr "متا تایتیل"
+
+msgid "meta description"
+msgstr "متا دسکریپشن"
+
+msgid "view count"
+msgstr "تعداد بازدید"
+
+msgid "file"
+msgstr "فایل"
+
+msgid "uploaded at"
+msgstr "آپلود شده در"
+
+msgid "markdown"
+msgstr "مارک‌داون"
+
+msgid "short summary; if left blank, it will be automatically generated from the content."
+msgstr "خلاصه کوتاه؛ اگر خالی بماند، به طور خودکار از محتوا تولید می‌شود."
+
+msgid "cache rendered HTML from content — do not edit manually."
+msgstr "HTML رندر شده از محتوا را در حافظه پنهان ذخیره کنید - به صورت دستی ویرایش نکنید."
+
+msgid "original text in Markdown format"
+msgstr "متن اصلی در قالب مارک‌داون"
+
+msgid "featured image"
+msgstr "تصویر اصلی"
+
+msgid "markdown-ready code"
+msgstr "کد آماده مارک‌داون"
+
+msgid "main content"
+msgstr "محتوای اصلی"
+
+msgid "text"
+msgstr "متن"
+
+msgid "content"
+msgstr "محتوا"
+
+msgid "media"
+msgstr "مدیا"
+
+msgid "preview"
+msgstr "پیش‌نمایش"
+
+msgid "seo"
+msgstr "سئو"
+
+msgid "system info"
+msgstr "اطلاعات سیستمی"

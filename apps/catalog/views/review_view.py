@@ -1,8 +1,7 @@
 from rest_framework import permissions, viewsets
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.decorators import action
 
-from ..models import Review, ReviewStatus, Product
+from ..models import Review, ReviewStatus
 from ..serializers import ReviewReadSerializer, ReviewWriteSerializer
 
 
@@ -15,6 +14,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             if self.request.user.is_authenticated:
                 from django.db.models import Q
+
                 qs = qs.filter(Q(status=ReviewStatus.APPROVED) | Q(user=self.request.user))
             else:
                 qs = qs.filter(status=ReviewStatus.APPROVED)

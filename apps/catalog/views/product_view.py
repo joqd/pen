@@ -8,13 +8,12 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from ..models import Product
+from ..models import Product, Review, ReviewStatus
 from ..serializers import (
     ProductDetailSerializer,
     ProductListSerializer,
+    ReviewReadSerializer,
 )
-from ..models import Review, ReviewStatus
-from ..serializers import ReviewReadSerializer
 
 
 class StandardPagination(PageNumberPagination):

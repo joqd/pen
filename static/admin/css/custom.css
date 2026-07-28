@@ -121,3 +121,39 @@ input {
 body {
 	font-family: 'YekanBakh' !important;
 }
+
+
+/* ============================================
+   Post content markdown editor (EasyMDE) — RTL + font
+   ============================================ */
+
+.markdown-widget-wrapper .CodeMirror,
+.markdown-widget-wrapper .CodeMirror-lines,
+.markdown-widget-wrapper .CodeMirror pre.CodeMirror-line {
+    direction: rtl !important;
+    text-align: right !important;
+    font-family: var(--font-fa) !important;
+    line-height: 2 !important;
+}
+
+.editor-preview,
+.editor-preview-side {
+    direction: rtl !important;
+    text-align: right !important;
+    font-family: var(--font-fa) !important;
+}
+
+.markdown-widget-wrapper .CodeMirror [dir="ltr"],
+.editor-preview [dir="ltr"],
+.editor-preview-side [dir="ltr"] {
+    direction: ltr !important;
+    text-align: left !important;
+}
+
+.editor-preview pre,
+.editor-preview code,
+.editor-preview-side pre,
+.editor-preview-side code {
+    direction: ltr !important;
+    text-align: left !important;
+}
