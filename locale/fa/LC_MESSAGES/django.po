@@ -346,12 +346,6 @@ msgstr "نام گیرنده"
 msgid "recipient"
 msgstr "گیرنده"
 
-msgid "province"
-msgstr "استان"
-
-msgid "city"
-msgstr "شهر"
-
 msgid "postal code"
 msgstr "کدپستی"
 
@@ -627,3 +621,15 @@ msgstr "سئو"
 
 msgid "system info"
 msgstr "اطلاعات سیستمی"
+
+msgid "province"
+msgstr "استان"
+
+msgid "provinces"
+msgstr "استان‌ها"
+
+msgid "city"
+msgstr "شهر"
+
+msgid "cities"
+msgstr "شهرها"

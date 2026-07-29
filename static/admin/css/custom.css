@@ -15,6 +15,11 @@ body {
     text-align: right !important;
 }
 
+caption {
+	text-align: right !important;
+}
+
+
 #result_list thead th {
     text-align: right !important;
 }
@@ -22,6 +27,7 @@ body {
 #result_list thead th > div.flex {
     justify-content: flex-start;
 }
+
 
 /* Sort options: swap ml-2 → mr-2 so gap sits between text and icon */
 #result_list thead th .sortoptions {
