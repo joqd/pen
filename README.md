@@ -1,30 +1,18 @@
 # Ecommerce
 
-Pen — Minimal Django E-commerce
+Pen — Django E-commerce
 
-A small Django-based e-commerce starter project (Persian language default).
+A small Django-based e-commerce.
 
-## Quick start
+## Quick start (development)
 
-```bash
-cp .env.example .env
-source .venv/bin/activate
-python manage.py migrate
-python manage.py runserver
-```
-
-Prerequisites
-
-- Python 3.11+ and a virtual environment
-- Install dependencies: `pip install -r requirements/base.txt`
-
-Quick start (development)
-
-1. Copy environment variables or create a `.env` at project root (see `program/settings.py`).
-2. Apply migrations:
+1. Copy environment variables or create a `.env`.
+2. Apply migrations & compile messages:
 
 ```bash
-python manage.py migrate
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate && python manage.py compilemessages
 ```
 
 3. Create a superuser:
@@ -43,12 +31,6 @@ Notes
 
 - Default DB is SQLite at `db.sqlite3`. To use PostgreSQL set `DB_ENGINE=postgresql` and related vars.
 - Admin interface is customized using `django-unfold`.
-- SMS integration keys (optional): `SMS_IR_API_KEY`, `SMS_IR_LINE_NUMBER`.
-
-Where to look
-
-- Django settings: [program/settings.py](program/settings.py#L1-L500)
-- Main apps: `apps/accounts`, `apps/catalog`, `apps/orders`
 
 License
 
