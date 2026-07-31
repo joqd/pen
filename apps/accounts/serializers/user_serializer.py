@@ -5,7 +5,7 @@ User = get_user_model()
 
 
 class LoginSerializer(serializers.Serializer):
-    phone = serializers.CharField(max_length=13)
+    phone = serializers.CharField(max_length=14)
 
 
 class LoginResponseSerializer(serializers.Serializer):

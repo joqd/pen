@@ -10,7 +10,7 @@ from .managers import UserManager
 
 class User(AbstractUser):
     username = None
-    phone = models.CharField(_('phone'), max_length=10, unique=True)
+    phone = models.CharField(_('phone'), max_length=14, unique=True) # +98 905 123 1234
     full_name = models.CharField(_('full name'), max_length=150)
 
     USERNAME_FIELD = 'phone'
