@@ -57,11 +57,7 @@ class VerifyOTPAPIView(APIView):
     permission_classes = [AllowAny]
 
     def _create_user_if_not_exist(self, phone):
-        try:
-            user = User.objects.create_user(phone=phone)
-        except User.DoesNotExist:
-            user = User.objects.create(phone=phone)
-
+        user, _ = User.objects.get_or_create(phone=phone)
         return user
 
     @extend_schema(

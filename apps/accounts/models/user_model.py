@@ -28,7 +28,7 @@ class OTPPurpose(models.TextChoices):
 
 
 class OTPCode(models.Model):
-    phone = models.CharField(_('phone'), max_length=11)
+    phone = models.CharField(_('phone'), max_length=14)
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
 

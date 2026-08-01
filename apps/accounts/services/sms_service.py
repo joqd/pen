@@ -5,7 +5,7 @@ from sms_ir import SmsIr
 class SMSService:
     @staticmethod
     def send_otp(phone: str, code: str) -> None:
-        message = f'starboy.ir | code: {code}'
+        message = f'starboy.ir code: {code}'
 
         SMSService._send_sms(phone, message)
 
