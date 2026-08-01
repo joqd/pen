@@ -28,7 +28,9 @@ class MeAPIView(APIView):
         },
     )
     def get(self, request):
-        user = request.user
+        serializer = UserResponseSerializer(request.user)
 
-        d = {'id': user.id, 'phone': user.phone}
-        return Response(d, status=status.HTTP_200_OK)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )

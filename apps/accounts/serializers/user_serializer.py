@@ -13,10 +13,10 @@ class LoginResponseSerializer(serializers.Serializer):
     code = serializers.CharField(read_only=True, required=False)
 
 
-class UserResponseSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    phone = serializers.CharField(read_only=True)
-    full_name = serializers.CharField(read_only=True)
+class UserResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'phone', 'full_name', 'avatar']
 
 
 class VerifyOTPSerializer(serializers.Serializer):

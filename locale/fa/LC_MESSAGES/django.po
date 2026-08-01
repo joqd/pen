@@ -633,3 +633,6 @@ msgstr "شهر"
 
 msgid "cities"
 msgstr "شهرها"
+
+msgid "avatar"
+msgstr "آواتار"
