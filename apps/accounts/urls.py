@@ -10,12 +10,14 @@ from .views.addresses_view import (
 from .views.login_view import LoginAPIView, VerifyOTPAPIView
 from .views.logout_view import LogoutAPIView
 from .views.me_view import MeAPIView
+from .views.csrf_view import CsrfCookieAPIView
 
 router = DefaultRouter()
 router.register(r'addresses', AddressViewSet, basename='addresses')
 
 
 urlpatterns = [
+	path("csrf/", CsrfCookieAPIView.as_view()),
     path('login/', LoginAPIView.as_view()),
     path('verify/', VerifyOTPAPIView.as_view()),
     path('logout/', LogoutAPIView.as_view()),
