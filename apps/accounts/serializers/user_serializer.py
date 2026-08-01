@@ -10,7 +10,7 @@ class LoginSerializer(serializers.Serializer):
 
 class LoginResponseSerializer(serializers.Serializer):
     detail = serializers.CharField(read_only=True)
-    code = serializers.CharField(read_only=True, required=False)
+    code = serializers.CharField(max_length=6, read_only=True, required=False)
 
 
 class UserResponseSerializer(serializers.ModelSerializer):
@@ -20,5 +20,5 @@ class UserResponseSerializer(serializers.ModelSerializer):
 
 
 class VerifyOTPSerializer(serializers.Serializer):
-    phone = serializers.CharField(max_length=11)
+    phone = serializers.CharField(max_length=14)
     code = serializers.CharField(max_length=6)

@@ -19,7 +19,7 @@ def load_env_file(path: Path) -> None:
 
         key, value = line.split('=', 1)
         key = key.strip()
-        value = value.strip().strip(""").strip(""")
+        value = value.strip().strip('"').strip("'")
         os.environ.setdefault(key, value)
 
 
@@ -41,16 +41,57 @@ load_env_file(BASE_DIR / '.env')
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-me')
 DEBUG = env_bool('DJANGO_DEBUG', True)
-# ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost', 'testserver'])
-ALLOWED_HOSTS = ['*']
-# CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
-CSRF_TRUSTED_ORIGINS = [
-    'http://*',
-    'https://*',
-]
 
-SESSION_COOKIE_SECURE = False  # for dev
-CSRF_COOKIE_SECURE = False  # for dev
+# ---------------------------------------------------------------------------
+# Single switch: everything below derives from DEBUG + these two env-driven
+# lists. Nothing else needs to change between dev and prod.
+# ---------------------------------------------------------------------------
+ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', ['localhost', '127.0.0.1'])
+
+# The exact origin(s) of your Next.js frontend, comma-separated.
+#   dev:  http://localhost:3000
+#   prod: https://yourapp.com,https://www.yourapp.com
+FRONTEND_ORIGINS = env_list('DJANGO_FRONTEND_ORIGINS', ['http://localhost:3000'])
+
+# ---------------------------------------------------------------------------
+# CORS (django-cors-headers)
+# ---------------------------------------------------------------------------
+CORS_ALLOWED_ORIGINS = FRONTEND_ORIGINS
+CORS_ALLOW_CREDENTIALS = True  # required so the session cookie is sent/accepted cross-port/cross-domain
+
+# ---------------------------------------------------------------------------
+# CSRF / Session cookies
+# ---------------------------------------------------------------------------
+# Needed because the frontend's origin always differs from the backend's own
+# host:port, even in dev (different port = different origin).
+CSRF_TRUSTED_ORIGINS = FRONTEND_ORIGINS
+
+# Must be False so the frontend's JS can read the csrftoken cookie and echo
+# it back as the X-CSRFToken header.
+CSRF_COOKIE_HTTPONLY = False
+
+# "Lax" is correct as long as frontend and backend are same-site — same
+# registrable domain, e.g. both on "localhost" in dev (any ports), or
+# app.yourapp.com + api.yourapp.com in prod. Keep frontend/backend on a
+# shared parent domain and this never needs to change.
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Secure cookies require HTTPS — automatically on in prod, off in dev.
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
+# If frontend and API sit on different subdomains of the same parent domain
+# in prod (app.yourapp.com + api.yourapp.com), set this so cookies set by the
+# API are readable on the frontend's subdomain too:
+SESSION_COOKIE_DOMAIN = os.environ.get('DJANGO_COOKIE_DOMAIN') or None
+CSRF_COOKIE_DOMAIN = SESSION_COOKIE_DOMAIN
+
+# Only relevant once the backend sits behind a reverse proxy (nginx, etc.) in
+# prod, so Django knows the original request was HTTPS:
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
 
 INSTALLED_APPS = [
     'unfold',
@@ -165,9 +206,6 @@ SMS_IR_API_KEY = os.environ.get('SMS_IR_API_KEY')
 SMS_IR_LINE_NUMBER = os.environ.get('SMS_IR_LINE_NUMBER')
 
 JQUERY_URL = True
-
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
 
 UNFOLD = {
     'SITE_TITLE': _('admin panel'),

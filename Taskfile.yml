@@ -9,7 +9,7 @@ tasks:
   run:
     desc: Run development server
     cmds:
-      - uv run python manage.py runserver
+      - uv run python manage.py runserver localhost:8000
     silent: true
 
   format:
