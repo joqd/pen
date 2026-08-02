@@ -38,7 +38,7 @@ class CartView(CartMixin, APIView):
     )
     def get(self, request):
         cart = self.get_cart(request)
-        serializer = CartSerializer(cart, context={"request": request})
+        serializer = CartSerializer(cart, context={'request': request})
 
         response = Response(serializer.data)
         if not request.user.is_authenticated and not request.COOKIES.get('cart_token'):
@@ -88,7 +88,7 @@ class CartItemCreateView(CartMixin, APIView):
         CartService.add_item(cart=cart, variant=variant, quantity=serializer.validated_data['quantity'])
 
         cart.refresh_from_db()
-        serializer = CartSerializer(cart, context={"request": request})
+        serializer = CartSerializer(cart, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -126,7 +126,7 @@ class CartItemView(CartMixin, APIView):
         CartService.update_quantity(item=item, quantity=serializer.validated_data['quantity'])
 
         cart.refresh_from_db()
-        serializer = CartSerializer(cart, context={"request": request})
+        serializer = CartSerializer(cart, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
@@ -156,5 +156,5 @@ class CartItemView(CartMixin, APIView):
         CartService.remove_item(item)
 
         cart.refresh_from_db()
-        serializer = CartSerializer(cart, context={"request": request})
+        serializer = CartSerializer(cart, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

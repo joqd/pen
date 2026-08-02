@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from program.core.serializers import DetailResponseSerializer
 
 
-@method_decorator(ensure_csrf_cookie, name="dispatch")
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class CsrfCookieAPIView(APIView):
     permission_classes = [AllowAny]
 

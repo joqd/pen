@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -17,6 +18,13 @@ class Product(models.Model):
     slug = models.SlugField(_('slug'), max_length=255, unique=True)
     short_description = models.CharField(_('short description'), max_length=320)
     description = models.TextField(_('description'), blank=True)
+    audio = models.FileField(
+        _('audio'),
+        upload_to='products/audio/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav', 'ogg', 'm4a'])],
+    )
 
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, related_name='products', blank=True, null=True, verbose_name=_('category')

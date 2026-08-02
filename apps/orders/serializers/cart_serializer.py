@@ -34,22 +34,19 @@ class CartItemSerializer(serializers.ModelSerializer):
             'price',
             'compare_price',
         )
-        
+
     def get_image(self, obj):
-        image = (
-            obj.variant.product.images.filter(is_primary=True).first()
-            or obj.variant.product.images.first()
-        )
+        image = obj.variant.product.images.filter(is_primary=True).first() or obj.variant.product.images.first()
 
         if not image:
             return None
 
-        request = self.context.get("request")
+        request = self.context.get('request')
         if request:
             return request.build_absolute_uri(image.image.url)
 
         return image.image.url
-    
+
     def get_available_stock(self, obj):
         return obj.variant.available_stock
 

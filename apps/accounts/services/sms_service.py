@@ -12,7 +12,7 @@ class SMSService:
     @staticmethod
     def _send_sms(phone: str, message: str):
         client = SmsIr(settings.SMS_IR_API_KEY)
-        
+
         if settings.DEBUG:
             print(f'new SMS sent to {phone}; message: {message}')
 

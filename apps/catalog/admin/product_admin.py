@@ -71,7 +71,6 @@ class ProductAdmin(ModelAdmin):
     autocomplete_fields = (
         'category',
         'collections',
-        # 'tags',
     )
 
     search_fields = (
@@ -85,7 +84,6 @@ class ProductAdmin(ModelAdmin):
         'featured',
         'category',
         'collections',
-        # 'tags',
     )
 
     list_display = (
@@ -101,7 +99,6 @@ class ProductAdmin(ModelAdmin):
 
     filter_horizontal = (
         'collections',
-        # 'tags',
     )
 
     readonly_fields = (
@@ -119,7 +116,6 @@ class ProductAdmin(ModelAdmin):
                     'slug',
                     'category',
                     'collections',
-                    # 'tags',
                 ),
             },
         ),
@@ -130,6 +126,7 @@ class ProductAdmin(ModelAdmin):
                 'fields': (
                     'short_description',
                     'description',
+                    'audio',
                 ),
             },
         ),

@@ -29,9 +29,9 @@ class MeAPIView(APIView):
     )
     def get(self, request):
         serializer = UserResponseSerializer(
-			request.user,
-			context={"request": request},
-		)
+            request.user,
+            context={'request': request},
+        )
 
         return Response(
             serializer.data,

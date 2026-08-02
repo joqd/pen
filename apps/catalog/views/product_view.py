@@ -62,7 +62,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
                 'images',
                 'variants__size',
                 'collections',
-                'tags',
             )
         elif self.action == 'list':
             queryset = queryset.prefetch_related('collections', 'images')

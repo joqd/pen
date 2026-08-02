@@ -49,7 +49,7 @@ class CustomUserAdmin(ModelAdmin):
             },
         ),
     )
-    
+
     @display(description=_('Image'))
     def thumbnail(self, obj):
         if not obj.pk or not obj.avatar:
