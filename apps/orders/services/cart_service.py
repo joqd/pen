@@ -64,7 +64,6 @@ class CartService:
         )
 
     @classmethod
-    @classmethod
     def update_quantity(cls, item, quantity):
 
         if quantity > cls.MAX_ITEM_QUANTITY:
