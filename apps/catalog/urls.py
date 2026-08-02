@@ -2,6 +2,13 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import CategoryViewSet, CollectionViewSet, ProductViewSet, ReviewViewSet
+from .views.audio_view import (
+    AudioListView,
+    NextAudioView,
+    PreviousAudioView,
+    RandomAudioView,
+)
+
 
 router = DefaultRouter()
 router.register(r'products', ProductViewSet, basename='product')
@@ -12,4 +19,9 @@ router.register(r'reviews', ReviewViewSet, basename='review')
 
 urlpatterns = [
     path('', include(router.urls)),
+
+	path('audios/', AudioListView.as_view(), name='audio-list'),
+    path('audios/random/', RandomAudioView.as_view(), name='audio-random'),
+    path('audios/<int:pk>/next/', NextAudioView.as_view(), name='audio-next'),
+    path('audios/<int:pk>/previous/', PreviousAudioView.as_view(), name='audio-previous'),
 ]

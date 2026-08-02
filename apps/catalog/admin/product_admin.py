@@ -10,6 +10,7 @@ from ..models import (
     ProductImage,
     ProductSize,
     ProductVariant,
+    Audio,
 )
 
 
@@ -57,11 +58,19 @@ class ProductVariantInline(TabularInline):
     autocomplete_fields = ('size',)
 
 
+class AudioInline(TabularInline):
+    model = Audio
+    extra = 0
+    max_num = 1
+    can_delete = True
+
+
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
     inlines = (
         ProductImageInline,
         ProductVariantInline,
+        AudioInline,
     )
 
     prepopulated_fields = {
@@ -97,9 +106,7 @@ class ProductAdmin(ModelAdmin):
         'updated_at',
     )
 
-    filter_horizontal = (
-        'collections',
-    )
+    filter_horizontal = ('collections',)
 
     readonly_fields = (
         'created_at',
@@ -126,7 +133,6 @@ class ProductAdmin(ModelAdmin):
                 'fields': (
                     'short_description',
                     'description',
-                    'audio',
                 ),
             },
         ),

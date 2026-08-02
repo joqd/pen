@@ -639,3 +639,12 @@ msgstr "آواتار"
 
 msgid "audio"
 msgstr "صدا"
+
+msgid "cover"
+msgstr "کاور"
+
+msgid "artist"
+msgstr "هنرمند"
+
+msgid "audios"
+msgstr "صداها"

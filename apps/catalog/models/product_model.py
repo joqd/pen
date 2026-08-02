@@ -1,10 +1,8 @@
-from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .category_model import Category
 from .collection_model import Collection
-from .tag_model import Tag
 
 
 class ProductStatus(models.TextChoices):
