@@ -45,7 +45,6 @@ class ProductListSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(serializers.ModelSerializer):
     collections = CollectionListSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
-    audio = serializers.SerializerMethodField()
     variants = ProductVariantSerializer(many=True, read_only=True)
     is_in_wishlist = serializers.SerializerMethodField()
 
@@ -62,7 +61,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'featured',
             'collections',
             'images',
-            'audio',
             'variants',
             'is_in_wishlist',
             'created_at',
@@ -78,12 +76,3 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
         return request.user.wishlist_items.filter(product_id=obj.id).exists()
 
-    def get_audio(self, obj):
-        if not obj.audio:
-            return None
-
-        request = self.context.get('request')
-        if request:
-            return request.build_absolute_uri(obj.audio.url)
-
-        return obj.audio.url
