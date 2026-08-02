@@ -33,7 +33,6 @@ class ProductListSerializer(serializers.ModelSerializer):
             'title',
             'slug',
             'short_description',
-            'status',
             'featured',
             'published_at',
             'images',
