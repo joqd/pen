@@ -1,6 +1,7 @@
 from django.db.models import F
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema
 
 from ..models.post_model import Post
@@ -12,11 +13,13 @@ from ..serializers.post_serializer import (
 
 @extend_schema(tags=['Posts'])
 class PostViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Post.published.select_related(
         'author',
         'category',
     ).prefetch_related('media')
     lookup_field = 'slug'
+    
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
