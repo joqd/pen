@@ -1,21 +1,21 @@
 from random import randint
 
+from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema
 
 from ..models.audio_model import Audio
 from ..serializers.audio_serializer import AudioSerializer
 
 
-@extend_schema(tags=['Audio'])
+@extend_schema(tags=['Audios'])
 class AudioListView(ListAPIView):
     queryset = Audio.objects.all().order_by('id')
     serializer_class = AudioSerializer
 
 
-@extend_schema(tags=['Audio'])
+@extend_schema(tags=['Audios'])
 class NextAudioView(APIView):
     def get(self, request, pk):
         current = get_object_or_404(Audio, pk=pk)
@@ -33,7 +33,7 @@ class NextAudioView(APIView):
         return Response(serializer.data)
 
 
-@extend_schema(tags=['Audio'])
+@extend_schema(tags=['Audios'])
 class PreviousAudioView(APIView):
     def get(self, request, pk):
         current = get_object_or_404(Audio, pk=pk)
@@ -51,7 +51,7 @@ class PreviousAudioView(APIView):
         return Response(serializer.data)
 
 
-@extend_schema(tags=['Audio'])
+@extend_schema(tags=['Audios'])
 class RandomAudioView(APIView):
     def get(self, request):
         count = Audio.objects.count()

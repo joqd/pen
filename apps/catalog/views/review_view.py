@@ -1,10 +1,12 @@
 from rest_framework import permissions, viewsets
 from rest_framework.exceptions import PermissionDenied
+from drf_spectacular.utils import extend_schema
 
 from ..models import Review, ReviewStatus
 from ..serializers import ReviewReadSerializer, ReviewWriteSerializer
 
 
+@extend_schema(tags=['Reviews'])
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 

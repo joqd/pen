@@ -6,11 +6,11 @@ from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin, TabularInline
 
 from ..models import (
+    Audio,
     Product,
     ProductImage,
     ProductSize,
     ProductVariant,
-    Audio,
 )
 
 

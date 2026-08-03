@@ -15,6 +15,7 @@ class StandardPagination(PageNumberPagination):
     max_page_size = 100
 
 
+@extend_schema(tags=['Collections'])
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for reading Collection objects."""
 
@@ -42,10 +43,8 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.prefetch_related('children')
         return queryset
 
-    @extend_schema(tags=['Collection'])
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-    @extend_schema(tags=['Collection'])
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)

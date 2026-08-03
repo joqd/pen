@@ -56,13 +56,13 @@ class AddressViewSet(viewsets.ModelViewSet):
         return AddressSerializer
 
 
-@extend_schema(tags=['Province and City'])
+@extend_schema(tags=['Provinces and Cities'])
 class ProvinceListAPIView(ListAPIView):
     queryset = Province.objects.all()
     serializer_class = ProvinceSerializer
 
 
-@extend_schema(tags=['Province and City'])
+@extend_schema(tags=['Provinces and Cities'])
 class ProvinceCityListAPIView(ListAPIView):
     serializer_class = CitySerializer
 
@@ -72,7 +72,7 @@ class ProvinceCityListAPIView(ListAPIView):
         return City.objects.select_related('province').filter(province_id=province_id)
 
 
-@extend_schema(tags=['Province and City'])
+@extend_schema(tags=['Provinces and Cities'])
 class CityListAPIView(ListAPIView):
     queryset = City.objects.select_related('province')
     serializer_class = CitySerializer
