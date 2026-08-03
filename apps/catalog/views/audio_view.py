@@ -4,6 +4,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 
 from ..models.audio_model import Audio
 from ..serializers.audio_serializer import AudioSerializer
@@ -11,12 +12,15 @@ from ..serializers.audio_serializer import AudioSerializer
 
 @extend_schema(tags=['Audios'])
 class AudioListView(ListAPIView):
+    permission_classes = [AllowAny]
     queryset = Audio.objects.all().order_by('id')
     serializer_class = AudioSerializer
 
 
 @extend_schema(tags=['Audios'])
 class NextAudioView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request, pk):
         current = get_object_or_404(Audio, pk=pk)
 
@@ -35,6 +39,8 @@ class NextAudioView(APIView):
 
 @extend_schema(tags=['Audios'])
 class PreviousAudioView(APIView):
+    permission_classes = [AllowAny]
+    
     def get(self, request, pk):
         current = get_object_or_404(Audio, pk=pk)
 
@@ -53,6 +59,8 @@ class PreviousAudioView(APIView):
 
 @extend_schema(tags=['Audios'])
 class RandomAudioView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request):
         count = Audio.objects.count()
 
