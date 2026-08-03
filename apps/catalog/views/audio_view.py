@@ -2,9 +2,9 @@ from random import randint
 
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 
 from ..models.audio_model import Audio
 from ..serializers.audio_serializer import AudioSerializer
@@ -40,7 +40,7 @@ class NextAudioView(APIView):
 @extend_schema(tags=['Audios'])
 class PreviousAudioView(APIView):
     permission_classes = [AllowAny]
-    
+
     def get(self, request, pk):
         current = get_object_or_404(Audio, pk=pk)
 

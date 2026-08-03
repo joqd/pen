@@ -1,8 +1,8 @@
 from django.db.models import F
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 from ..models.post_model import Post
 from ..serializers.post_serializer import (
@@ -19,7 +19,6 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
         'category',
     ).prefetch_related('media')
     lookup_field = 'slug'
-    
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

@@ -22,3 +22,20 @@ class UserResponseSerializer(serializers.ModelSerializer):
 class VerifyOTPSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=14)
     code = serializers.CharField(max_length=6)
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'full_name',
+            'avatar',
+        ]
+
+    def validate_full_name(self, value):
+        value = value.strip()
+
+        if len(value) < 2:
+            raise serializers.ValidationError('name must be at least 2 characters.')
+
+        return value

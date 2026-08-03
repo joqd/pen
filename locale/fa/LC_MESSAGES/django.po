@@ -648,3 +648,6 @@ msgstr "هنرمند"
 
 msgid "audios"
 msgstr "صداها"
+
+msgid "name must be at least 2 characters."
+msgstr "نام باید حداقل ۲ کاراکتر باشد."
