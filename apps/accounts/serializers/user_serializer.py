@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
@@ -36,6 +37,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         value = value.strip()
 
         if len(value) < 2:
-            raise serializers.ValidationError('name must be at least 2 characters.')
+            raise serializers.ValidationError(_('name must be at least 2 characters.'))
 
         return value
