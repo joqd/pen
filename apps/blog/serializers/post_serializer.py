@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from apps.seo.serializers import MetaTagSerializer
+
 from ..models.post_model import Post, PostMedia
 
 
@@ -51,6 +53,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
     featured_image = serializers.SerializerMethodField()
     media = PostMediaSerializer(many=True, read_only=True)
+    meta_tag = MetaTagSerializer(read_only=True)
 
     class Meta:
         model = Post
@@ -63,11 +66,12 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'featured_image',
             'category',
             'author',
-            'published_at',
-            'updated_at',
             'view_count',
             'allow_comments',
             'media',
+            'meta_tag',
+            'published_at',
+            'updated_at',
         )
 
     def get_featured_image(self, obj):

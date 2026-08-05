@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from apps.seo.serializers import MetaTagSerializer
+
 from ..models import Category
 from .product_serializer import ProductListSerializer
 
@@ -15,6 +17,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     children = CategoryListSerializer(many=True, read_only=True)
     parent_detail = CategoryListSerializer(source='parent', read_only=True)
     products = ProductListSerializer(many=True, read_only=True)
+    meta_tag = MetaTagSerializer(read_only=True)
 
     class Meta:
         model = Category
@@ -30,6 +33,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
             'image',
             'children',
             'products',
+            'meta_tag',
             'created_at',
             'updated_at',
         ]

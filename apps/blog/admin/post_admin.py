@@ -73,8 +73,6 @@ class PostAdmin(ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     inlines = [PostMediaInline, PostMetaTagInline]
 
-    # Markdown editor only on the `content` field (not every TextField,
-    # so excerpt / meta_description stay as plain admin textareas).
     formfield_overrides = {
         models.TextField: {'widget': MarkdownWidget},
     }
@@ -102,12 +100,6 @@ class PostAdmin(ModelAdmin):
             _('publishing'),
             {
                 'fields': ('status', 'published_at', 'allow_comments'),
-            },
-        ),
-        (
-            _('seo'),
-            {
-                'fields': ('meta_title', 'meta_description'),
             },
         ),
         (

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from apps.seo.serializers import MetaTagSerializer
+
 from ..models import Product, ProductImage, ProductVariant
 from .audio_serializer import AudioSerializer
 from .collection_serializer import CollectionListSerializer
@@ -48,6 +50,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     audio = serializers.SerializerMethodField()
     variants = ProductVariantSerializer(many=True, read_only=True)
     is_in_wishlist = serializers.SerializerMethodField()
+    meta_tag = MetaTagSerializer(read_only=True)
 
     class Meta:
         model = Product
@@ -65,6 +68,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'audio',
             'variants',
             'is_in_wishlist',
+            'meta_tag',
             'created_at',
             'updated_at',
         ]

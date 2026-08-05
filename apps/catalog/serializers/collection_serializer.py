@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from apps.seo.serializers import MetaTagSerializer
+
 from ..models import Collection
 
 
@@ -13,6 +15,7 @@ class CollectionListSerializer(serializers.ModelSerializer):
 class CollectionDetailSerializer(serializers.ModelSerializer):
     children = CollectionListSerializer(many=True, read_only=True)
     parent_detail = CollectionListSerializer(source='parent', read_only=True)
+    meta_tag = MetaTagSerializer(read_only=True)
 
     class Meta:
         model = Collection
@@ -27,6 +30,7 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
             'is_active',
             'image',
             'children',
+            'meta_tag',
             'created_at',
             'updated_at',
         ]

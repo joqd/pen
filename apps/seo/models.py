@@ -93,4 +93,4 @@ class MetaTag(models.Model):
 
     def __str__(self):
         target = self.product or self.category or self.collection or self.post
-        return target if target else self.pk
+        return str(target) if target else str(self.pk)
