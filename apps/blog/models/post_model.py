@@ -121,9 +121,6 @@ class Post(models.Model):
     )
 
     featured_image = models.ImageField(_('featured image'), upload_to='posts/%Y/%m/', blank=True, null=True)
-    meta_title = models.CharField(_('meta title'), max_length=255, blank=True)
-    meta_description = models.CharField(_('meta description'), max_length=300, blank=True)
-
     status = models.CharField(_('status'), max_length=10, choices=Status.choices, default=Status.DRAFT, db_index=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)

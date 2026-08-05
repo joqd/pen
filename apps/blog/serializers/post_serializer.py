@@ -68,8 +68,6 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'view_count',
             'allow_comments',
             'media',
-            'meta_title',
-            'meta_description',
         )
 
     def get_featured_image(self, obj):
