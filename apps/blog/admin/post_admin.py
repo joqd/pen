@@ -7,6 +7,7 @@ from unfold.decorators import display
 from unfold_markdown.widgets import MarkdownWidget
 
 from apps.seo.admin import PostMetaTagInline
+
 from ..models import Post, PostMedia
 
 # ---------------------------------------------------------------------------

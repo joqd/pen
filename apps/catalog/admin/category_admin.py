@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
 from apps.seo.admin import CategoryMetaTagInline
+
 from ..models import Category
 
 
