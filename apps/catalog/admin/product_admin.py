@@ -5,6 +5,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin, TabularInline
 
+from apps.seo.admin import ProductMetaTagInline
 from ..models import (
     Audio,
     Product,
@@ -68,9 +69,10 @@ class AudioInline(TabularInline):
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
     inlines = (
-        ProductImageInline,
         ProductVariantInline,
+        ProductImageInline,
         AudioInline,
+        ProductMetaTagInline,
     )
 
     prepopulated_fields = {

@@ -4,11 +4,13 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
+from apps.seo.admin import CategoryMetaTagInline
 from ..models import Category
 
 
 @admin.register(Category)
 class CategoryAdmin(ModelAdmin):
+    inlines = [CategoryMetaTagInline]
     search_fields = ['title', 'slug']
     list_display = ['thumbnail', 'title', 'slug', 'is_active', 'created_at']
 

@@ -6,6 +6,7 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import display
 from unfold_markdown.widgets import MarkdownWidget
 
+from apps.seo.admin import PostMetaTagInline
 from ..models import Post, PostMedia
 
 # ---------------------------------------------------------------------------
@@ -69,7 +70,7 @@ class PostAdmin(ModelAdmin):
     ordering = ('-created_at',)
     readonly_fields = ('created_at', 'updated_at', 'view_count')
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [PostMediaInline]
+    inlines = [PostMediaInline, PostMetaTagInline]
 
     # Markdown editor only on the `content` field (not every TextField,
     # so excerpt / meta_description stay as plain admin textareas).

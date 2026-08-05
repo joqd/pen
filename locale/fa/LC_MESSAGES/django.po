@@ -651,3 +651,36 @@ msgstr "صداها"
 
 msgid "name must be at least 2 characters."
 msgstr "نام باید حداقل ۲ کاراکتر باشد."
+
+msgid "open graph"
+msgstr "اوپن گراف"
+
+msgid "Summary Large Image"
+msgstr "خلاصه تصویر بزرگ"
+
+msgid "canonical url"
+msgstr "کنونیکال لینک"
+
+msgid "is indexable"
+msgstr "قابل ایندکس است؟"
+
+msgid "og title"
+msgstr "عنوان اجتماعی"
+
+msgid "og description"
+msgstr "توضیحات اجتماعی"
+
+msgid "og image"
+msgstr "تصویر اجتماعی"
+
+msgid "twitter card"
+msgstr "کارت توییتر"
+
+msgid "metatag"
+msgstr "متاتگ"
+
+msgid "metatags"
+msgstr "متاتگ‌ها"
+
+msgid "Exactly one of the product/category/collection/post fields must be set."
+msgstr "دقیقاً یکی از فیلدهای محصول/کتگوری/کالکشن/پست باید تنظیم شود."
