@@ -92,7 +92,6 @@ class ProductSize(models.Model):
         verbose_name = _('product size')
         verbose_name_plural = _('product sizes')
         ordering = ['sort_order', 'id']
-        
 
 
 class ProductVariant(models.Model):
