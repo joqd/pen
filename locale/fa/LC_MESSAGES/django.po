@@ -684,3 +684,6 @@ msgstr "متاتگ‌ها"
 
 msgid "Exactly one of the product/category/collection/post fields must be set."
 msgstr "دقیقاً یکی از فیلدهای محصول/کتگوری/کالکشن/پست باید تنظیم شود."
+
+msgid "home"
+msgstr "خانه"

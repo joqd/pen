@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 
 from django.conf import settings
+from django.db.models import Avg, Count
+from django.utils.translation import gettext_lazy as _
 
-DEFAULT_SITE_URL = getattr(settings, "SITE_URL", "https://starboy.ir")
-DEFAULT_SITE_NAME = getattr(settings, "SITE_NAME", "استاربوی")
-DEFAULT_CURRENCY = getattr(settings, "SEO_PRICE_CURRENCY", "IRT")
-DEFAULT_SOCIAL_LINKS = getattr(settings, "SEO_SOCIAL_LINKS", [])
+DEFAULT_SITE_URL = getattr(settings, 'SITE_URL', 'https://starboy.ir')
+DEFAULT_SITE_NAME = getattr(settings, 'SITE_NAME', 'Starboy')
+DEFAULT_CURRENCY = getattr(settings, 'SEO_PRICE_CURRENCY', 'IRT')
+DEFAULT_SOCIAL_LINKS = getattr(settings, 'SEO_SOCIAL_LINKS', [])
 
 
 class BaseSchemaBuilder(ABC):
@@ -15,11 +17,10 @@ class BaseSchemaBuilder(ABC):
 
     @property
     def site_url(self) -> str:
-        return DEFAULT_SITE_URL.rstrip("/")
+        return DEFAULT_SITE_URL.rstrip('/')
 
     @abstractmethod
-    def build(self) -> dict:
-        ...
+    def build(self) -> dict: ...
 
     def to_json_ld(self) -> dict:
         return self._clean(self.build())
@@ -27,18 +28,18 @@ class BaseSchemaBuilder(ABC):
     def _clean(self, data):
         if isinstance(data, dict):
             cleaned = {k: self._clean(v) for k, v in data.items()}
-            return {k: v for k, v in cleaned.items() if v not in (None, "", [], {})}
+            return {k: v for k, v in cleaned.items() if v not in (None, '', [], {})}
         if isinstance(data, list):
             cleaned = [self._clean(v) for v in data]
-            return [v for v in cleaned if v not in (None, "", [], {})]
+            return [v for v in cleaned if v not in (None, '', [], {})]
         return data
 
     def absolute_url(self, path: str) -> str:
         if not path:
-            return ""
-        if path.startswith("http://") or path.startswith("https://"):
+            return ''
+        if path.startswith('http://') or path.startswith('https://'):
             return path
-        return f"{self.site_url}{path}"
+        return f'{self.site_url}{path}'
 
     def absolute_media_url(self, file_field) -> str | None:
         if not file_field:
@@ -58,41 +59,43 @@ class BaseSchemaBuilder(ABC):
 
 
 class ProductSchemaBuilder(BaseSchemaBuilder):
+    MIN_REVIEWS_FOR_RICH_RESULT = 3
+
     def build(self) -> dict:
         product = self.instance
         return {
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "name": product.title,
-            "description": self._description(),
-            "url": self.absolute_url(f"/products/{product.slug}"),
-            "image": self._gallery_images(),
-            "brand": self._brand(),
-            "category": product.category.title if product.category_id else None,
-            "offers": self._offers(),
-            "aggregateRating": self._aggregate_rating(),
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            'name': product.title,
+            'description': self._description(),
+            'url': self.absolute_url(f'/products/{product.slug}'),
+            'image': self._gallery_images(),
+            'brand': self._brand(),
+            'category': product.category.title if product.category_id else None,
+            'offers': self._offers(),
+            'aggregateRating': self._aggregate_rating(),
         }
 
     def _description(self) -> str:
         product = self.instance
-        return (product.description or product.short_description or "").strip()
+        return (product.description or product.short_description or '').strip()
 
     def _brand(self) -> dict:
-        brand = getattr(self.instance, "brand", None)
-        return {"@type": "Brand", "name": getattr(brand, "name", None) or DEFAULT_SITE_NAME}
+        brand = getattr(self.instance, 'brand', None)
+        return {'@type': 'Brand', 'name': getattr(brand, 'name', None) or DEFAULT_SITE_NAME}
 
     def _active_variants(self) -> list:
         product = self.instance
-        if hasattr(product, "active_variants"):
+        if hasattr(product, 'active_variants'):
             return list(product.active_variants)
-        return list(product.variants.filter(is_active=True).select_related("size"))
+        return list(product.variants.filter(is_active=True).select_related('size'))
 
     def _gallery_images(self) -> list[str]:
         product = self.instance
-        if hasattr(product, "gallery_images"):
+        if hasattr(product, 'gallery_images'):
             images = list(product.gallery_images)
         else:
-            images = list(product.images.filter(media_kind="gallery"))
+            images = list(product.images.filter(media_kind='gallery'))
         images = sorted(images, key=lambda img: (not img.is_primary, img.sort_order))
         return [url for img in images if (url := self.absolute_media_url(img.image))]
 
@@ -108,43 +111,58 @@ class ProductSchemaBuilder(BaseSchemaBuilder):
 
     def _single_offer(self, variant) -> dict:
         return {
-            "@type": "Offer",
-            "url": self.absolute_url(f"/products/{self.instance.slug}"),
-            "priceCurrency": DEFAULT_CURRENCY,
-            "price": str(variant.price),
-            "availability": self._availability(variant.available_stock > 0),
-            "itemCondition": "https://schema.org/NewCondition",
-            "sku": variant.sku,
+            '@type': 'Offer',
+            'url': self.absolute_url(f'/products/{self.instance.slug}'),
+            'priceCurrency': DEFAULT_CURRENCY,
+            'price': str(variant.price),
+            'availability': self._availability(variant.available_stock > 0),
+            'itemCondition': 'https://schema.org/NewCondition',
+            'sku': variant.sku,
         }
 
     def _aggregate_offer(self, variants: list) -> dict:
         prices = [v.price for v in variants]
         any_in_stock = any(v.available_stock > 0 for v in variants)
         return {
-            "@type": "AggregateOffer",
-            "url": self.absolute_url(f"/products/{self.instance.slug}"),
-            "priceCurrency": DEFAULT_CURRENCY,
-            "lowPrice": str(min(prices)),
-            "highPrice": str(max(prices)),
-            "offerCount": len(variants),
-            "availability": self._availability(any_in_stock),
+            '@type': 'AggregateOffer',
+            'url': self.absolute_url(f'/products/{self.instance.slug}'),
+            'priceCurrency': DEFAULT_CURRENCY,
+            'lowPrice': str(min(prices)),
+            'highPrice': str(max(prices)),
+            'offerCount': len(variants),
+            'availability': self._availability(any_in_stock),
         }
 
     @staticmethod
     def _availability(in_stock: bool) -> str:
-        return "https://schema.org/InStock" if in_stock else "https://schema.org/OutOfStock"
+        return 'https://schema.org/InStock' if in_stock else 'https://schema.org/OutOfStock'
 
     def _aggregate_rating(self) -> dict | None:
-        avg_rating = getattr(self.instance, "avg_rating", None)
-        review_count = getattr(self.instance, "review_count", 0)
-        if not review_count or avg_rating is None:
+        avg_rating = getattr(self.instance, 'avg_rating', None)
+        review_count = getattr(self.instance, 'review_count', None)
+
+        if avg_rating is None or review_count is None:
+            avg_rating, review_count = self._fallback_rating()
+
+        if not review_count or review_count < self.MIN_REVIEWS_FOR_RICH_RESULT or avg_rating is None:
             return None
+
         return {
-            "@type": "AggregateRating",
-            "ratingValue": round(avg_rating, 1),
-            "reviewCount": review_count,
-            "bestRating": "5",
+            '@type': 'AggregateRating',
+            'ratingValue': round(avg_rating, 1),
+            'reviewCount': review_count,
+            'bestRating': '5',
+            'worstRating': '1',
         }
+
+    def _fallback_rating(self) -> tuple[float | None, int]:
+        from apps.catalog.models import Review, ReviewStatus
+
+        agg = Review.objects.filter(
+            product_id=self.instance.pk,
+            status=ReviewStatus.APPROVED,
+        ).aggregate(avg=Avg('rating'), count=Count('id'))
+        return agg['avg'], agg['count'] or 0
 
 
 # ============================================================
@@ -158,39 +176,39 @@ class BaseCollectionPageSchemaBuilder(BaseSchemaBuilder):
     def build(self) -> dict:
         obj = self.instance
         data = {
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": obj.title,
-            "description": (obj.description or obj.short_description or "").strip(),
-            "url": self.absolute_url(f"{self.path_prefix}/{obj.slug}"),
-            "image": self.absolute_media_url(obj.image),
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            'name': obj.title,
+            'description': (obj.description or obj.short_description or '').strip(),
+            'url': self.absolute_url(f'{self.path_prefix}/{obj.slug}'),
+            'image': self.absolute_media_url(obj.image),
         }
         item_list = self._item_list()
         if item_list:
-            data["mainEntity"] = item_list
+            data['mainEntity'] = item_list
         return data
 
     def _item_list(self) -> dict | None:
-        products = getattr(self.instance, "seo_products", None)
+        products = getattr(self.instance, 'seo_products', None)
         if not products:
             return None
         items = [
             {
-                "@type": "ListItem",
-                "position": i + 1,
-                "url": self.absolute_url(f"/products/{p.slug}"),
+                '@type': 'ListItem',
+                'position': i + 1,
+                'url': self.absolute_url(f'/products/{p.slug}'),
             }
             for i, p in enumerate(products)
         ]
-        return {"@type": "ItemList", "itemListElement": items} if items else None
+        return {'@type': 'ItemList', 'itemListElement': items} if items else None
 
 
 class CategorySchemaBuilder(BaseCollectionPageSchemaBuilder):
-    path_prefix = "/categories"
+    path_prefix = '/categories'
 
 
 class CollectionSchemaBuilder(BaseCollectionPageSchemaBuilder):
-    path_prefix = "/collections"
+    path_prefix = '/collections'
 
 
 # ============================================================
@@ -202,20 +220,20 @@ class ArticleSchemaBuilder(BaseSchemaBuilder):
     def build(self) -> dict:
         post = self.instance
         return {
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            "headline": post.title[:110],
-            "description": post.excerpt,
-            "image": self.absolute_media_url(post.featured_image),
-            "datePublished": self._date_published(),
-            "dateModified": post.updated_at.isoformat(),
-            "mainEntityOfPage": {
-                "@type": "WebPage",
-                "@id": self.absolute_url(f"/blog/{post.slug}"),
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            'headline': post.title[:110],
+            'description': post.excerpt,
+            'image': self.absolute_media_url(post.featured_image),
+            'datePublished': self._date_published(),
+            'dateModified': post.updated_at.isoformat(),
+            'mainEntityOfPage': {
+                '@type': 'WebPage',
+                '@id': self.absolute_url(f'/blog/{post.slug}'),
             },
-            "author": self._author(),
-            "publisher": self._publisher(),
-            "articleSection": post.category.title if post.category_id else None,
+            'author': self._author(),
+            'publisher': self._publisher(),
+            'articleSection': post.category.title if post.category_id else None,
         }
 
     def _date_published(self) -> str:
@@ -226,21 +244,21 @@ class ArticleSchemaBuilder(BaseSchemaBuilder):
     def _author(self) -> dict:
         author = self.instance.author
         if not author:
-            return {"@type": "Organization", "name": DEFAULT_SITE_NAME}
+            return {'@type': 'Organization', 'name': DEFAULT_SITE_NAME}
         name = (
             author.get_full_name()
-            if hasattr(author, "get_full_name") and author.get_full_name()
-            else getattr(author, "username", DEFAULT_SITE_NAME)
+            if hasattr(author, 'get_full_name') and author.get_full_name()
+            else getattr(author, 'username', DEFAULT_SITE_NAME)
         )
-        return {"@type": "Person", "name": name}
+        return {'@type': 'Person', 'name': name}
 
     def _publisher(self) -> dict:
         return {
-            "@type": "Organization",
-            "name": DEFAULT_SITE_NAME,
-            "logo": {
-                "@type": "ImageObject",
-                "url": self.absolute_url("/logo.png"),
+            '@type': 'Organization',
+            'name': DEFAULT_SITE_NAME,
+            'logo': {
+                '@type': 'ImageObject',
+                'url': self.absolute_url('/logo.png'),
             },
         }
 
@@ -258,46 +276,46 @@ class BreadcrumbSchemaBuilder(BaseSchemaBuilder):
 
     def build(self) -> dict:
         return {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
                 {
-                    "@type": "ListItem",
-                    "position": i + 1,
-                    "name": name,
-                    "item": self.absolute_url(path),
+                    '@type': 'ListItem',
+                    'position': i + 1,
+                    'name': name,
+                    'item': self.absolute_url(path),
                 }
                 for i, (name, path) in enumerate(self.items)
             ],
         }
 
     @classmethod
-    def for_product(cls, product, request=None) -> "BreadcrumbSchemaBuilder":
-        items = [("خانه", "/")]
-        items += cls._category_chain(product.category, path_prefix="/categories")
-        items.append((product.title, f"/products/{product.slug}"))
+    def for_product(cls, product, request=None) -> 'BreadcrumbSchemaBuilder':
+        items = [(_('home'), '/')]
+        items += cls._category_chain(product.category, path_prefix='/categories')
+        items.append((product.title, f'/products/{product.slug}'))
         return cls(items, request=request)
 
     @classmethod
-    def for_category(cls, category, request=None) -> "BreadcrumbSchemaBuilder":
-        items = [("خانه", "/")]
-        items += cls._category_chain(category.parent, path_prefix="/categories")
-        items.append((category.title, f"/categories/{category.slug}"))
+    def for_category(cls, category, request=None) -> 'BreadcrumbSchemaBuilder':
+        items = [(_('home'), '/')]
+        items += cls._category_chain(category.parent, path_prefix='/categories')
+        items.append((category.title, f'/categories/{category.slug}'))
         return cls(items, request=request)
 
     @classmethod
-    def for_collection(cls, collection, request=None) -> "BreadcrumbSchemaBuilder":
-        items = [("خانه", "/")]
-        items += cls._category_chain(collection.parent, path_prefix="/collections")
-        items.append((collection.title, f"/collections/{collection.slug}"))
+    def for_collection(cls, collection, request=None) -> 'BreadcrumbSchemaBuilder':
+        items = [(_('home'), '/')]
+        items += cls._category_chain(collection.parent, path_prefix='/collections')
+        items.append((collection.title, f'/collections/{collection.slug}'))
         return cls(items, request=request)
 
     @classmethod
-    def for_post(cls, post, request=None) -> "BreadcrumbSchemaBuilder":
-        items = [("خانه", "/"), ("بلاگ", "/blog")]
+    def for_post(cls, post, request=None) -> 'BreadcrumbSchemaBuilder':
+        items = [(_('home'), '/'), (_('blog'), '/blog')]
         if post.category_id:
-            items.append((post.category.title, f"/blog/category/{post.category.slug}"))
-        items.append((post.title, f"/blog/{post.slug}"))
+            items.append((post.category.title, f'/blog/category/{post.category.slug}'))
+        items.append((post.title, f'/blog/{post.slug}'))
         return cls(items, request=request)
 
     @staticmethod
@@ -309,7 +327,7 @@ class BreadcrumbSchemaBuilder(BaseSchemaBuilder):
             stack.append(current)
             current = current.parent
         for n in reversed(stack):
-            chain.append((n.title, f"{path_prefix}/{n.slug}"))
+            chain.append((n.title, f'{path_prefix}/{n.slug}'))
         return chain
 
 
@@ -321,25 +339,25 @@ class BreadcrumbSchemaBuilder(BaseSchemaBuilder):
 class OrganizationSchemaBuilder(BaseSchemaBuilder):
     def build(self) -> dict:
         return {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": DEFAULT_SITE_NAME,
-            "url": self.site_url,
-            "logo": self.absolute_url("/logo.png"),
-            "sameAs": DEFAULT_SOCIAL_LINKS,
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            'name': DEFAULT_SITE_NAME,
+            'url': self.site_url,
+            'logo': self.absolute_url('/logo.png'),
+            'sameAs': DEFAULT_SOCIAL_LINKS,
         }
 
 
 class WebsiteSchemaBuilder(BaseSchemaBuilder):
     def build(self) -> dict:
         return {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": DEFAULT_SITE_NAME,
-            "url": self.site_url,
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": f"{self.site_url}/search?q={{search_term_string}}",
-                "query-input": "required name=search_term_string",
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            'name': DEFAULT_SITE_NAME,
+            'url': self.site_url,
+            'potentialAction': {
+                '@type': 'SearchAction',
+                'target': f'{self.site_url}/search?q={{search_term_string}}',
+                'query-input': 'required name=search_term_string',
             },
         }

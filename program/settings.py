@@ -93,6 +93,16 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     USE_X_FORWARDED_HOST = True
 
+# Seo settings
+SITE_URL = os.environ.get('SITE_URL') or None
+
+SITE_NAME = os.environ.get('SITE_NAME') or None
+
+SEO_PRICE_CURRENCY = os.environ.get('SEO_PRICE_CURRENCY') or None
+
+SEO_SOCIAL_LINKS = env_list('SEO_SOCIAL_LINKS', [])
+
+
 INSTALLED_APPS = [
     'unfold',
     'unfold.contrib.filters',

@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Avg, Count, Prefetch, Q
 from django_filters import rest_framework as django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from ..models import Product, Review, ReviewStatus
+from ..models.product_model import ProductImage, ProductVariant
 from ..serializers import (
     ProductDetailSerializer,
     ProductListSerializer,
@@ -55,21 +56,32 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         return ProductListSerializer
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-
-        if self.action == 'retrieve':
-            queryset = queryset.prefetch_related(
-                'images',
-                'variants__size',
-                'collections',
+        return (
+            Product.objects.select_related('category')
+            .prefetch_related(
+                Prefetch(
+                    'variants',
+                    queryset=ProductVariant.objects.filter(is_active=True).select_related('size'),
+                    to_attr='active_variants',
+                ),
+                Prefetch(
+                    'images',
+                    queryset=ProductImage.objects.filter(media_kind='gallery'),
+                    to_attr='gallery_images',
+                ),
             )
-        elif self.action == 'list':
-            queryset = queryset.prefetch_related('collections', 'images')
-
-        if 'collections' in self.request.query_params:
-            queryset = queryset.distinct()
-
-        return queryset
+            .annotate(
+                avg_rating=Avg(
+                    'reviews__rating',
+                    filter=Q(reviews__status=ReviewStatus.APPROVED),
+                ),
+                review_count=Count(
+                    'reviews',
+                    filter=Q(reviews__status=ReviewStatus.APPROVED),
+                ),
+            )
+            .distinct()
+        )
 
     @extend_schema(tags=['Products'])
     def list(self, request, *args, **kwargs):
