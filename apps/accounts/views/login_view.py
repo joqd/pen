@@ -10,8 +10,8 @@ from apps.accounts.serializers import LoginSerializer, VerifyOTPSerializer
 from apps.accounts.services.otp_service import OTPService
 from apps.accounts.services.sms_service import SMSService
 from apps.accounts.throttles import (
-    OTPRequestAnonRateThrottle,
     OTPPhoneRateThrottle,
+    OTPRequestAnonRateThrottle,
     OTPResendPhoneRateThrottle,
     OTPThrottledMixin,
 )
@@ -68,6 +68,7 @@ class ResendOTPAPIView(OTPThrottledMixin, APIView):
     نرخ این Endpoint سخت‌گیرانه‌تر از LoginAPIView است (طبق اسکوپ
     `otp_resend` در تنظیمات Throttle) تا از ارسال پیاپی پیامک جلوگیری شود.
     """
+
     permission_classes = [AllowAny]
     throttle_classes = [OTPResendPhoneRateThrottle, OTPRequestAnonRateThrottle]
 
