@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from apps.seo.serializers import MetaTagSerializer
 
+from apps.seo.schema_builders import ProductSchemaBuilder, BreadcrumbSchemaBuilder
 from ..models import Product, ProductImage, ProductVariant
 from .audio_serializer import AudioSerializer
 from .collection_serializer import CollectionListSerializer
@@ -51,6 +52,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     is_in_wishlist = serializers.SerializerMethodField()
     meta_tag = MetaTagSerializer(read_only=True)
+    json_ld = serializers.SerializerMethodField()
+    breadcrumb_ld = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Product
@@ -69,6 +73,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'variants',
             'is_in_wishlist',
             'meta_tag',
+            "json_ld", 
+            "breadcrumb_ld",
             'created_at',
             'updated_at',
         ]
@@ -90,3 +96,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             obj.audio,
             context=self.context,
         ).data
+    
+    def get_json_ld(self, obj) -> dict:
+        request = self.context.get("request")
+        return ProductSchemaBuilder(obj, request=request).to_json_ld()
+
+    def get_breadcrumb_ld(self, obj) -> dict:
+        request = self.context.get("request")
+        return BreadcrumbSchemaBuilder.for_product(obj, request=request).to_json_ld()
