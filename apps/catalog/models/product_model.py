@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from .category_model import Category
 from .collection_model import Collection
 
+import uuid
+
 
 class ProductStatus(models.TextChoices):
     DRAFT = 'draft', 'پیش‌نویس'
@@ -133,6 +135,18 @@ class ProductVariant(models.Model):
     @property
     def available_stock(self):
         return self.stock - self.reserved_stock
+    
+    def generate_sku(self):
+        base = f'{self.product_id}-{self.size_id}'.upper()
+        sku = f'{base}-{uuid.uuid4().hex[:6].upper()}'
+        while ProductVariant.objects.filter(sku=sku).exists():
+            sku = f'{base}-{uuid.uuid4().hex[:6].upper()}'
+        return sku
+
+    def save(self, *args, **kwargs):
+        if not self.sku:
+            self.sku = self.generate_sku()
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('product variant')

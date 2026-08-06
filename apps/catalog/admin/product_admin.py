@@ -58,6 +58,7 @@ class ProductVariantInline(TabularInline):
         'is_active',
     )
 
+    readonly_fields = ('sku',)
     autocomplete_fields = ('size',)
 
 
