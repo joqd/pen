@@ -9,6 +9,11 @@ from rest_framework.views import APIView
 from apps.accounts.serializers import LoginSerializer, VerifyOTPSerializer
 from apps.accounts.services.otp_service import OTPService
 from apps.accounts.services.sms_service import SMSService
+from apps.accounts.throttles import (
+    OTPRequestAnonRateThrottle,
+    OTPPhoneRateThrottle,
+    OTPResendPhoneRateThrottle,
+)
 from apps.orders.services.cart_service import CartService
 
 User = get_user_model()
@@ -16,6 +21,7 @@ User = get_user_model()
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [OTPPhoneRateThrottle, OTPRequestAnonRateThrottle]
 
     @extend_schema(
         tags=['Auth'],
@@ -23,7 +29,8 @@ class LoginAPIView(APIView):
         description=(
             'Send a one-time password (OTP) to the specified phone number.\n\n'
             'The OTP is required to complete authentication using the '
-            '`/auth/verify/` endpoint.'
+            '`/auth/verify/` endpoint.\n\n'
+            'Rate limited per phone number and per IP address.'
         ),
         request=LoginSerializer,
         examples=[
@@ -47,6 +54,46 @@ class LoginAPIView(APIView):
 
         d = {
             'detail': 'OTP sent.',
+            'code': otp.code if settings.DEBUG else None,
+        }
+
+        return Response(d, status=status.HTTP_200_OK)
+
+
+class ResendOTPAPIView(APIView):
+    permission_classes = [AllowAny]
+    throttle_classes = [OTPResendPhoneRateThrottle, OTPRequestAnonRateThrottle]
+
+    @extend_schema(
+        tags=['Auth'],
+        summary='Resend login OTP',
+        description=(
+            'Resend the one-time password (OTP) to the specified phone number.\n\n'
+            'Subject to a stricter rate limit than the initial OTP request '
+            'endpoint to prevent SMS abuse.'
+        ),
+        request=LoginSerializer,
+        examples=[
+            OpenApiExample(
+                name='Request Example',
+                summary='Resend OTP',
+                value={
+                    'phone': '9123456789',
+                },
+                request_only=True,
+            ),
+        ],
+    )
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        phone = serializer.validated_data['phone']
+        otp = OTPService.create_otp(phone)
+        SMSService.send_otp(phone, otp.code)
+
+        d = {
+            'detail': 'OTP resent.',
             'code': otp.code if settings.DEBUG else None,
         }
 
