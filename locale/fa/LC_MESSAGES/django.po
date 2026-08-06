@@ -689,7 +689,7 @@ msgid "home"
 msgstr "خانه"
 
 msgid "Too many requests. Please try again in %(wait)d seconds."
-msgstr "درخواست‌ها خیلی زیاد است. لطفاً %(صبر)d ثانیه دیگر دوباره امتحان کنید."
+msgstr "درخواست‌ها خیلی زیاد است. لطفاً %(wait)d ثانیه دیگر دوباره امتحان کنید."
 
 msgid "Too many requests. Please try again later."
 msgstr "تعداد درخواست‌ها خیلی زیاد است. لطفاً بعداً دوباره امتحان کنید."
