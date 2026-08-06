@@ -1,3 +1,7 @@
+import math
+
+from django.utils.translation import gettext_lazy as _
+from rest_framework.exceptions import Throttled
 from rest_framework.throttling import AnonRateThrottle, SimpleRateThrottle
 
 
@@ -20,3 +24,16 @@ class OTPResendPhoneRateThrottle(OTPPhoneRateThrottle):
 
 class OTPRequestAnonRateThrottle(AnonRateThrottle):
     scope = 'otp_request_ip'
+
+
+class OTPThrottledMixin:
+    def throttled(self, request, wait):
+        if wait is not None:
+            wait_seconds = math.ceil(wait)
+            detail = _('Too many requests. Please try again in %(wait)d seconds.') % {
+                'wait': wait_seconds,
+            }
+        else:
+            detail = _('Too many requests. Please try again later.')
+
+        raise Throttled(wait=wait, detail=detail, code='throttled')

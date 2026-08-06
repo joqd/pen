@@ -13,13 +13,14 @@ from apps.accounts.throttles import (
     OTPRequestAnonRateThrottle,
     OTPPhoneRateThrottle,
     OTPResendPhoneRateThrottle,
+    OTPThrottledMixin,
 )
 from apps.orders.services.cart_service import CartService
 
 User = get_user_model()
 
 
-class LoginAPIView(APIView):
+class LoginAPIView(OTPThrottledMixin, APIView):
     permission_classes = [AllowAny]
     throttle_classes = [OTPPhoneRateThrottle, OTPRequestAnonRateThrottle]
 
@@ -60,7 +61,13 @@ class LoginAPIView(APIView):
         return Response(d, status=status.HTTP_200_OK)
 
 
-class ResendOTPAPIView(APIView):
+class ResendOTPAPIView(OTPThrottledMixin, APIView):
+    """
+    ارسال مجدد OTP برای شماره‌ای که قبلاً یک درخواست OTP برایش ثبت شده.
+
+    نرخ این Endpoint سخت‌گیرانه‌تر از LoginAPIView است (طبق اسکوپ
+    `otp_resend` در تنظیمات Throttle) تا از ارسال پیاپی پیامک جلوگیری شود.
+    """
     permission_classes = [AllowAny]
     throttle_classes = [OTPResendPhoneRateThrottle, OTPRequestAnonRateThrottle]
 
