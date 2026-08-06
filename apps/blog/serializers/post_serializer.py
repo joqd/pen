@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
-from apps.seo.serializers import MetaTagSerializer
 from apps.seo.schema_builders import ArticleSchemaBuilder, BreadcrumbSchemaBuilder
+from apps.seo.serializers import MetaTagSerializer
+
 from ..models.post_model import Post, PostMedia
 
 
@@ -57,7 +58,6 @@ class PostDetailSerializer(serializers.ModelSerializer):
     json_ld = serializers.SerializerMethodField()
     breadcrumb_ld = serializers.SerializerMethodField()
 
-
     class Meta:
         model = Post
         fields = (
@@ -73,8 +73,8 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'allow_comments',
             'media',
             'meta_tag',
-            "json_ld", 
-            "breadcrumb_ld",
+            'json_ld',
+            'breadcrumb_ld',
             'published_at',
             'updated_at',
         )
@@ -90,7 +90,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
         return obj.featured_image.url
 
     def get_json_ld(self, obj) -> dict:
-        return ArticleSchemaBuilder(obj, request=self.context.get("request")).to_json_ld()
+        return ArticleSchemaBuilder(obj, request=self.context.get('request')).to_json_ld()
 
     def get_breadcrumb_ld(self, obj) -> dict:
-        return BreadcrumbSchemaBuilder.for_post(obj, request=self.context.get("request")).to_json_ld()
+        return BreadcrumbSchemaBuilder.for_post(obj, request=self.context.get('request')).to_json_ld()

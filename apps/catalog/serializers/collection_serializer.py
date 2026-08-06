@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
+from apps.seo.schema_builders import BreadcrumbSchemaBuilder, CollectionSchemaBuilder
 from apps.seo.serializers import MetaTagSerializer
 
-from apps.seo.schema_builders import CollectionSchemaBuilder, BreadcrumbSchemaBuilder
 from ..models import Collection
 
 
@@ -42,7 +42,7 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_json_ld(self, obj) -> dict:
-        return CollectionSchemaBuilder(obj, request=self.context.get("request")).to_json_ld()
+        return CollectionSchemaBuilder(obj, request=self.context.get('request')).to_json_ld()
 
     def get_breadcrumb_ld(self, obj) -> dict:
-        return BreadcrumbSchemaBuilder.for_category(obj, request=self.context.get("request")).to_json_ld()
+        return BreadcrumbSchemaBuilder.for_category(obj, request=self.context.get('request')).to_json_ld()
