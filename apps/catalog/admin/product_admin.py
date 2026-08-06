@@ -13,6 +13,7 @@ from ..models import (
     ProductImage,
     ProductSize,
     ProductVariant,
+    SizeAttribute,
 )
 
 
@@ -349,22 +350,14 @@ class ProductImageAdmin(ModelAdmin):
         )
 
 
+class SizeAttributeInline(TabularInline):
+    model = SizeAttribute
+    extra = 1
+    fields = ('key', 'value', 'sort_order')
+
+
 @admin.register(ProductSize)
 class ProductSizeAdmin(ModelAdmin):
-    list_display = (
-        'name',
-        'sort_order',
-        'is_active',
-    )
-
-    list_editable = (
-        'sort_order',
-        'is_active',
-    )
-
-    search_fields = ('name',)
-
-    ordering = (
-        'sort_order',
-        'id',
-    )
+    inlines = [SizeAttributeInline]
+    list_display = ('name', 'label', 'is_active')
+    search_fields = ('name', 'label')

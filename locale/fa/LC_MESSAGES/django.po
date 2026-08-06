@@ -693,3 +693,24 @@ msgstr "درخواست‌ها خیلی زیاد است. لطفاً %(wait)d ثا
 
 msgid "Too many requests. Please try again later."
 msgstr "تعداد درخواست‌ها خیلی زیاد است. لطفاً بعداً دوباره امتحان کنید."
+
+msgid "sizes"
+msgstr "سایزها"
+
+msgid "label"
+msgstr "برچسب"
+
+msgid "attributes"
+msgstr "ویژگی‌ها"
+
+msgid "key"
+msgstr "کلید"
+
+msgid "value"
+msgstr "مقدار"
+
+msgid "size attribute"
+msgstr "ویژگی اندازه"
+
+msgid "size attributes"
+msgstr "ویژگی های اندازه"

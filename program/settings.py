@@ -269,6 +269,11 @@ UNFOLD = {
                         'icon': 'comment',
                         'link': reverse_lazy('admin:catalog_review_changelist'),
                     },
+                    {
+                        'title': _('sizes'),
+                        'icon': 'fullscreen',
+                        'link': reverse_lazy('admin:catalog_productsize_changelist'),
+                    },
                 ],
             },
             {
