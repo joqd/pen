@@ -1,5 +1,5 @@
 services:
-  app:
+  web:
     image: ${DOCKERHUB_USERNAME:-rodxa}/${IMAGE_NAME:-pen}:${IMAGE_TAG:-latest}
     container_name: ${APP_NAME:-pen}
     restart: unless-stopped
@@ -10,5 +10,10 @@ services:
     volumes:
       - /var/www/${APP_NAME:-pen}/staticfiles:/app/staticfiles
       - /var/www/${APP_NAME:-pen}/media:/app/media
+    networks:
+      - shared_net
 
-    
+networks:
+  shared_net:
+    name: shared_net
+    external: true
