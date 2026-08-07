@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Run this on your laptop to build and push the image to Docker Hub.
+#
+# Usage:
+#   ./deploy.sh v1.0.0
+
 set -euo pipefail
 
 DOCKERHUB_USERNAME="rodxa"
@@ -16,5 +21,8 @@ docker push "${FULL_IMAGE}:${TAG}"
 echo "==> Pushing ${FULL_IMAGE}:latest ..."
 docker push "${FULL_IMAGE}:latest"
 
+echo "${TAG}" > .version
+
 echo ""
-echo "==> Done. Upload to the server with this tag: ${TAG}"
+echo "==> Done. Deploy this tag on the server: ${TAG}"
+echo "==> Saved to .version"

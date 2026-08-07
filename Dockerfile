@@ -26,9 +26,6 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
-
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
