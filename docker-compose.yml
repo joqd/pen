@@ -3,12 +3,12 @@ services:
     image: ${DOCKERHUB_USERNAME:-rodxa}/${IMAGE_NAME:-pen}:${IMAGE_TAG:-latest}
     container_name: ${APP_NAME:-pen}
     restart: unless-stopped
-
     env_file:
       - .env
-
     ports:
       - "${HOST_PORT:-8000}:8000"
-
     volumes:
       - /var/www/${APP_NAME:-pen}/staticfiles:/app/staticfiles
+      - /var/www/${APP_NAME:-pen}/media:/app/media
+
+    
