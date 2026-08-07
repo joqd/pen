@@ -12,3 +12,9 @@ services:
 
     volumes:
       - /var/www/${APP_NAME:-pen}/staticfiles:/app/staticfiles
+
+    networks:
+      - pen_network
+
+networks:
+  - pen_network
