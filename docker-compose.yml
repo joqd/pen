@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${DOCKERHUB_USERNAME:-rodxa}/${IMAGE_NAME:-pen}:${IMAGE_TAG:-latest}
     container_name: ${APP_CONTAINER_NAME:-app}
     restart: unless-stopped
     env_file:

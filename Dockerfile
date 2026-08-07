@@ -1,4 +1,4 @@
-# ---------- Stage 2: Builder ----------
+# Stage 2: Builder
 FROM python:3.13-slim AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -11,7 +11,7 @@ COPY . .
 RUN uv sync --frozen --no-dev
 
 
-# ---------- Stage 2: Runtime ----------
+# Stage 2: Runtime
 FROM python:3.13-slim AS runtime
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
