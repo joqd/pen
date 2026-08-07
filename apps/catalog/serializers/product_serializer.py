@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.seo.schema_builders import BreadcrumbSchemaBuilder, ProductSchemaBuilder
 from apps.seo.serializers import MetaTagSerializer
 
-from ..models import Product, ProductImage, ProductVariant
+from ..models import Product, ProductImage, ProductVariant, ProductSize, SizeAttribute
 from .audio_serializer import AudioSerializer
 from .collection_serializer import CollectionListSerializer
 
@@ -15,8 +15,24 @@ class ProductImageSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+
+class SizeAttributeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SizeAttribute
+        fields = ['key', 'value', 'sort_order']
+    
+
+class ProductSizeSerializer(serializers.ModelSerializer):
+    attributes = SizeAttributeSerializer(many=True)
+
+    class Meta:
+        model = ProductSize
+        fields = ['name', 'label', 'attributes']
+
+
 class ProductVariantSerializer(serializers.ModelSerializer):
     size_name = serializers.CharField(source='size.name', read_only=True)
+    size = ProductSizeSerializer(read_only=True)
 
     class Meta:
         model = ProductVariant
