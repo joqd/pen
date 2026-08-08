@@ -6,9 +6,11 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "bleach==6.4.0",
+    "boto3>=1.43.67",
     "django==6.0.7",
     "django-cors-headers==4.9.0",
     "django-filter==26.1",
+    "django-storages>=1.14.6",
     "django-unfold==0.101.0",
     "django-unfold-markdown==0.1.2",
     "djangorestframework==3.17.1",

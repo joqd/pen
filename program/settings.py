@@ -340,11 +340,35 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Backend API powering online stores.',
 }
 
-STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-    },
-    'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-    },
-}
+PARSPACK_BUCKET_NAME = os.environ.get('PARSPACK_BUCKET_NAME')
+
+if PARSPACK_BUCKET_NAME:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.s3.S3Storage',
+            'OPTIONS': {
+                'access_key': os.environ.get('PARSPACK_ACCESS_KEY'),
+                'secret_key': os.environ.get('PARSPACK_SECRET_KEY'),
+                'bucket_name': PARSPACK_BUCKET_NAME,
+                'endpoint_url': os.environ.get('PARSPACK_ENDPOINT_URL'),
+                'region_name': os.environ.get('PARSPACK_REGION', 'ir'),
+                'addressing_style': 'path',
+                'signature_version': 's3v4',
+                'default_acl': 'public-read',
+                'file_overwrite': False,
+                'location': os.environ.get('PARSPACK_MEDIA_PREFIX', 'media'),
+            },
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
+else:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
