@@ -19,6 +19,7 @@ dependencies = [
     "psycopg[binary]==3.3.4",
     "requests==2.34.2",
     "smsir-python==1.0.8",
+    "whitenoise>=6.12.0",
 ]
 
 [dependency-groups]

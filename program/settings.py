@@ -130,6 +130,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -337,4 +338,10 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'PEN API',
     'VERSION': '1.0.0',
     'DESCRIPTION': 'Backend API powering online stores.',
+}
+
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
 }
