@@ -1,6 +1,8 @@
 services:
   web:
-    image: ${DOCKERHUB_USERNAME:-rodxa}/${IMAGE_NAME:-pen}:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
       - .env
