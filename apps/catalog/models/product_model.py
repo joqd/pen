@@ -1,10 +1,10 @@
+import uuid
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .category_model import Category
 from .collection_model import Collection
-
-import uuid
 
 
 class ProductStatus(models.TextChoices):
@@ -135,7 +135,7 @@ class ProductVariant(models.Model):
     @property
     def available_stock(self):
         return self.stock - self.reserved_stock
-    
+
     def generate_sku(self):
         base = f'{self.product_id}-{self.size_id}'.upper()
         sku = f'{base}-{uuid.uuid4().hex[:6].upper()}'

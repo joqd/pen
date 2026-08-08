@@ -2,7 +2,7 @@
 # Run this on your laptop to build and push the image to Docker Hub.
 #
 # Usage:
-#   ./deploy.sh v1.0.0
+#   ./new-image-tag.sh v1.0.0
 
 set -euo pipefail
 

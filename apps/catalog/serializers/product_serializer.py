@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.seo.schema_builders import BreadcrumbSchemaBuilder, ProductSchemaBuilder
 from apps.seo.serializers import MetaTagSerializer
 
-from ..models import Product, ProductImage, ProductVariant, ProductSize, SizeAttribute
+from ..models import Product, ProductImage, ProductSize, ProductVariant, SizeAttribute
 from .audio_serializer import AudioSerializer
 from .collection_serializer import CollectionListSerializer
 
@@ -15,12 +15,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-
 class SizeAttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SizeAttribute
         fields = ['key', 'value', 'sort_order']
-    
+
 
 class ProductSizeSerializer(serializers.ModelSerializer):
     attributes = SizeAttributeSerializer(many=True)
