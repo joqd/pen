@@ -37,7 +37,7 @@ class PostFilter(django_filters.FilterSet):
 
     class Meta:
         model = Post
-        fields = ['category', 'author', 'allow_comments']
+        fields = ['category', 'author', 'featured', 'allow_comments']
 
     def filter_period(self, queryset, name, value):
         now = timezone.now()

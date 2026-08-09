@@ -120,6 +120,7 @@ class Post(models.Model):
         verbose_name=_('content html'),
     )
 
+    featured = models.BooleanField(_('featured'), default=False)
     featured_image = models.ImageField(_('featured image'), upload_to='posts/%Y/%m/', blank=True, null=True)
     status = models.CharField(_('status'), max_length=10, choices=Status.choices, default=Status.DRAFT, db_index=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)

@@ -59,11 +59,12 @@ class PostAdmin(ModelAdmin):
         'title',
         'author',
         'category',
+        'featured',
         'status_badge',
         'published_at',
         'view_count',
     )
-    list_filter = ('status', 'category', 'created_at')
+    list_filter = ('status', 'category', 'featured', 'created_at')
     list_filter_submit = True
     search_fields = ('title', 'content', 'excerpt')
     autocomplete_fields = ('author', 'category')
@@ -81,7 +82,7 @@ class PostAdmin(ModelAdmin):
         (
             _('main content'),
             {
-                'fields': ('title', 'slug', 'author', 'category'),
+                'fields': ('title', 'slug', 'author', 'category', 'featured'),
             },
         ),
         (
