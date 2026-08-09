@@ -8,6 +8,8 @@ services:
       - .env
     ports:
       - "${HOST_PORT:-8000}:8000"
+    volumes:
+      - ./media:/app/media
     networks:
       - shared_net
 
