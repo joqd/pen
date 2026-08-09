@@ -8,9 +8,6 @@ services:
       - .env
     ports:
       - "${HOST_PORT:-8000}:8000"
-    volumes:
-      - /var/www/${APP_NAME:-pen}/staticfiles:/app/staticfiles
-      - /var/www/${APP_NAME:-pen}/media:/app/media
     networks:
       - shared_net
 
