@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MetaTag
+from ..models.metatag_model import MetaTag
 
 
 class MetaTagSerializer(serializers.ModelSerializer):

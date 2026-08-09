@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from apps.seo.schema_builders import BreadcrumbSchemaBuilder, CategorySchemaBuilder
-from apps.seo.serializers import MetaTagSerializer
+from apps.seo.serializers.metatag_serializer import MetaTagSerializer
+from apps.seo.views.schema_builders_view import BreadcrumbSchemaBuilder, CategorySchemaBuilder
 
 from ..models import Category
 from .product_serializer import ProductListSerializer

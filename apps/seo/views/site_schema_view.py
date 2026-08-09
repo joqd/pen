@@ -4,7 +4,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.seo.schema_builders import OrganizationSchemaBuilder, WebsiteSchemaBuilder
+from apps.seo.views.schema_builders_view import OrganizationSchemaBuilder, WebsiteSchemaBuilder
 
 
 @extend_schema(tags=['SEO'])

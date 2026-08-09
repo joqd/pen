@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from apps.seo.schema_builders import BreadcrumbSchemaBuilder, ProductSchemaBuilder
-from apps.seo.serializers import MetaTagSerializer
+from apps.seo.serializers.metatag_serializer import MetaTagSerializer
+from apps.seo.views.schema_builders_view import BreadcrumbSchemaBuilder, ProductSchemaBuilder
 
 from ..models import Product, ProductImage, ProductSize, ProductVariant, SizeAttribute
 from .audio_serializer import AudioSerializer

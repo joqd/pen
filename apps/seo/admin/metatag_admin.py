@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import StackedInline
 
-from .models import MetaTag
+from ..models.metatag_model import MetaTag
 
 
 class BaseMetaTagInline(StackedInline):
