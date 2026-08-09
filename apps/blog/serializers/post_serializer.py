@@ -1,7 +1,7 @@
-from apps.seo.views.schema_builders_view import ArticleSchemaBuilder, BreadcrumbSchemaBuilder
 from rest_framework import serializers
 
 from apps.seo.serializers.metatag_serializer import MetaTagSerializer
+from apps.seo.views.schema_builders_view import ArticleSchemaBuilder, BreadcrumbSchemaBuilder
 
 from ..models.post_model import Post, PostMedia
 
