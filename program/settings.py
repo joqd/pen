@@ -119,6 +119,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'unfold_markdown',
+    'django_cleanup.apps.CleanupConfig',
     # my own
     'apps.accounts',
     'apps.catalog',
