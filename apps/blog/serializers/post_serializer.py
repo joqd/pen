@@ -4,6 +4,7 @@ from apps.seo.serializers.metatag_serializer import MetaTagSerializer
 from apps.seo.views.schema_builders_view import ArticleSchemaBuilder, BreadcrumbSchemaBuilder
 
 from ..models.post_model import Post, PostMedia
+from apps.accounts.models.user_model import User
 
 
 class PostMediaSerializer(serializers.ModelSerializer):
@@ -19,9 +20,18 @@ class PostMediaSerializer(serializers.ModelSerializer):
         )
 
 
+class AuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'full_name',
+            'avatar',
+        )
+
+
 class PostListSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
-    author = serializers.StringRelatedField()
+    author = AuthorSerializer()
     featured_image = serializers.SerializerMethodField()
 
     class Meta:
@@ -52,7 +62,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
 class PostDetailSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
-    author = serializers.StringRelatedField()
+    author = AuthorSerializer()
     featured_image = serializers.SerializerMethodField()
     media = PostMediaSerializer(many=True, read_only=True)
     meta_tag = MetaTagSerializer(read_only=True)
