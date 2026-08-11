@@ -16,6 +16,7 @@ class Category(models.Model):
     short_description = models.CharField(_('short description'), max_length=320, blank=True)
     description = models.TextField(_('description'), blank=True)
     image = models.ImageField(_('image'), upload_to='catalog/category/', blank=True, null=True)
+    image_dark = models.ImageField(_('image dark'), upload_to='catalog/category/', blank=True, null=True)
     is_active = models.BooleanField(_('is active'), default=True)
 
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)

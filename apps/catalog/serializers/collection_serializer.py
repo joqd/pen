@@ -9,7 +9,7 @@ from ..models import Collection
 class CollectionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['id', 'title', 'slug', 'short_description', 'image', 'is_active', 'parent']
+        fields = ['id', 'title', 'slug', 'short_description', 'image', 'image_dark', 'is_active', 'parent']
         read_only_fields = fields
 
 
@@ -32,6 +32,7 @@ class CollectionDetailSerializer(serializers.ModelSerializer):
             'description',
             'is_active',
             'image',
+            'image_dark',
             'children',
             'meta_tag',
             'json_ld',

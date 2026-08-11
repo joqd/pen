@@ -714,3 +714,6 @@ msgstr "ویژگی اندازه"
 
 msgid "size attributes"
 msgstr "ویژگی های اندازه"
+
+msgid "image dark"
+msgstr "تصویر دارک‌مود"

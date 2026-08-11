@@ -10,7 +10,7 @@ from .product_serializer import ProductListSerializer
 class CategoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'title', 'slug', 'short_description', 'image', 'is_active', 'parent']
+        fields = ['id', 'title', 'slug', 'short_description', 'image', 'image_dark', 'is_active', 'parent']
         read_only_fields = fields
 
 
@@ -34,6 +34,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
             'description',
             'is_active',
             'image',
+            'image_dark',
             'children',
             'products',
             'meta_tag',
