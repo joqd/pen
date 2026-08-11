@@ -1,6 +1,6 @@
 from django.urls import include, path
 from drf_spectacular.utils import extend_schema
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 
 @extend_schema(exclude=True)
@@ -11,6 +11,8 @@ class CustomSpectacularAPIView(SpectacularAPIView):
 urlpatterns = [
     path('api/schema/', CustomSpectacularAPIView.as_view(), name='schema'),
     path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='docs'),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+
     path('api/auth/', include('apps.accounts.urls')),
     path('api/', include('apps.catalog.urls')),
     path('api/', include('apps.orders.urls')),

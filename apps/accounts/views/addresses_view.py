@@ -1,7 +1,7 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from ..models import Address, City, Province
 from ..serializers import AddressSerializer, AddressWriteSerializer, CitySerializer, ProvinceSerializer
@@ -58,12 +58,14 @@ class AddressViewSet(viewsets.ModelViewSet):
 
 @extend_schema(tags=['Provinces and Cities'])
 class ProvinceListAPIView(ListAPIView):
+    permission_classes = [AllowAny]
     queryset = Province.objects.all()
     serializer_class = ProvinceSerializer
 
 
 @extend_schema(tags=['Provinces and Cities'])
 class ProvinceCityListAPIView(ListAPIView):
+    permission_classes = [AllowAny]
     serializer_class = CitySerializer
 
     def get_queryset(self):
@@ -74,5 +76,6 @@ class ProvinceCityListAPIView(ListAPIView):
 
 @extend_schema(tags=['Provinces and Cities'])
 class CityListAPIView(ListAPIView):
+    permission_classes = [AllowAny]
     queryset = City.objects.select_related('province')
     serializer_class = CitySerializer

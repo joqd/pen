@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, viewsets
+from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
 
 from ..models import Collection
@@ -19,7 +20,7 @@ class StandardPagination(PageNumberPagination):
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for reading Collection objects."""
 
-    permission_classes = []
+    permission_classes = [AllowAny]
 
     queryset = Collection.objects.filter(is_active=True)
     pagination_class = StandardPagination

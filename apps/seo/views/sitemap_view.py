@@ -1,6 +1,7 @@
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny
 
 from apps.blog.models.post_model import Post
 from apps.catalog.models.product_model import Product, ProductStatus
@@ -18,6 +19,7 @@ class BaseSitemapView(ListAPIView):
     Base view for sitemap endpoints.
     No pagination — item counts are expected to stay small (< 100).
     """
+    permission_classes = [AllowAny]
     serializer_class = SitemapItemSerializer
     pagination_class = None
 
