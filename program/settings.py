@@ -216,6 +216,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 SMS_IR_API_KEY = os.environ.get('SMS_IR_API_KEY')
+SMS_TEMPLATE_ID = os.environ.get('SMS_TEMPLATE_ID')
 SMS_IR_LINE_NUMBER = os.environ.get('SMS_IR_LINE_NUMBER')
 
 JQUERY_URL = True

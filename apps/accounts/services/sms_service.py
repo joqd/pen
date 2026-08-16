@@ -5,19 +5,23 @@ from sms_ir import SmsIr
 class SMSService:
     @staticmethod
     def send_otp(phone: str, code: str) -> None:
-        message = f'starboy.ir code: {code}'
-
-        SMSService._send_sms(phone, message)
+        parameters = [
+            {
+                'name': 'OTP',
+                'value': code,
+			}
+		]
+        SMSService._send_sms(phone, parameters)
 
     @staticmethod
-    def _send_sms(phone: str, message: str):
+    def _send_sms(phone: str, parameters: list):
         client = SmsIr(settings.SMS_IR_API_KEY)
 
-        if settings.DEBUG:
-            print(f'new SMS sent to {phone}; message: {message}')
+        # if settings.DEBUG:
+        #     print(f'new SMS sent to {phone}; message: {message}')
 
-        return client.send_sms(
+        return client.send_verify_code(
             number=phone,
-            message=message,
-            linenumber=settings.SMS_IR_LINE_NUMBER,
+            template_id=settings.SMS_TEMPLATE_ID,
+            parameters=parameters,
         )
