@@ -1,5 +1,8 @@
+from uuid import uuid4
+
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import Address
@@ -27,6 +30,10 @@ class Order(models.Model):
     address = models.ForeignKey(Address, on_delete=models.PROTECT, verbose_name=_('address'))
     order_number = models.CharField(_('order number'), max_length=32, unique=True)
 
+    # Public identifier used in payment callback URLs / frontend routes so we
+    # never leak the internal pk and can't be guessed/enumerated.
+    token = models.UUIDField(_('token'), default=uuid4, unique=True, editable=False, db_index=True)
+
     status = models.CharField(_('status'), max_length=30, choices=Status.choices, default=Status.PENDING_PAYMENT)
     shipping_status = models.CharField(
         _('shipping status'), max_length=30, choices=ShippingStatus.choices, default=ShippingStatus.PENDING
@@ -53,6 +60,10 @@ class Order(models.Model):
         verbose_name = _('order')
         verbose_name_plural = _('orders')
         ordering = ['-id']
+        indexes = [
+            # used heavily by the expiry sweep task
+            models.Index(fields=['status', 'expires_at']),
+        ]
 
     def __str__(self):
         return self.order_number
@@ -63,6 +74,14 @@ class Order(models.Model):
         if not self.order_number:
             self.order_number = str(100000 + self.pk)
             super().save(update_fields=['order_number'])
+
+    @property
+    def is_expired(self) -> bool:
+        return self.status == self.Status.PENDING_PAYMENT and self.expires_at <= timezone.now()
+
+    @property
+    def is_payable(self) -> bool:
+        return self.status == self.Status.PENDING_PAYMENT and not self.is_expired
 
 
 class OrderItem(models.Model):
