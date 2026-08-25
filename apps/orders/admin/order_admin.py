@@ -85,10 +85,7 @@ class OrderItemInlineFormSet(BaseInlineFormSet):
         existing = dict(order.items.values_list('variant_id', 'quantity')) if order.pk else {}
 
         with transaction.atomic():
-            variants = {
-                v.id: v
-                for v in ProductVariant.objects.select_for_update().filter(id__in=requested.keys())
-            }
+            variants = {v.id: v for v in ProductVariant.objects.select_for_update().filter(id__in=requested.keys())}
             for variant_id, new_qty in requested.items():
                 variant = variants[variant_id]
                 old_qty = existing.get(variant_id, 0)

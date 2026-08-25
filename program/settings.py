@@ -407,12 +407,12 @@ CELERY_RESULT_BACKEND = f'{REDIS_URL}/1'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE # keep in sync with Django's TIME_ZONE
+CELERY_TIMEZONE = TIME_ZONE  # keep in sync with Django's TIME_ZONE
 CELERY_ENABLE_UTC = True
 
 CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 5 * 60 # hard kill a task after 5 min
-CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60 # raise SoftTimeLimitExceeded first
+CELERY_TASK_TIME_LIMIT = 5 * 60  # hard kill a task after 5 min
+CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60  # raise SoftTimeLimitExceeded first
 
 # Don't let a worker grab more tasks than it can act on right now, and only
 # ack a task once it's actually finished - if a worker dies mid-task

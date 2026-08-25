@@ -23,8 +23,7 @@ class OutOfStockError(CheckoutError):
         self.variant = variant
         self.requested = requested
         super().__init__(
-            f'Insufficient stock for variant {variant.sku}: '
-            f'requested {requested}, available {variant.available_stock}'
+            f'Insufficient stock for variant {variant.sku}: requested {requested}, available {variant.available_stock}'
         )
 
 
@@ -46,9 +45,7 @@ def create_order_from_cart(*, cart: Cart, address, customer_note: str = '') -> O
     # Lock variants in a stable order (by id) to avoid deadlocks when two
     # checkouts share overlapping products.
     variant_ids = sorted({i.variant_id for i in cart_items})
-    variants = {
-        v.id: v for v in ProductVariant.objects.select_for_update().filter(id__in=variant_ids)
-    }
+    variants = {v.id: v for v in ProductVariant.objects.select_for_update().filter(id__in=variant_ids)}
 
     order = Order.objects.create(
         user=cart.user,
@@ -94,9 +91,7 @@ def create_order_from_cart(*, cart: Cart, address, customer_note: str = '') -> O
 
 def _locked_order_variants(order: Order) -> tuple[dict[int, ProductVariant], dict[int, int]]:
     variant_ids = list(order.items.values_list('variant_id', flat=True))
-    variants = {
-        v.id: v for v in ProductVariant.objects.select_for_update().filter(id__in=variant_ids)
-    }
+    variants = {v.id: v for v in ProductVariant.objects.select_for_update().filter(id__in=variant_ids)}
     quantities = dict(order.items.values_list('variant_id', 'quantity'))
     return variants, quantities
 
