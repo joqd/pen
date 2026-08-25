@@ -284,6 +284,11 @@ UNFOLD = {
                 'title': _('Cart and orders'),
                 'items': [
                     {
+                        'title': _('gateways'),
+                        'icon': 'paid',
+                        'link': reverse_lazy('admin:core_paymentgateway_changelist'),
+                    },
+                    {
                         'title': _('cart'),
                         'icon': 'shopping_cart',
                         'link': reverse_lazy('admin:orders_cart_changelist'),

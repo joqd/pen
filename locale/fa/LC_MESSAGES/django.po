@@ -774,3 +774,21 @@ msgstr "نمایش"
 
 msgid "Badge"
 msgstr "نشان"
+
+msgid "badge"
+msgstr "نشان"
+
+msgid "payment gateway"
+msgstr "درگاه پرداخت"
+
+msgid "payment gateways"
+msgstr "درگاه های پرداخت"
+
+msgid "merchant id"
+msgstr "مرچنت آیدی"
+
+msgid "base url"
+msgstr "لینک پایه"
+
+msgid "gateways"
+msgstr "درگاه ها"

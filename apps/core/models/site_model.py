@@ -17,4 +17,25 @@ class FooterBadge(models.Model):
         verbose_name_plural = _('footer badges')
 
     def __str__(self):
-        return self.title or f'Badge #{self.pk}'
+        return self.title
+
+
+class PaymentGateway(models.Model):
+    title = models.CharField(_('title'), max_length=100, unique=True)
+    badge = models.TextField(_('badge'))
+    merchant_id = models.CharField(_('merchant id'), max_length=200, unique=True)
+    base_url = models.URLField(_('base url'))
+    description = models.TextField(blank=True, null=True)
+    priority = models.PositiveIntegerField(_('priority'), default=0)
+    is_active = models.BooleanField(_('is active'), default=True)
+
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    class Meta:
+        ordering = ['-priority', '-created_at']
+        verbose_name = _('payment gateway')
+        verbose_name_plural = _('payment gateways')
+
+    def __str__(self):
+        return self.title
