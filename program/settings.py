@@ -292,6 +292,11 @@ UNFOLD = {
                         'icon': 'receipt_long',
                         'link': reverse_lazy('admin:orders_order_changelist'),
                     },
+                    {
+                        'title': _('payments'),
+                        'icon': 'payment',
+                        'link': reverse_lazy('admin:orders_paymenttransaction_changelist'),
+                    },
                 ],
             },
             {
@@ -337,7 +342,6 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_DIST': 'SIDECAR',
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
-
     'TITLE': 'PEN API',
     'VERSION': '1.0.0',
     'DESCRIPTION': 'Backend API powering online stores.',
@@ -375,3 +379,56 @@ else:
             'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
         },
     }
+
+
+AQAYEPARDAKHT_PIN = os.environ.get('AQAYEPARDAKHT_PIN')
+CHECKOUT_CALLBACK_BASE_URL = os.environ.get(
+    'CHECKOUT_CALLBACK_BASE_URL'
+)  # your Django domain, e.g. https://api.example.com
+FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL')  # https://example.com (NextJS)
+CHECKOUT_EXPIRE_MINUTES = 15
+
+CELERY_BEAT_SCHEDULE = {
+    'expire-pending-orders': {
+        'task': 'apps.orders.tasks.expire_pending_orders',
+        'schedule': 60.0,  # every minute
+    },
+}
+
+
+# Single source of truth for the redis connection - broker and result
+# backend just pick different DB indexes off of it, so there's only one
+# host/port/password to change between environments instead of three.
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+
+CELERY_BROKER_URL = f'{REDIS_URL}/0'
+CELERY_RESULT_BACKEND = f'{REDIS_URL}/1'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE # keep in sync with Django's TIME_ZONE
+CELERY_ENABLE_UTC = True
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 5 * 60 # hard kill a task after 5 min
+CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60 # raise SoftTimeLimitExceeded first
+
+# Don't let a worker grab more tasks than it can act on right now, and only
+# ack a task once it's actually finished - if a worker dies mid-task
+# (deploy, OOM, ...), the task goes back on the queue instead of being
+# silently lost. Safe here because expire_pending_orders is idempotent.
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_TASK_ACKS_LATE = True
+
+# Celery 6 will require this explicitly; setting it now avoids a startup
+# warning and means the worker retries connecting to redis instead of
+# crashing if redis isn't up yet (e.g. compose still starting it).
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CELERY_BEAT_SCHEDULE = {
+    'expire-pending-orders': {
+        'task': 'apps.orders.tasks.expire_pending_orders',
+        'schedule': 60.0,  # every minute
+    },
+}

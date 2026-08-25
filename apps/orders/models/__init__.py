@@ -1,5 +1,6 @@
 from .cart_model import Cart, CartItem
 from .order_model import Order, OrderItem
+from .payment_model import PaymentTransaction
 from .wishlist_model import WishlistItem
 
 __all__ = [
@@ -8,4 +9,5 @@ __all__ = [
     'WishlistItem',
     'Order',
     'OrderItem',
+    'PaymentTransaction',
 ]

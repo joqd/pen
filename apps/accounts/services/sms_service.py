@@ -9,8 +9,8 @@ class SMSService:
             {
                 'name': 'OTP',
                 'value': code,
-			}
-		]
+            }
+        ]
         SMSService._send_sms(phone, parameters)
 
     @staticmethod

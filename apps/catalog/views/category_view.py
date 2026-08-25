@@ -1,7 +1,7 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, viewsets
-from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny
 
 from ..models import Category
 from ..serializers import CategoryDetailSerializer, CategoryListSerializer

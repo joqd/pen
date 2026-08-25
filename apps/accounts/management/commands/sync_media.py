@@ -34,11 +34,7 @@ class Command(BaseCommand):
             raise CommandError(f'MEDIA_ROOT not found: {media_root}')
 
         # --- 1. Collect local files (relative posix paths) ---
-        local_files = {
-            p.relative_to(media_root).as_posix()
-            for p in media_root.rglob('*')
-            if p.is_file()
-        }
+        local_files = {p.relative_to(media_root).as_posix() for p in media_root.rglob('*') if p.is_file()}
 
         # --- 2. Collect remote files (relative posix paths) ---
         self.stdout.write('Listing remote files (this may take a while for large buckets)...')
@@ -89,11 +85,13 @@ class Command(BaseCommand):
                     failed_down += 1
             skipped_down = len(remote_files) - len(missing_local)
 
-        self.stdout.write(self.style.SUCCESS(
-            f'Sync finished. '
-            f'uploaded={uploaded}, skipped_upload={skipped_up}, failed_upload={failed_up}, '
-            f'downloaded={downloaded}, skipped_download={skipped_down}, failed_download={failed_down}'
-        ))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Sync finished. '
+                f'uploaded={uploaded}, skipped_upload={skipped_up}, failed_upload={failed_up}, '
+                f'downloaded={downloaded}, skipped_download={skipped_down}, failed_download={failed_down}'
+            )
+        )
 
     def _walk_storage(self, storage, path):
         directories, files = storage.listdir(path)

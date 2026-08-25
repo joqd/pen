@@ -717,3 +717,33 @@ msgstr "ویژگی های اندازه"
 
 msgid "image dark"
 msgstr "تصویر دارک‌مود"
+
+msgid "payments"
+msgstr "پرداخت‌ها"
+
+msgid "failed"
+msgstr "شکست خورده"
+
+msgid "success"
+msgstr "موفق"
+
+msgid "gateway"
+msgstr "درگاه"
+
+msgid "gateway reference"
+msgstr "مرجع درگاه"
+
+msgid "raw response"
+msgstr "پاسخ خام"
+
+msgid "verified at"
+msgstr "تایید شده در"
+
+msgid "payment transaction"
+msgstr "تراکنش پرداخت"
+
+msgid "payment transactions"
+msgstr "تراکنش های پرداخت"
+
+msgid "aqayepardakht"
+msgstr "آقای پرداخت"

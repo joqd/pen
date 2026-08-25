@@ -1,7 +1,7 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from ..models import Address, City, Province
 from ..serializers import AddressSerializer, AddressWriteSerializer, CitySerializer, ProvinceSerializer

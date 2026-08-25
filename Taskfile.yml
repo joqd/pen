@@ -7,7 +7,14 @@ vars:
 
 tasks:
   run:
-    desc: Run development server
+    desc: Run development server + celery beat together (Ctrl+C stops both)
+    deps:
+      - dev-server
+      - celery-dev
+    silent: true
+
+  dev-server:
+    internal: true
     cmds:
       - uv run python manage.py runserver localhost:8000
     silent: true
@@ -35,4 +42,28 @@ tasks:
     desc: Export dependencies in requirements-txt
     cmds:
       - uv export --format requirements-txt --no-hashes -o requirements.txt
+    silent: true
+
+  celery-worker:
+    desc: Run celery worker (development)
+    cmds:
+      - uv run celery -A program worker --loglevel=info
+    silent: true
+
+  celery-beat:
+    desc: Run celery beat scheduler (development)
+    cmds:
+      - uv run celery -A program beat --loglevel=info
+    silent: true
+
+  celery-dev:
+    desc: Run worker + beat together in one process (dev convenience only, not for production)
+    cmds:
+      - uv run celery -A program worker --beat --loglevel=info
+    silent: true
+
+  flower:
+    desc: Run Flower dashboard to monitor celery tasks/queues
+    cmds:
+      - uv run celery -A program flower --port=5555
     silent: true
