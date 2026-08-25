@@ -747,3 +747,30 @@ msgstr "تراکنش های پرداخت"
 
 msgid "aqayepardakht"
 msgstr "آقای پرداخت"
+
+msgid "zarinpal"
+msgstr "زرین‌پال"
+
+msgid "Site Settings"
+msgstr "تنظیمات سایت"
+
+msgid "footer badges"
+msgstr "نشان های فوتر"
+
+msgid "footer badge"
+msgstr "نشان فوتر"
+
+msgid "core"
+msgstr "تنظیمات"
+
+msgid "html"
+msgstr "کد"
+
+msgid "priority"
+msgstr "اولویت"
+
+msgid "Display"
+msgstr "نمایش"
+
+msgid "Badge"
+msgstr "نشان"

@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     'apps.gallery',
     'apps.blog',
     'apps.seo',
+    'apps.core',
 ]
 
 MIDDLEWARE = [
@@ -311,6 +312,16 @@ UNFOLD = {
                         'title': _('gallery'),
                         'icon': 'photo_library',
                         'link': reverse_lazy('admin:gallery_customergallery_changelist'),
+                    },
+                ],
+            },
+            {
+                'title': _('Site Settings'),
+                'items': [
+                    {
+                        'title': _('footer badges'),
+                        'icon': 'badge',
+                        'link': reverse_lazy('admin:core_footerbadge_changelist'),
                     },
                 ],
             },
