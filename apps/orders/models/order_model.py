@@ -1,12 +1,14 @@
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import Address
 from apps.catalog.models import ProductVariant
+
+from .cart_model import Cart
 
 User = get_user_model()
 
@@ -14,6 +16,7 @@ User = get_user_model()
 class Order(models.Model):
     class Status(models.TextChoices):
         PENDING_PAYMENT = 'pending_payment', _('pending payment')
+        PROCESSING = 'processing', _('processing')
         PAID = 'paid', _('paid')
         CANCELLED = 'cancelled', _('cancelled')
         EXPIRED = 'expired', _('expired')
@@ -27,8 +30,13 @@ class Order(models.Model):
         RETURNED = 'returned', _('returned')
 
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='orders', verbose_name=_('user'))
-    address = models.ForeignKey(Address, on_delete=models.PROTECT, verbose_name=_('address'))
-    order_number = models.CharField(_('order number'), max_length=32, unique=True)
+    address = models.ForeignKey(Address, on_delete=models.PROTECT, related_name='orders', verbose_name=_('address'))
+    # Traceability back to the cart this order was created from. SET_NULL
+    # (not CASCADE) so deleting/clearing an old cart never touches the order.
+    cart = models.ForeignKey(
+        Cart, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders', verbose_name=_('cart')
+    )
+    order_number = models.CharField(_('order number'), max_length=32, unique=True, editable=False)
 
     # Public identifier used in payment callback URLs / frontend routes so we
     # never leak the internal pk and can't be guessed/enumerated.
@@ -63,11 +71,26 @@ class Order(models.Model):
         indexes = [
             # used heavily by the expiry sweep task
             models.Index(fields=['status', 'expires_at']),
+            # used by "my orders" / order history queries
+            models.Index(fields=['user', 'status']),
+        ]
+        constraints = [
+            # Optional but recommended: keeps totals honest at the DB layer,
+            # not just in application code. Drop this if you later add
+            # taxes/fees that break the simple subtotal+shipping-discount
+            # formula, or if you're on MySQL < 8.0.16 (CHECK is a no-op there).
+            models.CheckConstraint(
+                condition=models.Q(
+                    total_amount=models.F('subtotal_amount') + models.F('shipping_amount') - models.F('discount_amount')
+                ),
+                name='order_total_amount_consistent',
+            ),
         ]
 
     def __str__(self):
         return self.order_number
 
+    @transaction.atomic
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
@@ -86,12 +109,32 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name=_('order'))
-    variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT, verbose_name=_('variant'))
+    variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT, related_name='+', verbose_name=_('variant'))
+
+    # Snapshot fields. The catalog (title, sku, options) can be edited or
+    # retranslated after the sale — an order must keep showing exactly what
+    # the buyer purchased, regardless of later catalog changes.
+    title = models.CharField(_('title'), max_length=255)
+    sku = models.CharField(_('sku'), max_length=64)
+    options = models.JSONField(_('options'), default=dict, blank=True)
 
     quantity = models.PositiveIntegerField(_('quantity'), default=1)
-    unit_price = models.PositiveIntegerField(_('price'))
+    unit_price = models.PositiveIntegerField(_('unit price'))
     total_price = models.PositiveIntegerField(_('total price'))
 
     class Meta:
         verbose_name = _('order item')
         verbose_name_plural = _('order items')
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(quantity__gte=1),
+                name='order_item_quantity_gte_1',
+            ),
+            models.CheckConstraint(
+                condition=models.Q(total_price=models.F('unit_price') * models.F('quantity')),
+                name='order_item_total_price_consistent',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.title} ({self.sku}) x{self.quantity}'

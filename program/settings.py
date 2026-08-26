@@ -128,6 +128,7 @@ INSTALLED_APPS = [
     'apps.blog',
     'apps.seo',
     'apps.core',
+    'apps.payments',
 ]
 
 MIDDLEWARE = [
