@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import FooterBadge, PaymentGateway
+from ..models import FooterBadge
 
 
 class FooterBadgeSerializer(serializers.ModelSerializer):
@@ -10,16 +10,5 @@ class FooterBadgeSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'html',
-            'priority',
-        ]
-
-
-class PaymentGatewaySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PaymentGateway
-        fields = [
-            'id',
-            'title',
-            'badge',
             'priority',
         ]

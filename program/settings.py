@@ -286,7 +286,7 @@ UNFOLD = {
                     {
                         'title': _('gateways'),
                         'icon': 'paid',
-                        'link': reverse_lazy('admin:core_paymentgateway_changelist'),
+                        'link': reverse_lazy('admin:orders_gateway_changelist'),
                     },
                     {
                         'title': _('cart'),

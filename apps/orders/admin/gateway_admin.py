@@ -2,11 +2,11 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
-from ..models import FooterBadge
+from ..models import Gateway
 
 
-@admin.register(FooterBadge)
-class FooterBadgeAdmin(ModelAdmin):
+@admin.register(Gateway)
+class GatewayAdmin(ModelAdmin):
     list_display = (
         'title',
         'priority',
@@ -18,17 +18,20 @@ class FooterBadgeAdmin(ModelAdmin):
     list_display_links = ('title',)
     list_filter = ('is_active',)
     search_fields = ('title',)
-    ordering = ('-priority', '-created_at')
+    ordering = ('-priority',)
 
     readonly_fields = ('created_at', 'updated_at')
 
     fieldsets = (
         (
-            _('badge'),
+            _('gateway'),
             {
                 'fields': (
                     'title',
-                    'html',
+                    'badge',
+                    'credentials',
+					'origin',
+                    'description',
                 ),
             },
         ),
@@ -51,5 +54,3 @@ class FooterBadgeAdmin(ModelAdmin):
             },
         ),
     )
-
-
