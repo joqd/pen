@@ -8,10 +8,10 @@ from .base import BaseGatewayAdapter, GatewayAdapterError, PaymentRequestResult,
 
 
 class Config:
-    def __init__(self, sandbox, merchant_id):
+    def __init__(self, sandbox, merchant_id, access_token):
         self.sandbox = sandbox
         self.merchant_id = merchant_id
-        self.access_token = None
+        self.access_token = access_token
 
 class ZarinpalAdapter(BaseGatewayAdapter):
     SUCCESS_CODE = 100
@@ -24,6 +24,13 @@ class ZarinpalAdapter(BaseGatewayAdapter):
         if not merchant_id:
             raise GatewayAdapterError(f'Gateway "{self.gateway}" has no merchant_id configured.')
         return merchant_id
+    
+    @property
+    def access_token(self) -> str:
+        access_token = self.gateway.credentials.get('access_token')
+        if not access_token:
+            raise GatewayAdapterError(f'Gateway "{self.gateway}" has no access_token configured.')
+        return access_token
 
     @property
     def is_sandbox(self) -> bool:
@@ -34,6 +41,7 @@ class ZarinpalAdapter(BaseGatewayAdapter):
         config = Config(
             merchant_id=self.merchant_id,
             sandbox=self.is_sandbox,
+            access_token=self.access_token,
         )
         return ZarinPal(config)
 
