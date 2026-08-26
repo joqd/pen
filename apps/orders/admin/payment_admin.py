@@ -59,9 +59,9 @@ class PaymentTransactionAdmin(ModelAdmin):
         url = reverse('admin:orders_order_change', args=[obj.order_id])
         return format_html('<a href="{}">{}</a>', url, obj.order.order_number)
 
-    @display(description=_('status'), label=True, ordering='status')
+    @display(description=_('status'), label=TXN_STATUS_COLORS, ordering='status')
     def status_badge(self, obj):
-        return obj.get_status_display(), TXN_STATUS_COLORS.get(obj.status, 'info')
+        return obj.status, obj.get_status_display()
 
     @display(description=_('amount'), ordering='amount')
     def amount_display(self, obj):
