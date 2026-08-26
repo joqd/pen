@@ -116,29 +116,35 @@ def finalize_paid_order(order: Order) -> None:
         variant.save(update_fields=['stock', 'reserved_stock'])
 
 
+def _claim_order(order_id: int, *, from_status: str, to_status: str) -> Order | None:
+    updated = Order.objects.filter(pk=order_id, status=from_status).update(status=to_status)
+    if not updated:
+        return None
+    return Order.objects.select_related().get(pk=order_id)
+
+
 @transaction.atomic
 def expire_order(order_id: int) -> None:
-    """
-    Idempotent: safe to call more than once (e.g. task retried) or on an
-    order that a concurrent payment callback just marked PAID, because we
-    re-check status *after* locking the row.
-    """
-    order = Order.objects.select_for_update().get(pk=order_id)
-    if order.status != Order.Status.PENDING_PAYMENT:
+    order = _claim_order(
+        order_id,
+        from_status=Order.Status.PENDING_PAYMENT,
+        to_status=Order.Status.EXPIRED,
+    )
+    if order is None:
         return
     release_reserved_stock(order)
-    order.status = Order.Status.EXPIRED
-    order.save(update_fields=['status'])
 
 
 @transaction.atomic
 def cancel_order(order_id: int) -> None:
-    order = Order.objects.select_for_update().get(pk=order_id)
-    if order.status != Order.Status.PENDING_PAYMENT:
+    order = _claim_order(
+        order_id,
+        from_status=Order.Status.PENDING_PAYMENT,
+        to_status=Order.Status.CANCELLED,
+    )
+    if order is None:
         return
     release_reserved_stock(order)
-    order.status = Order.Status.CANCELLED
-    order.save(update_fields=['status'])
 
 
 @transaction.atomic
