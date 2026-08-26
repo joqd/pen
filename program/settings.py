@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -411,7 +412,15 @@ CHECKOUT_EXPIRE_MINUTES = 15
 CELERY_BEAT_SCHEDULE = {
     'expire-pending-orders': {
         'task': 'apps.orders.tasks.expire_pending_orders',
-        'schedule': 60.0,  # every minute
+        'schedule': crontab(minute='*/2'),
+    },
+    'cleanup-stale-guest-carts': {
+        'task': 'apps.orders.tasks.cleanup_stale_guest_carts',
+        'schedule': crontab(hour=3, minute=0),
+    },
+    'purge-old-orders': {
+        'task': 'apps.orders.tasks.purge_old_orders',
+        'schedule': crontab(hour=3, minute=30),
     },
 }
 
