@@ -13,6 +13,7 @@ new adapter takes. To finish it:
 Nothing else in the codebase needs to change — services.py and views.py
 are gateway-agnostic and go through `registry.get_adapter()`.
 """
+
 from .base import BaseGatewayAdapter, GatewayAdapterError, PaymentRequestResult, PaymentVerifyResult
 
 

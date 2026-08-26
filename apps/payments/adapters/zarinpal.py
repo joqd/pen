@@ -13,6 +13,7 @@ class Config:
         self.merchant_id = merchant_id
         self.access_token = access_token
 
+
 class ZarinpalAdapter(BaseGatewayAdapter):
     SUCCESS_CODE = 100
     ALREADY_VERIFIED_CODE = 101
@@ -24,7 +25,7 @@ class ZarinpalAdapter(BaseGatewayAdapter):
         if not merchant_id:
             raise GatewayAdapterError(f'Gateway "{self.gateway}" has no merchant_id configured.')
         return merchant_id
-    
+
     @property
     def access_token(self) -> str:
         access_token = self.gateway.credentials.get('access_token')
@@ -82,9 +83,9 @@ class ZarinpalAdapter(BaseGatewayAdapter):
 
         if errors or data.get('code') != self.SUCCESS_CODE:
             raise GatewayAdapterError(
-                f"Zarinpal payment request failed "
-                f"(code={errors.get('code', data.get('code'))}, "
-                f"message={errors.get('message', 'unknown error')})"
+                f'Zarinpal payment request failed '
+                f'(code={errors.get("code", data.get("code"))}, '
+                f'message={errors.get("message", "unknown error")})'
             )
 
         authority = data['authority']
@@ -96,10 +97,12 @@ class ZarinpalAdapter(BaseGatewayAdapter):
 
     def verify_payment(self, *, authority: str, amount: int) -> PaymentVerifyResult:
         try:
-            result = self.client.verifications.verify({
-                'amount': amount,
-                'authority': authority,
-            })
+            result = self.client.verifications.verify(
+                {
+                    'amount': amount,
+                    'authority': authority,
+                }
+            )
         except Exception as exc:
             raise GatewayAdapterError(f'Zarinpal payment verification failed: {exc}') from exc
 

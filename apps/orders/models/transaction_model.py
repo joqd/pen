@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .order_model import Order
 from .gateway_model import Gateway
+from .order_model import Order
 
 
 class PaymentTransaction(models.Model):
@@ -22,7 +22,9 @@ class PaymentTransaction(models.Model):
         FAILED = 'failed', _('failed')
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transactions', verbose_name=_('order'))
-    gateway = models.ForeignKey(Gateway, on_delete=models.PROTECT, related_name='transactions', verbose_name=_('gateway'))
+    gateway = models.ForeignKey(
+        Gateway, on_delete=models.PROTECT, related_name='transactions', verbose_name=_('gateway')
+    )
 
     # Returned by the gateway when the payment session is created (e.g.
     # Zarinpal's "Authority"); used to build the redirect URL and to match

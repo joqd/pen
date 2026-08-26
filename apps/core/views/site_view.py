@@ -1,5 +1,5 @@
-from rest_framework.generics import ListAPIView
 from drf_spectacular.utils import extend_schema
+from rest_framework.generics import ListAPIView
 
 from ..models import FooterBadge
 from ..serializers.site_serializer import FooterBadgeSerializer

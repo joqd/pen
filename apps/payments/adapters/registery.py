@@ -7,6 +7,7 @@ never import a concrete adapter directly. To add a new gateway:
     2. Add a matching value to `Gateway.Origin` on the Gateway model.
     3. Add one line to `_ADAPTERS` below.
 """
+
 from apps.orders.models import Gateway  # adjust import to your actual app layout
 
 from .aqayepardakht import AqayePardakhtAdapter

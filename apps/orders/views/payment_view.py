@@ -49,8 +49,8 @@ def set_order_token_cookie(response, order):
         value=str(order.token),
         max_age=ORDER_TOKEN_COOKIE_MAX_AGE,
         httponly=True,
-        secure=not settings.DEBUG,   # must be True in production (HTTPS)
-        samesite='Lax',              # switch to 'None' (+ secure=True) if frontend/backend are cross-site
+        secure=not settings.DEBUG,  # must be True in production (HTTPS)
+        samesite='Lax',  # switch to 'None' (+ secure=True) if frontend/backend are cross-site
         path='/',
     )
     return response
@@ -68,7 +68,7 @@ def get_order_or_404_from_cookie(request):
     tags=['Checkout'],
     summary='Create an order from the active cart',
     description=(
-        'Converts the authenticated user\'s active Cart into an Order. This is '
+        "Converts the authenticated user's active Cart into an Order. This is "
         'the step the checkout page calls right after the user confirms their '
         'shipping address, and before they pick a payment gateway.\n\n'
         'On success, the order token is set as an **HttpOnly cookie** '
@@ -117,6 +117,7 @@ def get_order_or_404_from_cookie(request):
 )
 class OrderCreateAPIView(APIView):
     """POST /api/checkout/orders/"""
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -144,7 +145,7 @@ class OrderCreateAPIView(APIView):
     tags=['Orders'],
     summary='Retrieve the current order (from cookie)',
     description=(
-        'Returns the current, authoritative state of the caller\'s active '
+        "Returns the current, authoritative state of the caller's active "
         f'order, resolved from the `{ORDER_TOKEN_COOKIE}` HttpOnly cookie set '
         'during order creation — no token is passed by the frontend.\n\n'
         'This is what the order-result page calls after a gateway redirect. '
@@ -170,6 +171,7 @@ class OrderCreateAPIView(APIView):
 )
 class OrderDetailAPIView(APIView):
     """GET /api/orders/current/"""
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -193,6 +195,7 @@ class OrderDetailAPIView(APIView):
 )
 class ActiveGatewayListAPIView(APIView):
     """GET /api/checkout/gateways/"""
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -210,14 +213,14 @@ class ActiveGatewayListAPIView(APIView):
         'sends is the gateway the user picked (`gateway_id`).\n\n'
         'The frontend must perform a full-page redirect '
         '(`window.location.href = redirect_url`), not a client-side route '
-        'change — the user is leaving the app for the gateway\'s own site.\n\n'
+        "change — the user is leaving the app for the gateway's own site.\n\n"
         '**Notes:**\n'
         '- Safe to call more than once: if a PENDING transaction already '
         'exists for this order, the same `redirect_url` is returned rather '
         'than creating a second payment session (also enforced at the DB '
         'level via a partial unique constraint on `PaymentTransaction`).\n'
         '- The `callback_url` sent to the gateway always points to the '
-        'backend\'s own callback endpoint — the gateway never talks to the '
+        "backend's own callback endpoint — the gateway never talks to the "
         'frontend directly.'
     ),
     parameters=[
@@ -241,7 +244,7 @@ class ActiveGatewayListAPIView(APIView):
             ],
         ),
         400: OpenApiResponse(
-            description='Invalid/inactive gateway (`gateway_id`), or a business-logic error (`detail`) such as an already-paid or expired order, or a gateway API failure.',
+            description='Invalid/inactive gateway (`gateway_id`).',
         ),
         404: OpenApiResponse(description='No `order_token` cookie present, or no matching order for this user.'),
         401: OpenApiResponse(description='No authenticated user.'),
@@ -249,6 +252,7 @@ class ActiveGatewayListAPIView(APIView):
 )
 class PaymentCreateAPIView(APIView):
     """POST /api/checkout/orders/pay/"""
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -259,9 +263,7 @@ class PaymentCreateAPIView(APIView):
         gateway = Gateway.objects.get(pk=serializer.validated_data['gateway_id'])
 
         try:
-            _transaction, redirect_url = create_payment_transaction(
-                order=order, gateway=gateway, request=request
-            )
+            _transaction, redirect_url = create_payment_transaction(order=order, gateway=gateway, request=request)
         except PaymentCreationError as exc:
             raise ValidationError({'detail': str(exc)})
 
@@ -272,16 +274,16 @@ class PaymentCreateAPIView(APIView):
     tags=['Payments'],
     summary='Payment gateway return callback',
     description=(
-        'Public endpoint (no auth) the gateway redirects the buyer\'s browser '
+        "Public endpoint (no auth) the gateway redirects the buyer's browser "
         'to after they complete or cancel payment (e.g. Zarinpal calling back '
         'with `?Authority=...&Status=OK`). There is no session/JWT on this '
-        'request — the browser arrives here straight from the gateway\'s '
+        "request — the browser arrives here straight from the gateway's "
         'domain — so this view must not assume an authenticated user exists.\n\n'
         'The transaction is looked up by `Authority` (the identifier the '
-        'gateway itself hands back), **not** by cookie — that\'s the only '
+        "gateway itself hands back), **not** by cookie — that's the only "
         'reliable way to tie this callback to the right payment attempt. '
         'The `order_token` cookie is then (re)set on the redirect response so '
-        'it\'s guaranteed correct for the page the user lands on next.\n\n'
+        "it's guaranteed correct for the page the user lands on next.\n\n"
         'All business logic lives in `services.handle_payment_callback()`, '
         'which is idempotent (safe to run twice for the same Authority) since '
         'gateways occasionally fire the callback more than once and users '
@@ -328,6 +330,7 @@ class PaymentCreateAPIView(APIView):
 )
 class PaymentCallbackAPIView(APIView):
     """GET /api/payments/callback/{gateway_origin}/"""
+
     permission_classes = [AllowAny]
 
     def get(self, request, gateway_origin):
@@ -345,7 +348,5 @@ class PaymentCallbackAPIView(APIView):
 
         order = payment_transaction.order
         result = 'success' if payment_transaction.status == PaymentTransaction.Status.SUCCESS else 'failed'
-        response = HttpResponseRedirect(
-            f'{settings.FRONTEND_BASE_URL}/orders/result?status={result}'
-        )
+        response = HttpResponseRedirect(f'{settings.FRONTEND_BASE_URL}/orders/result?status={result}')
         return set_order_token_cookie(response, order)

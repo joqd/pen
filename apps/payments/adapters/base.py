@@ -7,6 +7,7 @@ That's what makes adding a new gateway (Aghaye Pardakht, a crypto
 processor, ...) a matter of writing one new file + one registry line,
 without touching services/views/serializers at all.
 """
+
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -24,6 +25,7 @@ class GatewayAdapterError(Exception):
 @dataclass
 class PaymentRequestResult:
     """Returned by `request_payment()` on success."""
+
     authority: str
     redirect_url: str
     raw_response: dict[str, Any] = field(default_factory=dict)
@@ -32,6 +34,7 @@ class PaymentRequestResult:
 @dataclass
 class PaymentVerifyResult:
     """Returned by `verify_payment()`, for both success and failure cases."""
+
     success: bool
     ref_id: str = ''
     raw_response: dict[str, Any] = field(default_factory=dict)

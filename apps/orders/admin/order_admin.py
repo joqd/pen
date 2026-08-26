@@ -322,6 +322,6 @@ class OrderAdmin(ModelAdmin):
             count += 1
         self.message_user(
             request,
-            f'{count} order(s) marked refunded. Remember to restock and process the refund with the gateway separately.',
+            f'{count} order(s) marked refunded.',
             level=messages.WARNING,
         )

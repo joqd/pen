@@ -11,6 +11,7 @@ from `apps.orders.models` (i.e. a models/ package with an __init__.py
 that re-exports them, as is typical for the cart_model.py / order_model.py
 / gateway_model.py / transaction_model.py files reviewed earlier).
 """
+
 import logging
 
 from django.conf import settings
@@ -79,15 +80,17 @@ def create_order_from_cart(*, cart, user, address, customer_note: str = '') -> O
         total_price = unit_price * item.quantity
         subtotal_amount += total_price
 
-        order_items.append(OrderItem(
-            variant=variant,
-            title=variant.product.title,
-            sku=variant.sku,
-            options=getattr(variant, 'options', {}) or {},
-            quantity=item.quantity,
-            unit_price=unit_price,
-            total_price=total_price,
-        ))
+        order_items.append(
+            OrderItem(
+                variant=variant,
+                title=variant.product.title,
+                sku=variant.sku,
+                options=getattr(variant, 'options', {}) or {},
+                quantity=item.quantity,
+                unit_price=unit_price,
+                total_price=total_price,
+            )
+        )
 
     shipping_amount = 0  # TODO: plug in real shipping-cost calculation
     discount_amount = 0  # TODO: plug in coupon/discount calculation
@@ -188,9 +191,11 @@ def handle_payment_callback(*, gateway_origin: str, authority: str, gateway_stat
     result page, so this must never double-charge or double-verify.
     """
     try:
-        payment_transaction = PaymentTransaction.objects.select_for_update().select_related(
-            'order', 'gateway'
-        ).get(authority=authority, gateway__origin=gateway_origin)
+        payment_transaction = (
+            PaymentTransaction.objects.select_for_update()
+            .select_related('order', 'gateway')
+            .get(authority=authority, gateway__origin=gateway_origin)
+        )
     except PaymentTransaction.DoesNotExist as exc:
         raise PaymentCreationError('تراکنش معتبری برای این authority پیدا نشد.') from exc
 
@@ -219,9 +224,7 @@ def handle_payment_callback(*, gateway_origin: str, authority: str, gateway_stat
     if result.success:
         payment_transaction.status = PaymentTransaction.Status.SUCCESS
         payment_transaction.ref_id = result.ref_id
-        payment_transaction.save(
-            update_fields=['status', 'ref_id', 'raw_response', 'verified_at', 'updated_at']
-        )
+        payment_transaction.save(update_fields=['status', 'ref_id', 'raw_response', 'verified_at', 'updated_at'])
 
         order = payment_transaction.order
         order.status = Order.Status.PAID

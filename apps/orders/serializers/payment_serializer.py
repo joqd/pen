@@ -13,6 +13,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class AddressSerializer(serializers.ModelSerializer):
     """Minimal placeholder — swap for your project's real AddressSerializer."""
+
     class Meta:
         model = Address
         fields = '__all__'
@@ -27,17 +28,31 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'token', 'order_number', 'status', 'shipping_status',
-            'subtotal_amount', 'shipping_amount', 'discount_amount', 'total_amount',
-            'tracking_code', 'shipping_company', 'customer_note',
-            'expires_at', 'paid_at', 'is_payable', 'is_expired',
-            'created_at', 'address', 'items',
+            'token',
+            'order_number',
+            'status',
+            'shipping_status',
+            'subtotal_amount',
+            'shipping_amount',
+            'discount_amount',
+            'total_amount',
+            'tracking_code',
+            'shipping_company',
+            'customer_note',
+            'expires_at',
+            'paid_at',
+            'is_payable',
+            'is_expired',
+            'created_at',
+            'address',
+            'items',
         ]
         read_only_fields = fields
 
 
 class CreateOrderSerializer(serializers.Serializer):
     """Input for POST /api/checkout/orders/."""
+
     address_id = serializers.IntegerField()
     customer_note = serializers.CharField(required=False, allow_blank=True, default='')
 
@@ -50,6 +65,7 @@ class CreateOrderSerializer(serializers.Serializer):
 
 class GatewaySerializer(serializers.ModelSerializer):
     """Public-facing gateway info for the checkout page. Never exposes `credentials`."""
+
     class Meta:
         model = Gateway
         fields = ['id', 'title', 'badge', 'description', 'min_amount', 'max_amount']
@@ -67,6 +83,7 @@ class PaymentTransactionSerializer(serializers.ModelSerializer):
 
 class CreatePaymentSerializer(serializers.Serializer):
     """Input for POST /api/checkout/orders/{token}/pay/."""
+
     gateway_id = serializers.IntegerField()
 
     def validate_gateway_id(self, value):

@@ -2,8 +2,8 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models, transaction
-from django.utils import timezone
 from django.db.models.functions import Greatest
+from django.utils import timezone
 
 from apps.catalog.models import ProductVariant
 from apps.orders.models import Cart, Order, OrderItem

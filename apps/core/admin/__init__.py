@@ -1,1 +1,1 @@
-from .site_admin import *  # noqa: F401
+from .site_admin import *  # noqa

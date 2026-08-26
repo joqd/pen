@@ -7,4 +7,4 @@ class OrdersConfig(AppConfig):
     verbose_name = _('orders')
 
     def ready(self):
-        from . import signals # noqa
+        from . import signals  # noqa
