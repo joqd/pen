@@ -93,17 +93,8 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     USE_X_FORWARDED_HOST = True
 
-
-# آدرس ریشه‌ی فرانت Next.js — برای ریدایرکت نهایی بعد از پرداخت
-FRONTEND_BASE_URL = "https://starboy.ir"
-
-# اختیاری — پیش‌فرض 15 و 20 دقیقه
 ORDER_PAYMENT_TIMEOUT_MINUTES = 15
 PENDING_TRANSACTION_TIMEOUT_MINUTES = 20
-
-# اختیاری — پیش‌فرض هر Gateway از credentials["sandbox"] خودش می‌خواند؛
-# این فقط fallback است وقتی آن کلید ست نشده باشد
-ZARINPAL_SANDBOX = False
 
 # Seo settings
 SITE_URL = os.environ.get('SITE_URL') or None
