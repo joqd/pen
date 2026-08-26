@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
+from django.db.models.functions import Greatest
 
 from apps.catalog.models import ProductVariant
 from apps.orders.models import Cart, Order, OrderItem
@@ -98,11 +99,11 @@ def _locked_order_variants(order: Order) -> tuple[dict[int, ProductVariant], dic
 
 @transaction.atomic
 def release_reserved_stock(order: Order) -> None:
-    """Give reserved-but-unpaid stock back to the pool (cancel / expire)."""
     variants, quantities = _locked_order_variants(order)
     for variant_id, variant in variants.items():
-        variant.reserved_stock = models.F('reserved_stock') - quantities[variant_id]
-        variant.save(update_fields=['reserved_stock'])
+        ProductVariant.objects.filter(pk=variant_id).update(
+            reserved_stock=Greatest(models.F('reserved_stock') - quantities[variant_id], 0)
+        )
 
 
 @transaction.atomic
