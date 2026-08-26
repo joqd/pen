@@ -1,13 +1,40 @@
+from django import forms
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
+from unfold.widgets import UnfoldAdminTextareaWidget
 
 from ..models import Gateway
 
 
+class GatewayAdminForm(forms.ModelForm):
+    class Meta:
+        model = Gateway
+        fields = '__all__'
+        widgets = {
+            'credentials': UnfoldAdminTextareaWidget(
+                attrs={
+                    'rows': 10,
+                    'dir': 'ltr',
+                    'spellcheck': 'false',
+                }
+            ),
+            'badge': UnfoldAdminTextareaWidget(
+                attrs={
+                    'rows': 10,
+                    'dir': 'ltr',
+                    'spellcheck': 'false',
+                }
+            ),
+        }
+
+
 @admin.register(Gateway)
 class GatewayAdmin(ModelAdmin):
+    form = GatewayAdminForm
+
     list_display = (
+        'id',
         'title',
         'priority',
         'is_active',
@@ -29,8 +56,8 @@ class GatewayAdmin(ModelAdmin):
                 'fields': (
                     'title',
                     'badge',
+                    'origin',
                     'credentials',
-					'origin',
                     'description',
                 ),
             },

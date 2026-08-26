@@ -1,46 +1,23 @@
-"""
-Zarinpal adapter (REST API v4).
-
-Implemented against ZarinPal-Lab's official sample:
-https://github.com/ZarinPal-Lab/Zarinpal-RestAPI-Sample-php
-
-Request flow:
-    POST {base}/request.json
-    body: {merchant_id, amount, callback_url, description, metadata}
-    -> data.code == 100  =>  redirect user to {startpay}/{data.authority}
-
-Verify flow (called from our callback view after the user returns):
-    POST {base}/verify.json
-    body: {merchant_id, authority, amount}
-    -> data.code == 100  =>  paid, data.ref_id is the settlement reference
-    -> data.code == 101  =>  already verified earlier (treat as success —
-       this happens if the callback fires more than once)
-"""
+from functools import cached_property
 from typing import Any
 
-import requests
 from django.conf import settings
+from zarinpal import ZarinPal
 
 from .base import BaseGatewayAdapter, GatewayAdapterError, PaymentRequestResult, PaymentVerifyResult
 
 
+class Config:
+    def __init__(self, sandbox, merchant_id):
+        self.sandbox = sandbox
+        self.merchant_id = merchant_id
+        self.access_token = None
+
 class ZarinpalAdapter(BaseGatewayAdapter):
-    PRODUCTION_BASE_URL = 'https://api.zarinpal.com/pg/v4/payment'
-    SANDBOX_BASE_URL = 'https://sandbox.zarinpal.com/pg/v4/payment'
-
-    PRODUCTION_STARTPAY_URL = 'https://www.zarinpal.com/pg/StartPay/'
-    SANDBOX_STARTPAY_URL = 'https://sandbox.zarinpal.com/pg/StartPay/'
-
     SUCCESS_CODE = 100
     ALREADY_VERIFIED_CODE = 101
 
-    REQUEST_TIMEOUT_SECONDS = 15
-
     # -- credentials / environment -----------------------------------------
-    #
-    # Expected shape of Gateway.credentials for a Zarinpal gateway row:
-    #   {"merchant_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "sandbox": false}
-
     @property
     def merchant_id(self) -> str:
         merchant_id = self.gateway.credentials.get('merchant_id')
@@ -52,39 +29,13 @@ class ZarinpalAdapter(BaseGatewayAdapter):
     def is_sandbox(self) -> bool:
         return bool(self.gateway.credentials.get('sandbox', getattr(settings, 'ZARINPAL_SANDBOX', False)))
 
-    @property
-    def base_url(self) -> str:
-        return self.SANDBOX_BASE_URL if self.is_sandbox else self.PRODUCTION_BASE_URL
-
-    @property
-    def startpay_url(self) -> str:
-        return self.SANDBOX_STARTPAY_URL if self.is_sandbox else self.PRODUCTION_STARTPAY_URL
-
-    # -- HTTP plumbing --------------------------------------------------
-
-    def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
-        try:
-            response = requests.post(
-                f'{self.base_url}/{path}',
-                json=payload,
-                headers={
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'User-Agent': 'ZarinPal Rest Api v4 (django-adapter)',
-                },
-                timeout=self.REQUEST_TIMEOUT_SECONDS,
-            )
-        except requests.RequestException as exc:
-            raise GatewayAdapterError(f'Network error while calling Zarinpal: {exc}') from exc
-
-        try:
-            data = response.json()
-        except ValueError as exc:
-            raise GatewayAdapterError(
-                f'Zarinpal returned a non-JSON response (HTTP {response.status_code}).'
-            ) from exc
-
-        return data
+    @cached_property
+    def client(self) -> ZarinPal:
+        config = Config(
+            merchant_id=self.merchant_id,
+            sandbox=self.is_sandbox,
+        )
+        return ZarinPal(config)
 
     # -- public interface -------------------------------------------------
 
@@ -96,20 +47,27 @@ class ZarinpalAdapter(BaseGatewayAdapter):
         description: str,
         mobile: str = '',
         email: str = '',
+        card_pan: list[str] | None = None,
+        referrer_id: str = '',
     ) -> PaymentRequestResult:
-        metadata = {}
-        if mobile:
-            metadata['mobile'] = mobile
-        if email:
-            metadata['email'] = email
-
-        result = self._post('request.json', {
-            'merchant_id': self.merchant_id,
+        payload: dict[str, Any] = {
             'amount': amount,
             'callback_url': callback_url,
             'description': description,
-            'metadata': metadata,
-        })
+        }
+        if mobile:
+            payload['mobile'] = mobile
+        if email:
+            payload['email'] = email
+        if card_pan:
+            payload['cardPan'] = card_pan
+        if referrer_id:
+            payload['referrer_id'] = referrer_id
+
+        try:
+            result = self.client.payments.create(payload)
+        except Exception as exc:
+            raise GatewayAdapterError(f'Zarinpal payment request failed: {exc}') from exc
 
         data = result.get('data') or {}
         errors = result.get('errors') or {}
@@ -124,16 +82,18 @@ class ZarinpalAdapter(BaseGatewayAdapter):
         authority = data['authority']
         return PaymentRequestResult(
             authority=authority,
-            redirect_url=f'{self.startpay_url}{authority}',
+            redirect_url=self.client.payments.generate_payment_url(authority),
             raw_response=result,
         )
 
     def verify_payment(self, *, authority: str, amount: int) -> PaymentVerifyResult:
-        result = self._post('verify.json', {
-            'merchant_id': self.merchant_id,
-            'authority': authority,
-            'amount': amount,
-        })
+        try:
+            result = self.client.verifications.verify({
+                'amount': amount,
+                'authority': authority,
+            })
+        except Exception as exc:
+            raise GatewayAdapterError(f'Zarinpal payment verification failed: {exc}') from exc
 
         data = result.get('data') or {}
         errors = result.get('errors') or {}
@@ -152,3 +112,11 @@ class ZarinpalAdapter(BaseGatewayAdapter):
             error_code=str(code or ''),
             error_message=errors.get('message', ''),
         )
+
+    def inquire_payment(self, *, authority: str) -> dict[str, Any]:
+        """Extra helper exposed by the new SDK: check a transaction's status
+        without triggering verification (useful for support/debugging tools)."""
+        try:
+            return self.client.inquiries.inquire({'authority': authority})
+        except Exception as exc:
+            raise GatewayAdapterError(f'Zarinpal inquiry failed: {exc}') from exc

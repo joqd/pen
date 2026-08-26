@@ -109,8 +109,9 @@ def create_order_from_cart(*, cart, user, address, customer_note: str = '') -> O
         order_item.order = order
     OrderItem.objects.bulk_create(order_items)
 
-    cart.converted_at = timezone.now()
-    cart.save(update_fields=['converted_at'])
+    cart.items.all().delete()
+    # cart.converted_at = timezone.now()
+    # cart.save(update_fields=['converted_at'])
 
     return order
 
