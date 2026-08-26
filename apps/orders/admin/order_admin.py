@@ -135,9 +135,9 @@ class PaymentTransactionInline(TabularInline):
         # mark_order_paid_manually intentionally doesn't create one.
         return False
 
-    @display(description=_('status'), label=True)
+    @display(description=_('status'), label=TXN_STATUS_COLORS)
     def txn_status_badge(self, obj):
-        return obj.get_status_display(), TXN_STATUS_COLORS.get(obj.status, 'info')
+        return obj.status, obj.get_status_display()
 
 
 @admin.register(Order)
@@ -231,13 +231,13 @@ class OrderAdmin(ModelAdmin):
     def user_display(self, obj):
         return str(obj.user)
 
-    @display(description=_('status'), label=True, ordering='status')
+    @display(description=_('status'), label=STATUS_COLORS, ordering='status')
     def status_badge(self, obj):
-        return obj.get_status_display(), STATUS_COLORS.get(obj.status, 'info')
+        return obj.status, obj.get_status_display()
 
-    @display(description=_('shipping'), label=True, ordering='shipping_status')
+    @display(description=_('shipping'), label=SHIPPING_STATUS_COLORS, ordering='shipping_status')
     def shipping_status_badge(self, obj):
-        return obj.get_shipping_status_display(), SHIPPING_STATUS_COLORS.get(obj.shipping_status, 'info')
+        return obj.shipping_status, obj.get_shipping_status_display()
 
     @display(description=_('total'), ordering='total_amount')
     def total_amount_display(self, obj):
