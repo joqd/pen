@@ -194,13 +194,18 @@ class OrderDetailAPIView(APIView):
     },
 )
 class ActiveGatewayListAPIView(APIView):
-    """GET /api/checkout/gateways/"""
-
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         gateways = Gateway.objects.filter(is_active=True)
-        return Response(GatewaySerializer(gateways, many=True).data)
+
+        serializer = GatewaySerializer(
+            gateways,
+            many=True,
+            context={"request": request},
+        )
+
+        return Response(serializer.data)
 
 
 @extend_schema(

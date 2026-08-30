@@ -24,7 +24,7 @@ class Cart(models.Model):
     class Meta:
         verbose_name = _('cart')
         verbose_name_plural = _('carts')
-        
+
         indexes = [
             models.Index(fields=['user', 'updated_at']),
         ]

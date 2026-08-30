@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -8,12 +9,8 @@ class Gateway(models.Model):
         ZARINPAL = 'zarinpal', _('zarinpal')
 
     title = models.CharField(_('title'), max_length=100, unique=True)
-    badge = models.TextField(_('badge'), blank=True)
+    badge = models.FileField(_('badge'), upload_to='payment-badges', blank=True, null=True)
 
-    # NOTE: this stores gateway secrets (merchant id / api key) as plain
-    # JSON. In production, encrypt this at rest (e.g. django-encrypted-
-    # model-fields) or keep secrets out of the DB entirely and reference
-    # them from environment/secret-manager by gateway id.
     credentials = models.JSONField(_('credentials'), default=dict, blank=True)
     origin = models.CharField(_('origin'), max_length=50, choices=Origin.choices)
     description = models.TextField(_('description'), blank=True, null=True)

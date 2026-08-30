@@ -19,13 +19,6 @@ class GatewayAdminForm(forms.ModelForm):
                     'spellcheck': 'false',
                 }
             ),
-            'badge': UnfoldAdminTextareaWidget(
-                attrs={
-                    'rows': 10,
-                    'dir': 'ltr',
-                    'spellcheck': 'false',
-                }
-            ),
         }
 
 

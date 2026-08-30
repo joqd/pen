@@ -32,7 +32,9 @@ def _delete_in_batches(queryset, batch_size=CLEANUP_BATCH_SIZE):
         total_deleted += len(ids)
         logger.info(
             'cleanup: deleted %s %s rows (running total %s)',
-            len(ids), model.__name__, total_deleted,
+            len(ids),
+            model.__name__,
+            total_deleted,
         )
     return total_deleted
 
