@@ -14,11 +14,12 @@ class UpdateCartItemSerializer(serializers.Serializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
     sku = serializers.CharField(source='variant.sku', read_only=True)
+    slug = serializers.CharField(source='variant.product.slug', read_only=True)
     product_title = serializers.CharField(source='variant.product.title', read_only=True)
     compare_price = serializers.CharField(source='variant.compare_price', read_only=True)
     image = serializers.SerializerMethodField()
     available_stock = serializers.SerializerMethodField()
-    size = serializers.CharField(source='variant.size.name', read_only=True)
+    size = serializers.CharField(source='variant.size.label', read_only=True)
     price = serializers.IntegerField(source='variant.price', read_only=True)
 
     class Meta:
@@ -26,6 +27,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'sku',
+            'slug',
             'image',
             'quantity',
             'product_title',
