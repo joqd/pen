@@ -61,17 +61,21 @@ class ProvinceListAPIView(ListAPIView):
     permission_classes = [AllowAny]
     queryset = Province.objects.all()
     serializer_class = ProvinceSerializer
+    pagination_class = None
 
 
 @extend_schema(tags=['Provinces and Cities'])
 class ProvinceCityListAPIView(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = CitySerializer
+    pagination_class = None
 
     def get_queryset(self):
         province_id = self.kwargs['province_id']
 
-        return City.objects.select_related('province').filter(province_id=province_id)
+        return City.objects.select_related('province').filter(
+            province_id=province_id
+        )
 
 
 @extend_schema(tags=['Provinces and Cities'])
