@@ -7,8 +7,12 @@ from .views.cart_view import (
 )
 from .views.payment_view import (
     ActiveGatewayListAPIView,
-    OrderCreateAPIView,
+    OrderAddressUpdateAPIView,
+    OrderCancelAPIView,
     OrderDetailAPIView,
+    OrderItemCreateAPIView,
+    OrderItemUpdateDeleteAPIView,
+    OrderListCreateAPIView,
     PaymentCallbackAPIView,
     PaymentCreateAPIView,
 )
@@ -25,9 +29,20 @@ urlpatterns = [
     path('wishlist/', WishlistView.as_view(), name='wishlist'),
     path('wishlist/items/', WishlistItemCreateView.as_view(), name='wishlist-add-item'),
     path('wishlist/items/<slug:slug>/', WishlistItemView.as_view(), name='wishlist-item'),
-    path('checkout/orders/', OrderCreateAPIView.as_view(), name='order-create'),
-    path('orders/current/', OrderDetailAPIView.as_view(), name='order-detail'),
+    # Orders: every order is addressed by its own public UUID `token`, not
+    # by a cookie-resolved "current order" - a user can have many orders
+    # (order history), and this exposes the full CRUD-ish surface for them.
+    path('orders/', OrderListCreateAPIView.as_view(), name='order-list-create'),
+    path('orders/<uuid:token>/', OrderDetailAPIView.as_view(), name='order-detail'),
+    path('orders/<uuid:token>/cancel/', OrderCancelAPIView.as_view(), name='order-cancel'),
+    path('orders/<uuid:token>/address/', OrderAddressUpdateAPIView.as_view(), name='order-address-update'),
+    path('orders/<uuid:token>/items/', OrderItemCreateAPIView.as_view(), name='order-item-create'),
+    path(
+        'orders/<uuid:token>/items/<int:item_id>/',
+        OrderItemUpdateDeleteAPIView.as_view(),
+        name='order-item-update-delete',
+    ),
+    path('orders/<uuid:token>/pay/', PaymentCreateAPIView.as_view(), name='payment-create'),
     path('checkout/gateways/', ActiveGatewayListAPIView.as_view(), name='gateway-list'),
-    path('checkout/orders/pay/', PaymentCreateAPIView.as_view(), name='payment-create'),
-    path('payments/callback/<str:gateway_origin>/', PaymentCallbackAPIView.as_view()),
+    path('payments/callback/<str:gateway_origin>/', PaymentCallbackAPIView.as_view(), name='payment-callback'),
 ]

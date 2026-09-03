@@ -73,9 +73,7 @@ class ProvinceCityListAPIView(ListAPIView):
     def get_queryset(self):
         province_id = self.kwargs['province_id']
 
-        return City.objects.select_related('province').filter(
-            province_id=province_id
-        )
+        return City.objects.select_related('province').filter(province_id=province_id)
 
 
 @extend_schema(tags=['Provinces and Cities'])

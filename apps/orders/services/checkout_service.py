@@ -6,7 +6,7 @@ from django.db.models.functions import Greatest
 from django.utils import timezone
 
 from apps.catalog.models import ProductVariant
-from apps.orders.models import Cart, Order, OrderItem
+from apps.orders.models import Cart, Order, OrderItem, PaymentTransaction
 
 CHECKOUT_EXPIRE_MINUTES = getattr(settings, 'CHECKOUT_EXPIRE_MINUTES', 15)
 
@@ -33,13 +33,27 @@ def create_order_from_cart(*, cart: Cart, address, customer_note: str = '') -> O
     """
     Turns a cart into a PENDING_PAYMENT order and reserves stock for it.
 
+    This is the single, canonical place order creation happens. Both the
+    checkout API and any other caller (admin action, management command,
+    etc.) should go through this function rather than re-implementing
+    stock validation/reservation elsewhere - that duplication is exactly
+    what used to let the two code paths drift out of sync (missing
+    item snapshots, missing stock locking, ...).
+
     Concurrency: locks the relevant ProductVariant rows with SELECT ... FOR
     UPDATE before checking availability, so two customers racing for the
     last unit can't both succeed. Must be called inside a transaction (the
     decorator handles that) - if OutOfStockError is raised everything,
     including the Order row already created, is rolled back.
+
+    Multi-order note: `cart` is NOT single-use. A user's Cart is a
+    OneToOneField, so it's the same row for their entire lifetime as a
+    customer - it's just emptied here and left ready to be refilled for
+    the *next* purchase. Nothing about this function prevents a user from
+    calling it again later to create a second, third, ... order; Order.user
+    is a plain ForeignKey, so a user can hold any number of Orders.
     """
-    cart_items = list(cart.items.select_related('variant').order_by('variant_id'))
+    cart_items = list(cart.items.select_related('variant', 'variant__product').order_by('variant_id'))
     if not cart_items:
         raise EmptyCartError('Cart is empty')
 
@@ -51,6 +65,7 @@ def create_order_from_cart(*, cart: Cart, address, customer_note: str = '') -> O
     order = Order.objects.create(
         user=cart.user,
         address=address,
+        cart=cart,
         customer_note=customer_note,
         expires_at=timezone.now() + timedelta(minutes=CHECKOUT_EXPIRE_MINUTES),
     )
@@ -70,6 +85,11 @@ def create_order_from_cart(*, cart: Cart, address, customer_note: str = '') -> O
             OrderItem(
                 order=order,
                 variant=variant,
+                # Snapshot fields - the catalog can change/retranslate later,
+                # the order must keep showing exactly what was purchased.
+                title=variant.product.title,
+                sku=variant.sku,
+                options=getattr(variant, 'options', {}) or {},
                 quantity=cart_item.quantity,
                 unit_price=variant.price,
                 total_price=total_price,
@@ -86,8 +106,138 @@ def create_order_from_cart(*, cart: Cart, address, customer_note: str = '') -> O
     order.save(update_fields=['subtotal_amount', 'total_amount'])
 
     cart.items.all().delete()
+    # `converted_at` is informational only (e.g. for "has this customer ever
+    # completed a checkout" analytics / abandoned-cart reporting) - it is
+    # deliberately NOT used to block reuse of the cart, since the cart is a
+    # long-lived, one-per-user row that must stay usable for every future
+    # order, not just the first one.
+    cart.converted_at = timezone.now()
+    cart.save(update_fields=['converted_at'])
 
     return order
+
+
+def _ensure_editable(order: Order) -> None:
+    """Shared guard for every post-creation edit (address, items, ...)."""
+    if not order.is_payable:
+        raise CheckoutError('Only orders that are pending payment can be modified.')
+
+
+def _invalidate_pending_transactions(order: Order) -> None:
+    """
+    Any PENDING PaymentTransaction was created against the order's
+    *previous* address/total. Once the order is edited the gateway session
+    behind that transaction no longer matches the order and must not be
+    resumed - fail it so the `unique_pending_transaction_per_order`
+    constraint frees up and the next `pay` call starts a fresh, correctly
+    priced attempt instead of silently completing a stale one.
+    """
+    order.transactions.filter(status=PaymentTransaction.Status.PENDING).update(status=PaymentTransaction.Status.FAILED)
+
+
+@transaction.atomic
+def update_order_address(*, order_id: int, address) -> Order:
+    """Change the shipping address of an order that hasn't been paid yet."""
+    order = Order.objects.select_for_update().get(pk=order_id)
+    _ensure_editable(order)
+
+    order.address = address
+    order.save(update_fields=['address'])
+
+    _invalidate_pending_transactions(order)
+    return order
+
+
+@transaction.atomic
+def add_order_item(*, order_id: int, variant: ProductVariant, quantity: int) -> OrderItem:
+    """
+    Add a new line item to a pending order. Reserves stock for it exactly
+    like initial order creation does, and keeps the order totals in sync.
+    """
+    order = Order.objects.select_for_update().get(pk=order_id)
+    _ensure_editable(order)
+
+    variant = ProductVariant.objects.select_for_update().get(pk=variant.pk)
+
+    if order.items.filter(variant_id=variant.pk).exists():
+        raise CheckoutError('This item is already in the order - update its quantity instead.')
+
+    if not variant.is_active or variant.available_stock < quantity:
+        raise OutOfStockError(variant, quantity)
+
+    item = OrderItem.objects.create(
+        order=order,
+        variant=variant,
+        title=variant.product.title,
+        sku=variant.sku,
+        options=getattr(variant, 'options', {}) or {},
+        quantity=quantity,
+        unit_price=variant.price,
+        total_price=variant.price * quantity,
+    )
+
+    variant.reserved_stock = models.F('reserved_stock') + quantity
+    variant.save(update_fields=['reserved_stock'])
+
+    recalculate_order_totals(order.pk)
+    _invalidate_pending_transactions(order)
+    return item
+
+
+@transaction.atomic
+def remove_order_item(*, order_id: int, item_id: int) -> None:
+    """
+    Remove a line item from a pending order and release its reserved
+    stock. Refuses to remove the last remaining item - an order with zero
+    items shouldn't exist; cancel the whole order instead.
+    """
+    order = Order.objects.select_for_update().get(pk=order_id)
+    _ensure_editable(order)
+
+    if order.items.count() <= 1:
+        raise CheckoutError(
+            'An order must have at least one item - cancel the order instead of removing its last item.'
+        )
+
+    item = order.items.get(pk=item_id)
+
+    ProductVariant.objects.filter(pk=item.variant_id).update(
+        reserved_stock=Greatest(models.F('reserved_stock') - item.quantity, 0)
+    )
+    item.delete()
+
+    recalculate_order_totals(order.pk)
+    _invalidate_pending_transactions(order)
+
+
+@transaction.atomic
+def update_order_item_quantity(*, order_id: int, item_id: int, quantity: int) -> OrderItem:
+    """
+    Change the quantity of an existing line item on a pending order.
+    `unit_price` is intentionally NOT re-fetched from the catalog here -
+    the price stays whatever it was snapshotted at when the item was
+    added, only the reserved stock and totals move with the new quantity.
+    """
+    order = Order.objects.select_for_update().get(pk=order_id)
+    _ensure_editable(order)
+
+    item = order.items.get(pk=item_id)
+    variant = ProductVariant.objects.select_for_update().get(pk=item.variant_id)
+
+    delta = quantity - item.quantity
+    if delta > 0 and variant.available_stock < delta:
+        raise OutOfStockError(variant, quantity)
+
+    variant.reserved_stock = models.F('reserved_stock') + delta
+    variant.save(update_fields=['reserved_stock'])
+
+    item.quantity = quantity
+    item.total_price = item.unit_price * quantity
+    item.save(update_fields=['quantity', 'total_price'])
+
+    recalculate_order_totals(order.pk)
+    _invalidate_pending_transactions(order)
+    return item
 
 
 def _locked_order_variants(order: Order) -> tuple[dict[int, ProductVariant], dict[int, int]]:

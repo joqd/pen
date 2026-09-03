@@ -1,15 +1,19 @@
 """
-Business logic for turning a Cart into an Order and taking it through
-payment. Kept out of views.py on purpose: views only handle HTTP concerns
-(auth, request/response shapes), everything transactional/business-rule
-related lives here so it's reusable (e.g. from an admin action or a
-management command) and independently testable.
+Business logic for taking an already-created Order through payment.
+
+NOTE: Order creation itself (turning a Cart into an Order + reserving
+stock) intentionally does NOT live here anymore - it lives in
+`checkout_service.create_order_from_cart`, which is the concurrency-safe
+(SELECT ... FOR UPDATE) implementation. This module used to have its own,
+weaker, duplicate copy of that logic (no row locking, no item snapshot on
+some fields); that duplication was a real bug risk (the two copies could
+silently drift apart) and has been removed in favor of a single source of
+truth. This module now only deals with the *payment* side: starting a
+gateway payment attempt and processing the gateway's callback.
 
 NOTE on imports: adjust these to match your actual app layout. This file
-assumes Cart/Order/OrderItem/Gateway/PaymentTransaction are importable
-from `apps.orders.models` (i.e. a models/ package with an __init__.py
-that re-exports them, as is typical for the cart_model.py / order_model.py
-/ gateway_model.py / transaction_model.py files reviewed earlier).
+assumes Gateway/Order/PaymentTransaction are importable from
+`apps.orders.models`.
 """
 
 import logging
@@ -18,18 +22,14 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
-from apps.orders.models import Gateway, Order, OrderItem, PaymentTransaction
+from apps.orders.models import Gateway, Order, PaymentTransaction
+from apps.orders.services.checkout_service import finalize_paid_order
 from apps.payments.adapters.base import GatewayAdapterError
 from apps.payments.adapters.registery import get_adapter
 
 logger = logging.getLogger(__name__)
 
-ORDER_PAYMENT_TIMEOUT_MINUTES = getattr(settings, 'ORDER_PAYMENT_TIMEOUT_MINUTES', 15)
 PENDING_TRANSACTION_TIMEOUT_MINUTES = getattr(settings, 'PENDING_TRANSACTION_TIMEOUT_MINUTES', 20)
-
-
-class OrderCreationError(Exception):
-    """Raised when a Cart can't be turned into an Order (empty, already converted, out of stock, ...)."""
 
 
 class PaymentCreationError(Exception):
@@ -37,94 +37,11 @@ class PaymentCreationError(Exception):
 
 
 @transaction.atomic
-def create_order_from_cart(*, cart, user, address, customer_note: str = '') -> Order:
-    """
-    Turn an active Cart into a payable Order.
-
-    - `select_for_update()`s the cart's items so two concurrent "place
-      order" requests (double-click, duplicate tab) can't both succeed.
-    - Re-validates stock at order-creation time — prices/stock shown
-      earlier in the cart view may be stale by checkout time.
-    - Snapshots title/sku/options/unit_price onto each OrderItem, so the
-      order keeps showing exactly what the buyer purchased even if the
-      catalog changes later.
-    - Marks the cart `converted_at` so it stops counting as "abandoned"
-      and a fresh cart can be started for the user's next purchase.
-
-    Raises OrderCreationError for any business-rule violation. Callers
-    (views) are expected to turn that into a 400 response.
-    """
-    if cart.is_converted:
-        raise OrderCreationError('این سبد قبلاً به سفارش تبدیل شده است.')
-
-    items = list(cart.items.select_for_update().select_related('variant', 'variant__product'))
-    if not items:
-        raise OrderCreationError('سبد خرید خالی است.')
-
-    subtotal_amount = 0
-    order_items = []
-
-    for item in items:
-        variant = item.variant
-
-        # TODO: replace with your real stock-check (e.g. a dedicated
-        # inventory service). Left permissive (skip the check) if the
-        # variant has no `stock` attribute, so this doesn't crash your
-        # code out of the box — but you almost certainly want a real
-        # check here before going to production.
-        available_stock = getattr(variant, 'stock', None)
-        if available_stock is not None and item.quantity > available_stock:
-            raise OrderCreationError(f'موجودی «{variant.product.title}» کافی نیست.')
-
-        unit_price = variant.price  # TODO: point at your real pricing (incl. any active discount)
-        total_price = unit_price * item.quantity
-        subtotal_amount += total_price
-
-        order_items.append(
-            OrderItem(
-                variant=variant,
-                title=variant.product.title,
-                sku=variant.sku,
-                options=getattr(variant, 'options', {}) or {},
-                quantity=item.quantity,
-                unit_price=unit_price,
-                total_price=total_price,
-            )
-        )
-
-    shipping_amount = 0  # TODO: plug in real shipping-cost calculation
-    discount_amount = 0  # TODO: plug in coupon/discount calculation
-    total_amount = subtotal_amount + shipping_amount - discount_amount
-
-    order = Order.objects.create(
-        user=user,
-        address=address,
-        cart=cart,
-        subtotal_amount=subtotal_amount,
-        shipping_amount=shipping_amount,
-        discount_amount=discount_amount,
-        total_amount=total_amount,
-        customer_note=customer_note,
-        expires_at=timezone.now() + timezone.timedelta(minutes=ORDER_PAYMENT_TIMEOUT_MINUTES),
-    )
-
-    for order_item in order_items:
-        order_item.order = order
-    OrderItem.objects.bulk_create(order_items)
-
-    cart.items.all().delete()
-    # cart.converted_at = timezone.now()
-    # cart.save(update_fields=['converted_at'])
-
-    return order
-
-
-@transaction.atomic
 def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tuple[PaymentTransaction, str]:
     """
     Start (or resume) a payment attempt for `order` against `gateway`.
 
-    - Rejects orders that are no longer payable (already paid / expired) —
+    - Rejects orders that are no longer payable (already paid / expired) -
       checked again here under a row lock, not just relying on whatever
       the caller believed.
     - If a PENDING transaction already exists for this order (this is also
@@ -133,6 +50,10 @@ def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tu
       twice gets redirected to the same payment session, not two of them.
     - Delegates the actual gateway call to `get_adapter(gateway)`, so this
       function has zero gateway-specific logic.
+    - Because each Order has its own independent `PaymentTransaction`
+      history, a user can have several PENDING_PAYMENT orders at once and
+      pay them off in any order/tab - there is no longer a single "the
+      current order" concept anywhere in this flow.
 
     Returns (transaction, redirect_url). Raises PaymentCreationError on
     any business-rule violation or gateway-side failure.
@@ -140,7 +61,7 @@ def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tu
     order = Order.objects.select_for_update().get(pk=order.pk)
 
     if not order.is_payable:
-        raise PaymentCreationError('این سفارش دیگر قابل پرداخت نیست (پرداخت‌شده یا منقضی شده است).')
+        raise PaymentCreationError('This order is no longer payable (already paid or expired).')
 
     adapter = get_adapter(gateway)
 
@@ -161,7 +82,7 @@ def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tu
         result = adapter.request_payment(
             amount=payment_transaction.amount,
             callback_url=callback_url,
-            description=f'پرداخت سفارش {order.order_number}',
+            description=f'Payment for order {order.order_number}',
             mobile=getattr(order.user, 'phone', '') or '',
         )
     except GatewayAdapterError as exc:
@@ -169,7 +90,7 @@ def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tu
         payment_transaction.raw_response = {'error': str(exc)}
         payment_transaction.save(update_fields=['status', 'raw_response', 'updated_at'])
         logger.warning('Payment request failed for order %s: %s', order.order_number, exc)
-        raise PaymentCreationError('اتصال به درگاه پرداخت ناموفق بود. لطفاً دوباره تلاش کنید.') from exc
+        raise PaymentCreationError('Could not reach the payment gateway. Please try again.') from exc
 
     payment_transaction.authority = result.authority
     payment_transaction.raw_response = result.raw_response
@@ -186,9 +107,17 @@ def handle_payment_callback(*, gateway_origin: str, authority: str, gateway_stat
 
     Idempotent by design: if the transaction has already left the PENDING
     state (a previous call already resolved it), it's returned unchanged
-    without calling the gateway's verify endpoint again — gateways
+    without calling the gateway's verify endpoint again - gateways
     sometimes hit the callback more than once, and users refresh the
     result page, so this must never double-charge or double-verify.
+
+    On a verified success, this also converts the order's stock
+    *reservation* into a real deduction via `finalize_paid_order` -
+    previously this step was missing here, which meant `reserved_stock`
+    was incremented at order-creation time but never released/converted
+    after a successful payment, silently corrupting inventory numbers
+    over time. Fixed by locking + finalizing the order in the same
+    transaction as the status flip, so a crash here rolls back atomically.
     """
     try:
         payment_transaction = (
@@ -197,7 +126,7 @@ def handle_payment_callback(*, gateway_origin: str, authority: str, gateway_stat
             .get(authority=authority, gateway__origin=gateway_origin)
         )
     except PaymentTransaction.DoesNotExist as exc:
-        raise PaymentCreationError('تراکنش معتبری برای این authority پیدا نشد.') from exc
+        raise PaymentCreationError('No matching transaction was found for this authority.') from exc
 
     if payment_transaction.status != PaymentTransaction.Status.PENDING:
         return payment_transaction
@@ -226,7 +155,11 @@ def handle_payment_callback(*, gateway_origin: str, authority: str, gateway_stat
         payment_transaction.ref_id = result.ref_id
         payment_transaction.save(update_fields=['status', 'ref_id', 'raw_response', 'verified_at', 'updated_at'])
 
-        order = payment_transaction.order
+        # Lock the order row itself (not just the transaction) before
+        # touching stock/status, since other flows (admin cancel, expiry
+        # sweep) also mutate the same order under a row lock.
+        order = Order.objects.select_for_update().get(pk=payment_transaction.order_id)
+        finalize_paid_order(order)
         order.status = Order.Status.PAID
         order.paid_at = timezone.now()
         order.save(update_fields=['status', 'paid_at', 'updated_at'])
