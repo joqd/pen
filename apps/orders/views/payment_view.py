@@ -167,7 +167,7 @@ class OrderDetailAPIView(APIView):
             token=token,
             user=request.user,
         )
-        return Response(OrderSerializer(order).data)
+        return Response(OrderSerializer(order, context={'request': request}).data)
 
 
 @extend_schema(

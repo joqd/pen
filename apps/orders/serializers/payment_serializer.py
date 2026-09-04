@@ -1,22 +1,29 @@
 from rest_framework import serializers
 
 from apps.accounts.models import Address  # adjust to your actual app layout
+from apps.accounts.serializers.address_serializer import AddressSerializer
 from apps.orders.models import Gateway, Order, OrderItem, PaymentTransaction
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = OrderItem
-        fields = ['id', 'title', 'sku', 'options', 'quantity', 'unit_price', 'total_price']
+        fields = ['id', 'title', 'sku', 'options', 'quantity', 'unit_price', 'total_price', 'image']
         read_only_fields = fields
 
+    def get_image(self, obj):
+        image = obj.variant.product.images.filter(is_primary=True).first() or obj.variant.product.images.first()
 
-class AddressSerializer(serializers.ModelSerializer):
-    """Minimal placeholder - swap for your project's real AddressSerializer."""
+        if not image:
+            return None
 
-    class Meta:
-        model = Address
-        fields = '__all__'
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(image.image.url)
+
+        return image.image.url
 
 
 class OrderSerializer(serializers.ModelSerializer):
