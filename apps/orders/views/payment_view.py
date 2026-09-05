@@ -84,8 +84,22 @@ class OrderListCreateAPIView(APIView):
                 required=False,
                 description='Filter orders by status.',
             ),
+            OpenApiParameter(
+                name='page',
+                type=int,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Page number.',
+            ),
+            OpenApiParameter(
+                name='page_size',
+                type=int,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description='Number of orders per page. Maximum: 100.',
+            ),
         ],
-        responses={200: OrderListSerializer(many=True)},
+        # responses={200: OrderListSerializer(many=True)},
     )
     def get(self, request):
         queryset = Order.objects.filter(user=request.user).annotate(items_count=Count('items'))
