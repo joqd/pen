@@ -140,6 +140,13 @@ def handle_payment_callback(*, gateway_origin: str, authority: str, gateway_stat
 
     try:
         result = adapter.verify_payment(authority=authority, amount=payment_transaction.amount)
+        if settings.DEBUG and not result.success:
+            logger.warning(
+                'Aqaye Pardakht verify failed: code=%s message=%s raw=%s',
+                result.error_code,
+                result.error_message,
+                result.raw_response,
+            )
     except GatewayAdapterError as exc:
         payment_transaction.status = PaymentTransaction.Status.FAILED
         payment_transaction.raw_response = {'error': str(exc)}

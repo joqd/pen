@@ -124,6 +124,14 @@ class ZarinpalAdapter(BaseGatewayAdapter):
             error_message=errors.get('message', ''),
         )
 
+    @classmethod
+    def extract_callback_params(cls, request) -> tuple[str, str]:
+        # Zarinpal redirects the buyer's browser with a GET request:
+        # https://yoursite.com/callback/?Authority=...&Status=OK|NOK
+        authority = request.query_params.get('Authority', '')
+        status = request.query_params.get('Status', '')
+        return authority, status
+
     def inquire_payment(self, *, authority: str) -> dict[str, Any]:
         """Extra helper exposed by the new SDK: check a transaction's status
         without triggering verification (useful for support/debugging tools)."""

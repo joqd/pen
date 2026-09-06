@@ -81,3 +81,30 @@ class BaseGatewayAdapter:
         a dedicated code for this).
         """
         raise NotImplementedError
+
+    @classmethod
+    def extract_callback_params(cls, request) -> tuple[str, str]:
+        """
+        Pull (authority, status) out of the raw callback request this
+        gateway sends when the buyer is redirected back.
+
+        Every gateway uses its own HTTP method and field names here
+        (Zarinpal: GET query params `Authority`/`Status`; Aqaye Pardakht:
+        POST body `transid`/`status`; ...), so this is where that
+        gateway-specific knowledge lives — NOT in the view. The view/service
+        layer only ever sees the normalized (authority, status) tuple.
+
+        `status` is a hint only (used to skip a pointless verify call on a
+        known-failed transaction) — callers must still call
+        `verify_payment()` before trusting a transaction as paid. To keep
+        that shortcut logic in services.py gateway-agnostic, every adapter
+        must normalize its own raw status value to the shared vocabulary
+        `'OK'` (looks successful, go verify) / `'NOK'` (gateway itself
+        reported failure, skip verify) — do not leak a gateway's native
+        status strings/codes up to the caller.
+
+        This is a classmethod (no gateway credentials needed) so the view
+        can resolve it from `gateway_origin` alone, before a `Gateway` row
+        has even been looked up.
+        """
+        raise NotImplementedError

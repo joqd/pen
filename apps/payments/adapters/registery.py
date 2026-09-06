@@ -25,3 +25,19 @@ def get_adapter(gateway: Gateway) -> BaseGatewayAdapter:
     if adapter_cls is None:
         raise NotImplementedError(f'No adapter registered for gateway origin "{gateway.origin}".')
     return adapter_cls(gateway)
+
+
+def get_adapter_class(origin: str) -> type[BaseGatewayAdapter]:
+    """
+    Like `get_adapter`, but returns the class itself instead of an
+    instance bound to a `Gateway` row.
+
+    Used by the callback view to parse the gateway's raw callback request
+    (`extract_callback_params`) *before* a `Gateway` has necessarily been
+    looked up — that parsing needs no credentials, only knowledge of the
+    gateway's callback field names/method.
+    """
+    adapter_cls = _ADAPTERS.get(origin)
+    if adapter_cls is None:
+        raise NotImplementedError(f'No adapter registered for gateway origin "{origin}".')
+    return adapter_cls

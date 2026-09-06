@@ -40,6 +40,7 @@ from apps.orders.services.payment_service import (
     create_payment_transaction,
     handle_payment_callback,
 )
+from apps.payments.adapters.registery import get_adapter_class
 
 # --------------------------------------------------------------------------
 # Orders are addressed by their own public UUID `token` everywhere in this
@@ -480,13 +481,22 @@ class PaymentCreateAPIView(APIView):
     },
 )
 class PaymentCallbackAPIView(APIView):
-    """GET /api/payments/callback/{gateway_origin}/"""
+    """GET or POST /api/payments/callback/{gateway_origin}/"""
 
     permission_classes = [AllowAny]
 
     def get(self, request, gateway_origin):
-        authority = request.query_params.get('Authority', '')
-        gateway_status = request.query_params.get('Status', '')
+        return self._handle(request, gateway_origin)
+
+    def post(self, request, gateway_origin):
+        return self._handle(request, gateway_origin)
+
+    def _handle(self, request, gateway_origin):
+        try:
+            adapter_cls = get_adapter_class(gateway_origin)
+            authority, gateway_status = adapter_cls.extract_callback_params(request)
+        except NotImplementedError:
+            return HttpResponseRedirect(f'{settings.FRONTEND_BASE_URL}/orders/result?status=error')
 
         try:
             payment_transaction = handle_payment_callback(
