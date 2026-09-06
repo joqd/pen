@@ -402,7 +402,6 @@ else:
     }
 
 
-AQAYEPARDAKHT_PIN = os.environ.get('AQAYEPARDAKHT_PIN')
 CHECKOUT_CALLBACK_BASE_URL = os.environ.get(
     'CHECKOUT_CALLBACK_BASE_URL'
 )  # your Django domain, e.g. https://api.example.com
