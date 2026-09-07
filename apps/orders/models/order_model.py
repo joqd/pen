@@ -67,7 +67,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = _('order')
         verbose_name_plural = _('orders')
-        ordering = ['-id']
+        ordering = ['-created_at']
         indexes = [
             # used heavily by the expiry sweep task
             models.Index(fields=['status', 'expires_at']),
