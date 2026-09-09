@@ -125,8 +125,7 @@ class ZibalAdapter(BaseGatewayAdapter):
 
         if data.get('result') != self.SUCCESS_RESULT:
             raise GatewayAdapterError(
-                f'Zibal payment request failed '
-                f'(result={data.get("result")}: {self._error_message(data.get("result"))})'
+                f'Zibal payment request failed (result={data.get("result")}: {self._error_message(data.get("result"))})'
             )
 
         track_id = data.get('trackId')
