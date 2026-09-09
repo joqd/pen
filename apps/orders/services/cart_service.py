@@ -30,7 +30,14 @@ class CartService:
         if quantity > cls.MAX_ITEM_QUANTITY:
             raise ValidationError(f'Maximum quantity is {cls.MAX_ITEM_QUANTITY}.')
 
-        if quantity > variant.stock:
+        # Must compare against available_stock (stock - reserved_stock), not
+        # raw stock. Raw stock ignores units already reserved by *other*
+        # customers' pending orders, so validating against it here would let
+        # a cart hold a quantity that create_order_from_cart's (correct)
+        # available_stock check then rejects at checkout time - i.e. the
+        # exact "insufficient stock" error we're trying to avoid, on a
+        # product that still looks available.
+        if quantity > variant.available_stock:
             raise ValidationError('Insufficient stock.')
 
         item = CartItem.objects.filter(
@@ -44,7 +51,7 @@ class CartService:
             if requested > cls.MAX_ITEM_QUANTITY:
                 raise ValidationError(f'Maximum quantity is {cls.MAX_ITEM_QUANTITY}.')
 
-            if requested > variant.stock:
+            if requested > variant.available_stock:
                 raise ValidationError('Insufficient stock.')
 
             item.quantity = requested
@@ -69,7 +76,7 @@ class CartService:
         if quantity > cls.MAX_ITEM_QUANTITY:
             raise ValidationError(f'Maximum quantity is {cls.MAX_ITEM_QUANTITY}.')
 
-        if quantity > item.variant.stock:
+        if quantity > item.variant.available_stock:
             raise ValidationError('Insufficient stock.')
 
         item.quantity = quantity
@@ -88,12 +95,12 @@ class CartService:
             existing = user_cart.items.filter(variant_id=guest_item.variant_id).first()
 
             if existing:
-                new_quantity = min(existing.variant.stock, existing.quantity + guest_item.quantity)
+                new_quantity = min(existing.variant.available_stock, existing.quantity + guest_item.quantity)
 
                 existing.quantity = new_quantity
                 existing.save(update_fields=['quantity'])
             else:
-                guest_item.quantity = min(guest_item.quantity, guest_item.variant.stock)
+                guest_item.quantity = min(guest_item.quantity, guest_item.variant.available_stock)
                 guest_item.cart = user_cart
                 guest_item.save(update_fields=['quantity', 'cart'])
 
