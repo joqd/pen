@@ -11,16 +11,16 @@ services:
     volumes:
       - ./media:/app/media
     depends_on:
-      - rdb
-      - pg
+      - redis
+      - postgres
 
-  rdb:
+  redis:
     image: redis:7-alpine
     restart: unless-stopped
     volumes:
       - redis_data:/data
 
-  pg:
+  postgres:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
