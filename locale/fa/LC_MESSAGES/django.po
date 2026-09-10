@@ -792,3 +792,9 @@ msgstr "لینک پایه"
 
 msgid "gateways"
 msgstr "درگاه ها"
+
+msgid "zibal"
+msgstr "زیبال"
+
+msgid "is installment"
+msgstr "اقساطی است؟"

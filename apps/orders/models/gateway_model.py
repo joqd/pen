@@ -10,6 +10,7 @@ class Gateway(models.Model):
 
     title = models.CharField(_('title'), max_length=100, unique=True)
     badge = models.FileField(_('badge'), upload_to='payment-badges', blank=True, null=True)
+    is_installment = models.BooleanField(_('is installment'), default=False)
 
     credentials = models.JSONField(_('credentials'), default=dict, blank=True)
     origin = models.CharField(_('origin'), max_length=50, choices=Origin.choices)

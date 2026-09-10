@@ -50,6 +50,7 @@ class GatewayAdmin(ModelAdmin):
                     'title',
                     'badge',
                     'origin',
+                    'is_installment',
                     'credentials',
                     'description',
                 ),
