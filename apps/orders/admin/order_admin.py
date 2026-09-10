@@ -170,7 +170,7 @@ class OrderAdmin(ModelAdmin):
     readonly_fields = (
         'token',
         'order_number',
-        'status',
+        # 'status',
         'subtotal_amount',
         'total_amount',
         'created_at',
