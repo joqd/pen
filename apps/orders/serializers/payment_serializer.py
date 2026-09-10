@@ -134,7 +134,7 @@ class GatewaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Gateway
-        fields = ['id', 'title', 'badge', 'description', 'min_amount', 'max_amount']
+        fields = ['id', 'title', 'badge', 'is_installment', 'description', 'min_amount', 'max_amount']
         read_only_fields = fields
 
 
