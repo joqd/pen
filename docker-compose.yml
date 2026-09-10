@@ -12,6 +12,17 @@ services:
       - ./media:/app/media
     networks:
       - shared_net
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
 
 networks:
   shared_net:
