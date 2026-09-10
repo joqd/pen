@@ -13,16 +13,28 @@ services:
     networks:
       - shared_net
     depends_on:
-      - redis
+      - rdb
+      - pg
 
-  redis7:
+  rdb:
     image: redis:7-alpine
     restart: unless-stopped
     volumes:
       - redis_data:/data
 
+  pg:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-starboy}
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   redis_data:
+  postgres_data:
 
 networks:
   shared_net:
