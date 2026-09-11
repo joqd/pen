@@ -107,6 +107,8 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
         invoice_id: str = '',
         callback_method: str = '',
     ) -> PaymentRequestResult:
+        amount /= 10
+
         payload: dict[str, Any] = {
             'pin': self.pin,
             'amount': amount,
@@ -164,6 +166,8 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
         return transid, status
 
     def verify_payment(self, *, authority: str, amount: int) -> PaymentVerifyResult:
+        amount /= 10
+        
         payload = {
             'pin': self.pin,
             'amount': amount,
