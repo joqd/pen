@@ -103,7 +103,7 @@ class OrderListCreateAPIView(APIView):
         # responses={200: OrderListSerializer(many=True)},
     )
     def get(self, request):
-        queryset = Order.objects.filter(user=request.user).annotate(items_count=Count('items'))
+        queryset = Order.objects.filter(user=request.user).annotate(items_count=Count('items')).order_by('-created_at')
 
         status_param = request.query_params.get('status')
         if status_param:
