@@ -36,9 +36,9 @@ class AliasingOrderingFilter(filters.OrderingFilter):
     2. Deterministic, "grouped" ordering that's stable across pages.
        - `view.ordering_priority_fields`: fields prepended to *every*
          ordering, regardless of what the client requested or the default.
-         We use this to always push products with no active variant to the
-         very end of the list, no matter which field/direction is used to
-         sort the rest.
+         We use this to always push products with no in-stock active variant
+         to the very end of the list, no matter which field/direction is
+         used to sort the rest.
        - A trailing `-id` tie-breaker is appended automatically if the
          resolved ordering doesn't already end on `id`. Without a fully
          deterministic ORDER BY, rows that tie on the requested field(s)
@@ -139,10 +139,11 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     # `min_price` annotation name. See AliasingOrderingFilter above.
     ordering_param_aliases = {'price': 'min_price'}
     # Always applied first, before whatever the client asked for (or the
-    # default below): products with no active variant (has_variants=False)
-    # sort after products with at least one, in every ordering and on every
-    # page. See AliasingOrderingFilter.
-    ordering_priority_fields = ['-has_variants']
+    # default below): products with no in-stock active variant
+    # (has_stock=False) sort after products that do, in every ordering and
+    # on every page — regardless of any filter (e.g. in_stock=false) also
+    # applied. See AliasingOrderingFilter.
+    ordering_priority_fields = ['-has_stock']
     ordering = ['-published_at', '-id']
     lookup_field = 'slug'
     tags = ['Products']
@@ -165,6 +166,13 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         # don't have that problem.
         active_variants_qs = ProductVariant.objects.filter(product=OuterRef('pk'), is_active=True)
         min_price_subquery = active_variants_qs.order_by('price').values('price')[:1]
+        # Same idea as active_variants_qs above: a correlated Exists() bound
+        # to OuterRef('pk'), so it never joins/fans-out the outer query. This
+        # checks actual purchasable stock (stock__gt=0), not just "has an
+        # active variant" — a product can have active variants that are all
+        # out of stock, and those should still be pushed to the end of the
+        # list (see ordering_priority_fields below).
+        in_stock_variants_qs = active_variants_qs.filter(stock__gt=0)
 
         return (
             Product.objects.select_related('category')
@@ -191,6 +199,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
                 ),
                 min_price=Subquery(min_price_subquery),
                 has_variants=Exists(active_variants_qs),
+                has_stock=Exists(in_stock_variants_qs),
             )
             .distinct()
         )
@@ -213,9 +222,11 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
                     'variants. Price is not stored on the product itself but on '
                     'each variant, so this orders by `MIN(price)` across the '
                     "product's active variants.\n\n"
-                    'Regardless of which field/direction you choose, products with '
-                    '**no active variant** always sort after every product that has '
-                    'one — consistently across pages, not just within a single page. '
+                    'Regardless of which field/direction you choose (and regardless '
+                    'of any other filter applied, e.g. `in_stock`), products with '
+                    '**no in-stock active variant** always sort after every product '
+                    'that has one — consistently across pages, not just within a '
+                    'single page. '
                     'A `-id` tie-breaker is also applied automatically so pagination '
                     'stays stable even when many products tie on the chosen field.\n\n'
                     'Example: `?ordering=-price` or `?ordering=created_at,-title`'
@@ -240,7 +251,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         Searchable by title/slug/short description (`search`) and filterable
         by category, collection, featured status, and stock availability
         (`in_stock`). See the `ordering` parameter for sorting options and how
-        products without variants are always placed at the end.
+        out-of-stock products are always placed at the end.
         """
         return super().list(request, *args, **kwargs)
 

@@ -31,6 +31,14 @@ logger = logging.getLogger(__name__)
 
 PENDING_TRANSACTION_TIMEOUT_MINUTES = getattr(settings, 'PENDING_TRANSACTION_TIMEOUT_MINUTES', 20)
 
+# All amounts in our own models (Order.total_amount, PaymentTransaction.amount)
+# are stored in Toman, but every gateway adapter (Zarinpal, Aqaye Pardakht,
+# ...) expects/returns amounts in Rial - the smaller unit, worth 1/10th of a
+# Toman. Any amount crossing the boundary into `adapter.request_payment` /
+# `adapter.verify_payment` must be converted first, or we underpay/underverify
+# by a factor of 10 at the gateway while our own DB stays correct in Toman.
+TOMAN_TO_RIAL = 10
+
 
 class PaymentCreationError(Exception):
     """Raised when a payment attempt can't be started (order not payable, gateway failure, ...)."""
@@ -80,7 +88,7 @@ def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tu
 
     try:
         result = adapter.request_payment(
-            amount=payment_transaction.amount,
+            amount=payment_transaction.amount * TOMAN_TO_RIAL,
             callback_url=callback_url,
             description=f'Payment for order {order.order_number}',
             mobile=getattr(order.user, 'phone', '') or '',
@@ -139,7 +147,7 @@ def handle_payment_callback(*, gateway_origin: str, authority: str, gateway_stat
     adapter = get_adapter(payment_transaction.gateway)
 
     try:
-        result = adapter.verify_payment(authority=authority, amount=payment_transaction.amount)
+        result = adapter.verify_payment(authority=authority, amount=payment_transaction.amount * TOMAN_TO_RIAL)
         if settings.DEBUG and not result.success:
             logger.warning(
                 'Aqaye Pardakht verify failed: code=%s message=%s raw=%s',
