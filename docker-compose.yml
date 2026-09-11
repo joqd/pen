@@ -20,6 +20,32 @@ services:
     volumes:
       - redis_data:/data
 
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["celery", "-A", "program", "worker", "--loglevel=info"]
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./media:/app/media
+    depends_on:
+      - redis
+      - postgres
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["celery", "-A", "program", "beat", "--loglevel=info"]
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+
   postgres:
     image: postgres:17-alpine
     restart: unless-stopped
