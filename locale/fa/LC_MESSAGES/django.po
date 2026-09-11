@@ -798,3 +798,6 @@ msgstr "زیبال"
 
 msgid "is installment"
 msgstr "اقساطی است؟"
+
+msgid "origin"
+msgstr "مبدا"
