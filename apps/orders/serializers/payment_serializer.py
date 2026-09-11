@@ -86,6 +86,7 @@ class OrderListSerializer(serializers.ModelSerializer):
             'items_count',
             'is_payable',
             'is_expired',
+            'expires_at',
             'created_at',
         ]
         read_only_fields = fields

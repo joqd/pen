@@ -167,7 +167,7 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
 
     def verify_payment(self, *, authority: str, amount: int) -> PaymentVerifyResult:
         amount /= 10
-        
+
         payload = {
             'pin': self.pin,
             'amount': amount,
