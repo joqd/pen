@@ -9,6 +9,7 @@ from ..serializers.site_serializer import FooterBadgeSerializer
 class FooterBadgeListView(ListAPIView):
     serializer_class = FooterBadgeSerializer
     permission_classes = []
+    pagination_class = None
 
     def get_queryset(self):
         return FooterBadge.objects.filter(is_active=True)
