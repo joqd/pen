@@ -29,6 +29,7 @@ class FooterBadgeAdmin(ModelAdmin):
                 'fields': (
                     'title',
                     'html',
+                    'html_2',
                 ),
             },
         ),
