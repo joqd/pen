@@ -766,6 +766,9 @@ msgstr "تنظیمات"
 msgid "html"
 msgstr "کد"
 
+msgid "html 2"
+msgstr "کد ثانویه"
+
 msgid "priority"
 msgstr "اولویت"
 

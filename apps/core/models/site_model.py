@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 class FooterBadge(models.Model):
     title = models.CharField(_('title'), max_length=100, unique=True)
     html = models.TextField(_('html'))
+    html_2 = models.TextField(_('html 2'), blank=True, null=True)
     priority = models.PositiveIntegerField(_('priority'), default=0)
     is_active = models.BooleanField(_('is active'), default=True)
 

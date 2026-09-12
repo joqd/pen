@@ -10,5 +10,6 @@ class FooterBadgeSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'html',
+            'html_2'
             'priority',
         ]
