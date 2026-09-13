@@ -165,7 +165,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         # avg_rating / review_count. Subquery/Exists are fully isolated and
         # don't have that problem.
         active_variants_qs = ProductVariant.objects.filter(product=OuterRef('pk'), is_active=True)
-        min_price_subquery = active_variants_qs.order_by('price').values('price')[:1]
+        min_price_subquery = active_variants_qs.order_by('base_price_usd').values('base_price_usd')[:1]
         # Same idea as active_variants_qs above: a correlated Exists() bound
         # to OuterRef('pk'), so it never joins/fans-out the outer query. This
         # checks actual purchasable stock (stock__gt=0), not just "has an
