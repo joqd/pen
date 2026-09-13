@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ExchangeRate(models.Model):
-    currency = models.CharField(_('currency'), max_length=3, default='USD')
+    currency = models.CharField(_('currency'), max_length=3, default='USDT')
     rate = models.DecimalField(_('rate'), max_digits=20, decimal_places=0)
     source = models.CharField(_('source'), max_length=50, blank=True)
     fetched_at = models.DateTimeField(
