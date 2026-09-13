@@ -12,7 +12,6 @@ class ExchangeRateAdmin(ModelAdmin):
         'rate_display',
         'source',
         'fetched_at',
-        'created_at',
     )
     list_display_links = ('currency',)
     list_filter = ('currency', 'source')
@@ -23,4 +22,4 @@ class ExchangeRateAdmin(ModelAdmin):
 
     @admin.display(description=_('rate'), ordering='rate')
     def rate_display(self, obj):
-        return f'{obj.rate:,.0f} ریال'
+        return f'{obj.rate:,.0f} تومان'

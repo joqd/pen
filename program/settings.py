@@ -106,6 +106,8 @@ SEO_PRICE_CURRENCY = os.environ.get('SEO_PRICE_CURRENCY') or None
 
 SEO_SOCIAL_LINKS = env_list('SEO_SOCIAL_LINKS', [])
 
+# Exchange rate settings
+NETARZ_TOKEN = os.environ.get('NETARZ_TOKEN') or None
 
 INSTALLED_APPS = [
     'unfold',
@@ -426,6 +428,14 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apps.orders.tasks.purge_old_orders',
         'schedule': crontab(hour=3, minute=30),
     },
+    'delete-old-exchange-rates': {
+        'task': 'apps.core.tasks.delete_old_exchange_rates',
+        'schedule': crontab(hour=4, minute=0),
+    },
+    'update-usd-exchange-rate': {
+        'task': 'apps.core.tasks.update_usd_exchange_rate',
+        'schedule': crontab(),
+    },
 }
 
 
@@ -458,10 +468,3 @@ CELERY_TASK_ACKS_LATE = True
 # warning and means the worker retries connecting to redis instead of
 # crashing if redis isn't up yet (e.g. compose still starting it).
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-
-CELERY_BEAT_SCHEDULE = {
-    'expire-pending-orders': {
-        'task': 'apps.orders.tasks.expire_pending_orders',
-        'schedule': 60.0,  # every minute
-    },
-}
