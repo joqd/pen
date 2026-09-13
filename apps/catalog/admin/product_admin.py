@@ -17,6 +17,17 @@ from ..models import (
 )
 
 
+def _format_computed_price(value):
+    """
+    Shared formatting for read-only computed-price columns/fields across
+    the Product and ProductVariant admins. Returns an em dash when the
+    price can't be computed yet (e.g. no USD exchange rate fetched yet).
+    """
+    if value is None:
+        return '—'
+    return f'{value:,}'
+
+
 class ProductImageInline(TabularInline):
     model = ProductImage
     extra = 0
@@ -49,17 +60,35 @@ class ProductVariantInline(TabularInline):
     model = ProductVariant
     extra = 0
 
+    # `base_price_usd` / `compare_price_usd` are what's actually editable
+    # here. `computed_price` / `computed_compare_price` are read-only
+    # previews of what the customer will see, using the latest exchange
+    # rate, so whoever edits this inline doesn't have to do the math.
     fields = (
         'size',
         'sku',
-        'price',
-        'compare_price',
+        'base_price_usd',
+        'compare_price_usd',
+        'computed_price',
+        'computed_compare_price',
         'stock',
         'is_active',
     )
 
-    readonly_fields = ('sku',)
+    readonly_fields = ('sku', 'computed_price', 'computed_compare_price')
     autocomplete_fields = ('size',)
+
+    @display(description=_('price'))
+    def computed_price(self, obj):
+        if obj is None or obj.pk is None:
+            return '—'
+        return _format_computed_price(obj.price)
+
+    @display(description=_('compare price'))
+    def computed_compare_price(self, obj):
+        if obj is None or obj.pk is None:
+            return '—'
+        return _format_computed_price(obj.compare_price)
 
 
 class AudioInline(TabularInline):
@@ -175,8 +204,13 @@ class ProductAdmin(ModelAdmin):
             .annotate(
                 variants_count=Count('variants'),
                 stock_sum=Sum('variants__stock'),
-                min_price=Min('variants__price'),
-                max_price=Max('variants__price'),
+                # `price` is no longer a DB column (it's computed from
+                # base_price_usd * exchange rate), so we can only
+                # aggregate the raw USD values here. The conversion to
+                # local currency happens once per row in price_range()
+                # below, using the same (cached) rate for every row.
+                min_base_price_usd=Min('variants__base_price_usd'),
+                max_base_price_usd=Max('variants__base_price_usd'),
             )
         )
 
@@ -208,13 +242,24 @@ class ProductAdmin(ModelAdmin):
 
     @display(description=_('price'))
     def price_range(self, obj):
-        if obj.min_price is None:
+        if obj.min_base_price_usd is None:
             return '—'
 
-        if obj.min_price == obj.max_price:
-            return f'{obj.min_price:,}'
+        # Same USD amount -> same local price, so converting the min/max
+        # USD values individually gives the correct min/max local range
+        # (the rate is a positive scalar, it doesn't change ordering).
+        min_price = ProductVariant.compute_price_from_usd(obj.min_base_price_usd)
+        max_price = ProductVariant.compute_price_from_usd(obj.max_base_price_usd)
 
-        return f'{obj.min_price:,} → {obj.max_price:,}'
+        if min_price is None or max_price is None:
+            # base_price_usd values exist, but no exchange rate is
+            # available yet to convert them.
+            return '—'
+
+        if min_price == max_price:
+            return _format_computed_price(min_price)
+
+        return f'{_format_computed_price(min_price)} → {_format_computed_price(max_price)}'
 
 
 @admin.register(ProductVariant)
@@ -239,11 +284,14 @@ class ProductVariantAdmin(ModelAdmin):
         'is_active',
     )
 
+    # `price` is a computed property now (not a DB column), so it can no
+    # longer be sorted/filtered on directly. It still works fine as a
+    # read-only list_display column via the method below.
     list_display = (
         'sku',
         'product',
         'size',
-        'price',
+        'display_price',
         'stock',
         'is_active',
         'updated_at',
@@ -252,6 +300,8 @@ class ProductVariantAdmin(ModelAdmin):
     readonly_fields = (
         'created_at',
         'updated_at',
+        'display_price',
+        'display_compare_price',
     )
 
     fieldsets = (
@@ -262,8 +312,10 @@ class ProductVariantAdmin(ModelAdmin):
                     'product',
                     'size',
                     'sku',
-                    'price',
-                    'compare_price',
+                    'base_price_usd',
+                    'compare_price_usd',
+                    'display_price',
+                    'display_compare_price',
                     'stock',
                     'is_active',
                 ),
@@ -280,6 +332,14 @@ class ProductVariantAdmin(ModelAdmin):
             },
         ),
     )
+
+    @display(description=_('price'))
+    def display_price(self, obj):
+        return _format_computed_price(obj.price)
+
+    @display(description=_('compare price'))
+    def display_compare_price(self, obj):
+        return _format_computed_price(obj.compare_price)
 
 
 @admin.register(ProductImage)

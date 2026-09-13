@@ -822,3 +822,9 @@ msgstr "نرخ ارز"
 
 msgid "exchange rates"
 msgstr "نرخ های ارز"
+
+msgid "base price (USD)"
+msgstr "قیمت به دلار"
+
+msgid "compare price (USD)"
+msgstr "قیمت قبل به دلار"
