@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import display
-from django.db.models import Count, F, Sum
+from django.db.models import Count, Sum
 from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin, TabularInline
 
@@ -62,10 +62,10 @@ class CartAdmin(ModelAdmin):
             super()
             .get_queryset(request)
             .select_related('user')
+            .prefetch_related('items__variant')
             .annotate(
                 items_count=Count('items'),
                 quantity_sum=Sum('items__quantity'),
-                total_sum=Sum(F('items__quantity') * F('items__variant__price')),
             )
         )
 
@@ -90,12 +90,10 @@ class CartAdmin(ModelAdmin):
     def total_quantity(self, obj):
         return obj.quantity_sum or 0
 
-    @display(
-        description=_('total'),
-        ordering='total_sum',
-    )
+    @display(description=_('total'))
     def total_price(self, obj):
-        return f'{(obj.total_sum or 0):,}'
+        total = sum(item.variant.price * item.quantity for item in obj.items.all())
+        return f'{total:,}'
 
     @display(description=_('is guest'))
     def guest_status(self, obj):
