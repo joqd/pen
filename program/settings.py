@@ -333,6 +333,11 @@ UNFOLD = {
                         'icon': 'badge',
                         'link': reverse_lazy('admin:core_footerbadge_changelist'),
                     },
+                    {
+                        'title': _('exchange rate'),
+                        'icon': 'currency_exchange',
+                        'link': reverse_lazy('admin:core_exchangerate_changelist'),
+                    },
                 ],
             },
         ],

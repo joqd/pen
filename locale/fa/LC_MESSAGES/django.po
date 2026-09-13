@@ -804,3 +804,21 @@ msgstr "اقساطی است؟"
 
 msgid "origin"
 msgstr "مبدا"
+
+msgid "currency"
+msgstr "ارز"
+
+msgid "rate"
+msgstr "قیمت"
+
+msgid "source"
+msgstr "منبع"
+
+msgid "fetched at"
+msgstr "دریافت در"
+
+msgid "exchange rate"
+msgstr "نرخ ارز"
+
+msgid "exchange rates"
+msgstr "نرخ های ارز"
