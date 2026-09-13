@@ -418,7 +418,7 @@ CHECKOUT_EXPIRE_MINUTES = 15
 CELERY_BEAT_SCHEDULE = {
     'expire-pending-orders': {
         'task': 'apps.orders.tasks.expire_pending_orders',
-        'schedule': crontab(minute='*/6'),
+        'schedule': 10.0,
     },
     'cleanup-stale-guest-carts': {
         'task': 'apps.orders.tasks.cleanup_stale_guest_carts',
@@ -434,7 +434,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'update-usd-exchange-rate': {
         'task': 'apps.core.tasks.update_usd_exchange_rate',
-        'schedule': crontab(),
+        'schedule': crontab(minute='*/10'),
     },
 }
 
