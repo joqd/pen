@@ -20,6 +20,7 @@ class PaymentTransaction(models.Model):
         PENDING = 'pending', _('pending')
         SUCCESS = 'success', _('success')
         FAILED = 'failed', _('failed')
+        CANCELED = 'canceled', _('canceled')
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transactions', verbose_name=_('order'))
     gateway = models.ForeignKey(
