@@ -16,8 +16,12 @@ class BaseDigipayService:
     DIGIPAY_VERSION = '2022-02-02'
     AGENT = 'WEB'
 
-    def __init__(self, auth_client: Optional[DigipayAuthClient] = None):
-        self.auth_client = auth_client or DigipayAuthClient()
+    def __init__(self, gateway=None, auth_client: Optional[DigipayAuthClient] = None):
+        if auth_client is None:
+            if gateway is None:
+                raise ValueError('BaseDigipayService requires either "gateway" or "auth_client".')
+            auth_client = DigipayAuthClient(gateway)
+        self.auth_client = auth_client
         self.base_url = self.auth_client.base_url
         self.timeout = getattr(settings, 'DIGIPAY_TIMEOUT', 15)
 

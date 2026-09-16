@@ -14,26 +14,45 @@ logger = logging.getLogger(__name__)
 class DigipayAuthClient:
     """Handles Digipay OAuth token retrieval, refresh and caching.
 
-    Required settings: DIGIPAY_CLIENT_ID, DIGIPAY_CLIENT_SECRET,
-    DIGIPAY_USERNAME, DIGIPAY_PASSWORD. Base URL switches on settings.DEBUG.
+    Credentials (client_id, client_secret, username, password) come from
+    `gateway.credentials` — the same `Gateway` model row every other
+    adapter (Zarinpal, Zibal, ...) reads its own credentials from — rather
+    than Django settings, so multiple `Gateway` rows can each hold their
+    own Digipay account. Base URL still switches on settings.DEBUG, since
+    that's an environment concern rather than a per-gateway one.
     """
 
-    CACHE_KEY_ACCESS_TOKEN = 'digipay:access_token'
-    CACHE_KEY_REFRESH_TOKEN = 'digipay:refresh_token'
     TOKEN_ENDPOINT = '/oauth/token'
 
-    def __init__(self):
+    def __init__(self, gateway):
+        self.gateway = gateway
         self.base_url = self._get_base_url()
-        self.client_id = settings.DIGIPAY_CLIENT_ID
-        self.client_secret = settings.DIGIPAY_CLIENT_SECRET
-        self.username = settings.DIGIPAY_USERNAME
-        self.password = settings.DIGIPAY_PASSWORD
+        self.client_id = self._get_credential('client_id')
+        self.client_secret = self._get_credential('client_secret')
+        self.username = self._get_credential('username')
+        self.password = self._get_credential('password')
         self.timeout = getattr(settings, 'DIGIPAY_TIMEOUT', 15)
+
+    def _get_credential(self, key: str) -> str:
+        value = self.gateway.credentials.get(key)
+        if not value:
+            raise DigipayAuthenticationError(f'Gateway "{self.gateway}" has no {key} configured.')
+        return value
+
+    # Cache keys are scoped per gateway (by pk) so two Gateway rows with
+    # different Digipay accounts never read/overwrite each other's token.
+    @property
+    def CACHE_KEY_ACCESS_TOKEN(self) -> str:
+        return f'digipay:{self.gateway.pk}:access_token'
+
+    @property
+    def CACHE_KEY_REFRESH_TOKEN(self) -> str:
+        return f'digipay:{self.gateway.pk}:refresh_token'
 
     @staticmethod
     def _get_base_url() -> str:
         if settings.DEBUG:
-            return 'https://uat.mydigipay.info/digipay/api'
+            return 'https://api.mydigipay.com/digipay/api'
         return 'https://api.mydigipay.com/digipay/api'
 
     def _basic_auth_header(self) -> str:

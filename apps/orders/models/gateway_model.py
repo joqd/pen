@@ -7,6 +7,7 @@ class Gateway(models.Model):
         AQAYEPARDAKHT = 'aqayepardakht', _('aqayepardakht')
         ZARINPAL = 'zarinpal', _('zarinpal')
         ZIBAL = 'zibal', _('zibal')
+        DIGIPAY = 'digipay', _('digipay')
 
     title = models.CharField(_('title'), max_length=100, unique=True)
     badge = models.FileField(_('badge'), upload_to='payment-badges', blank=True, null=True)

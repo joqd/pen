@@ -1,5 +1,5 @@
 from .auth import DigipayAuthClient
-from .base import BaseDigipayService
+from .digibase import BaseDigipayService
 from .exceptions import (
     DigipayAPIError,
     DigipayAuthenticationError,

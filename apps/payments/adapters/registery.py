@@ -12,6 +12,7 @@ from apps.orders.models import Gateway  # adjust import to your actual app layou
 
 from .aqayepardakht import AqayePardakhtAdapter
 from .base import BaseGatewayAdapter
+from .digipay import DigipayAdapter
 from .zarinpal import ZarinpalAdapter
 from .zibal import ZibalAdapter
 
@@ -19,6 +20,7 @@ _ADAPTERS: dict[str, type[BaseGatewayAdapter]] = {
     Gateway.Origin.ZARINPAL: ZarinpalAdapter,
     Gateway.Origin.AQAYEPARDAKHT: AqayePardakhtAdapter,  # stub — see aqayepardakht.py
     Gateway.Origin.ZIBAL: ZibalAdapter,
+    Gateway.Origin.DIGIPAY: DigipayAdapter,
 }
 
 

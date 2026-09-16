@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from .base import BaseDigipayService
-from .constants import UPG_TICKET_TYPE, ProductType, SplitType
+from .constants import UPG_TICKET_TYPE, ProductType, SplitType, TicketType
+from .digibase import BaseDigipayService
 from .exceptions import DigipayValidationError
 
 
@@ -153,4 +153,65 @@ class DigipayTicketService(BaseDigipayService):
             path=self.PATH,
             params={'type': ticket_type},
             json_data=payload,
+        )
+
+    # -- verify / deliver ---------------------------------------------------
+    # Not present in the original package — added so the gateway-adapter
+    # layer (see adapters/digipay.py) has something to call from
+    # `verify_payment()`. `digibase.request()` already raises
+    # `DigipayAPIError` on any non-2xx response, so unlike Zarinpal/Zibal
+    # there's no separate `data.code` to inspect here: a call that returns
+    # normally is a success, one that doesn't raise means the ticket
+    # wasn't verified/delivered.
+    #
+    # Confirmed against third-party Digipay SDKs (PHP/Go): verify and
+    # reverse both need `trackingCode` *and* `providerId` together (the
+    # same providerId used at ticket-creation time), plus the `type` param.
+    #
+    # TODO(you): still unconfirmed — whether `trackingCode` goes in the
+    # URL path (as written below) vs. as a param alongside `providerId`
+    # and `type`, and the exact path segments (`/verify`, `/deliver`,
+    # `/reverse`). Not in the files you sent me or in what I could find
+    # publicly; if you get a 404/400 here, that's the first thing to check
+    # — Digipay's own error message will usually tell you what's missing.
+    def verify_ticket(
+        self,
+        tracking_code: str,
+        provider_id: str,
+        ticket_type: int = TicketType.BNPL,
+    ) -> Dict[str, Any]:
+        """Confirms a ticket was actually paid. Call once, right after the
+        buyer is redirected back to your callback_url."""
+        return self.request(
+            method='POST',
+            path=f'/tickets/{tracking_code}/verify',
+            params={'type': ticket_type, 'providerId': provider_id},
+        )
+
+    def deliver_ticket(
+        self,
+        tracking_code: str,
+        provider_id: str,
+        ticket_type: int = TicketType.BNPL,
+    ) -> Dict[str, Any]:
+        """Confirms the goods/service were actually delivered to the buyer.
+        Digipay's BNPL flow expects this after verify(), before it will
+        release/settle funds — call it once you've fulfilled the order."""
+        return self.request(
+            method='POST',
+            path=f'/tickets/{tracking_code}/deliver',
+            params={'type': ticket_type, 'providerId': provider_id},
+        )
+
+    def reverse_ticket(
+        self,
+        tracking_code: str,
+        provider_id: str,
+        ticket_type: int = TicketType.BNPL,
+    ) -> Dict[str, Any]:
+        """Cancels a ticket that was verified but not yet delivered."""
+        return self.request(
+            method='POST',
+            path=f'/tickets/{tracking_code}/reverse',
+            params={'type': ticket_type, 'providerId': provider_id},
         )
