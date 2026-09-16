@@ -7,7 +7,7 @@ Flow:
     1. POST /api/v2/create  -> {"status": "success", "transid": "..."}
     2. Redirect the buyer to /startpay/{transid}
        (or /startpay/sandbox/{transid} when using the "sandbox" pin)
-    3. The gateway POSTs back to your callback URL with:
+    3. Gateway POSTs back to the callback URL with:
        transid, cardnumber, tracking_number, invoice_id, bank, status (1/0)
     4. POST /api/v2/verify -> {"status": "success", "code": "1"}
        code: "0" = not paid, "1" = paid, "2" = already verified
@@ -32,7 +32,7 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
     VERIFY_SUCCESS_CODE = '1'
     VERIFY_ALREADY_VERIFIED_CODE = '2'
 
-    # Error codes documented at https://aqayepardakht.ir/api/
+    # https://aqayepardakht.ir/api/
     ERROR_MESSAGES = {
         '-1': 'amount نمی‌تواند خالی باشد',
         '-2': 'کد پین درگاه نمی‌تواند خالی باشد',
@@ -50,7 +50,6 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
         '-14': 'درگاه بر روی سایت دیگری در حال استفاده است',
     }
 
-    # -- credentials / environment -----------------------------------------
     @property
     def pin(self) -> str:
         pin = self.gateway.credentials.get('pin')
@@ -60,22 +59,14 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
 
     @property
     def is_sandbox(self) -> bool:
-        # aqayepardakht's own convention: the literal pin value "sandbox"
-        # puts the gateway in test mode; we also allow an explicit flag.
         return bool(self.gateway.credentials.get('sandbox', False)) or self.pin == 'sandbox'
 
     @property
     def startpay_url(self) -> str:
-        """
-        Base "start payment" URL to prepend a `transid` to, so callers
-        (e.g. `services.py`, when resuming an existing pending transaction
-        instead of calling `request_payment` again) can build the redirect
-        URL themselves without duplicating the sandbox/live path logic.
-        """
+        """Base "start payment" URL to prepend a `transid` to, used internally by `request_payment`."""
         path = '/startpay/sandbox/' if self.is_sandbox else '/startpay/'
         return f'{self.BASE_URL}{path}'
 
-    # -- internal helpers ---------------------------------------------------
     def _error_message(self, code: Any) -> str:
         return self.ERROR_MESSAGES.get(str(code), 'خطای نامشخص از سمت آقای پرداخت')
 
@@ -92,8 +83,6 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
                 f'Aqaye Pardakht returned a non-JSON response from {url} '
                 f'(http_status={response.status_code}): {response.text[:200]!r}'
             ) from exc
-
-    # -- public interface -----------------------------------------------
 
     def request_payment(
         self,
@@ -147,18 +136,8 @@ class AqayePardakhtAdapter(BaseGatewayAdapter):
 
     @classmethod
     def extract_callback_params(cls, request) -> tuple[str, str]:
-        # Aqaye Pardakht POSTs back to your callback URL by default:
-        #   transid, cardnumber, tracking_number, invoice_id, bank, status
-        # where status is "1" (paid) / "0" (not paid) — NOT the same
-        # vocabulary as Zarinpal's "OK"/"NOK". The rest of the codebase
-        # (services.py) already speaks Zarinpal's "OK"/"NOK" convention for
-        # its "skip verify on a known-failed callback" shortcut, so we
-        # normalize to that same vocabulary here rather than leaking
-        # Aqaye Pardakht's raw values up to gateway-agnostic code.
-        #
-        # If you passed callback_method='GET' in request_payment(), the
-        # same fields arrive as query params instead of POST body, so we
-        # fall back to query_params when the POST body is empty.
+        # POST callback (or query params if callback_method='GET'):
+        # transid, cardnumber, tracking_number, invoice_id, bank, status (1/0)
         data = getattr(request, 'data', None) or request.POST
         transid = data.get('transid', '') or request.query_params.get('transid', '')
         raw_status = data.get('status', '') or request.query_params.get('status', '')

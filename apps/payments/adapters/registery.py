@@ -18,7 +18,7 @@ from .zibal import ZibalAdapter
 
 _ADAPTERS: dict[str, type[BaseGatewayAdapter]] = {
     Gateway.Origin.ZARINPAL: ZarinpalAdapter,
-    Gateway.Origin.AQAYEPARDAKHT: AqayePardakhtAdapter,  # stub — see aqayepardakht.py
+    Gateway.Origin.AQAYEPARDAKHT: AqayePardakhtAdapter,
     Gateway.Origin.ZIBAL: ZibalAdapter,
     Gateway.Origin.DIGIPAY: DigipayAdapter,
 }
@@ -33,13 +33,9 @@ def get_adapter(gateway: Gateway) -> BaseGatewayAdapter:
 
 def get_adapter_class(origin: str) -> type[BaseGatewayAdapter]:
     """
-    Like `get_adapter`, but returns the class itself instead of an
-    instance bound to a `Gateway` row.
-
-    Used by the callback view to parse the gateway's raw callback request
-    (`extract_callback_params`) *before* a `Gateway` has necessarily been
-    looked up — that parsing needs no credentials, only knowledge of the
-    gateway's callback field names/method.
+    Like `get_adapter`, but returns the class itself instead of an instance
+    bound to a `Gateway` row. Used by the callback view to parse the
+    gateway's raw callback request before a `Gateway` row is looked up.
     """
     adapter_cls = _ADAPTERS.get(origin)
     if adapter_cls is None:

@@ -6,11 +6,9 @@ Official API docs: https://help.zibal.ir/IPG/API/
 Flow:
     1. POST /v1/request  -> {"result": 100, "trackId": ..., "message": "success"}
     2. Redirect the buyer to /start/{trackId}
-       (merchant = "zibal" puts the gateway in sandbox/test mode)
-    3. The gateway redirects back to your callback URL (GET) with:
-       trackId, success (1/0), status, orderId
+    3. Gateway redirects back (GET) with: trackId, success (1/0), status, orderId
     4. POST /v1/verify -> {"result": 100, "message": "success", "refNumber": ...}
-       result: 100 = verified now, 201 = already verified, anything else = failure
+       result: 100 = verified now, 201 = already verified, else = failure
 """
 
 from typing import Any
@@ -33,10 +31,7 @@ class ZibalAdapter(BaseGatewayAdapter):
 
     SANDBOX_MERCHANT = 'zibal'
 
-    # Result codes documented at https://help.zibal.ir/IPG/API/#result
-    # (shared between /v1/request and /v1/verify; not every code applies
-    # to both endpoints, but a single lookup table is fine since codes
-    # don't collide across them).
+    # https://help.zibal.ir/IPG/API/#result — shared between request/verify.
     ERROR_MESSAGES = {
         102: 'merchant یافت نشد',
         103: 'merchant غیرفعال است',
@@ -50,7 +45,6 @@ class ZibalAdapter(BaseGatewayAdapter):
         203: 'trackId نامعتبر است',
     }
 
-    # -- credentials / environment -----------------------------------------
     @property
     def merchant(self) -> str:
         merchant = self.gateway.credentials.get('merchant')
@@ -60,12 +54,8 @@ class ZibalAdapter(BaseGatewayAdapter):
 
     @property
     def is_sandbox(self) -> bool:
-        # Zibal's own convention: the literal merchant value "zibal" puts
-        # the gateway in test mode; we also allow an explicit flag, mirroring
-        # the aqayepardakht adapter's "sandbox" pin handling.
         return bool(self.gateway.credentials.get('sandbox', False)) or self.merchant == self.SANDBOX_MERCHANT
 
-    # -- internal helpers ---------------------------------------------------
     def _error_message(self, code: Any) -> str:
         try:
             code = int(code)
@@ -87,8 +77,6 @@ class ZibalAdapter(BaseGatewayAdapter):
                 f'(http_status={response.status_code}): {response.text[:200]!r}'
             ) from exc
 
-    # -- public interface -----------------------------------------------
-
     def request_payment(
         self,
         *,
@@ -100,11 +88,8 @@ class ZibalAdapter(BaseGatewayAdapter):
         order_id: str = '',
         card_number: str = '',
     ) -> PaymentRequestResult:
-        # Zibal wants amount in Rials; the rest of this codebase (Zarinpal,
-        # Aqaye Pardakht) works in Tomans, so callers of this adapter must
-        # already be passing Rials here, or `services.py` needs to convert
-        # (amount * 10) before calling this method — keep that conversion
-        # gateway-agnostic code, not inside this adapter.
+        # Zibal wants amount in Rials; convert before calling this method
+        # if the rest of the codebase works in Tomans.
         payload: dict[str, Any] = {
             'merchant': self.merchant,
             'amount': amount,
@@ -140,12 +125,7 @@ class ZibalAdapter(BaseGatewayAdapter):
 
     @classmethod
     def extract_callback_params(cls, request) -> tuple[str, str]:
-        # Zibal redirects the buyer's browser with a GET request:
-        # https://yoursite.com/callback/?trackId=...&success=1|0&status=...&orderId=...
-        # "success" (1/0) is the reliable field to normalize from — NOT
-        # the same vocabulary as Zarinpal's "OK"/"NOK", so we translate it
-        # to that shared vocabulary here rather than leaking Zibal's raw
-        # values up to gateway-agnostic code (see base.py).
+        # GET callback: ?trackId=...&success=1|0&status=...&orderId=...
         track_id = request.query_params.get('trackId', '')
         success = request.query_params.get('success', '')
         status = 'OK' if success == '1' else 'NOK'
@@ -161,10 +141,7 @@ class ZibalAdapter(BaseGatewayAdapter):
         result = data.get('result')
 
         if result in (self.SUCCESS_RESULT, self.VERIFY_ALREADY_VERIFIED_RESULT):
-            # Defense in depth: Zibal's verify response also echoes back the
-            # paid amount (in Rials) — make sure it actually matches what we
-            # expect before trusting the transaction as paid, the same way
-            # Zarinpal/Aqaye Pardakht let their gateway assert this for us.
+            # Defense in depth: confirm the paid amount actually matches.
             paid_amount = data.get('amount')
             if paid_amount is not None and int(paid_amount) != int(amount):
                 return PaymentVerifyResult(

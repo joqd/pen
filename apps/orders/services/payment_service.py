@@ -47,15 +47,14 @@ class PaymentCreationError(Exception):
 @transaction.atomic
 def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tuple[PaymentTransaction, str]:
     """
-    Start (or resume) a payment attempt for `order` against `gateway`.
+    Start a fresh payment attempt for `order` against `gateway`.
 
     - Rejects orders that are no longer payable (already paid / expired) -
       checked again here under a row lock, not just relying on whatever
       the caller believed.
-    - If a PENDING transaction already exists for this order (this is also
-      enforced at the DB level by `unique_pending_transaction_per_order`),
-      it's reused instead of creating a duplicate: a user clicking "pay"
-      twice gets redirected to the same payment session, not two of them.
+    - Any previous PENDING transaction for this order is canceled first
+      (see below) instead of being reused, so this never collides with
+      `unique_pending_transaction_per_order`.
     - Delegates the actual gateway call to `get_adapter(gateway)`, so this
       function has zero gateway-specific logic.
     - Because each Order has its own independent `PaymentTransaction`
@@ -71,11 +70,20 @@ def create_payment_transaction(*, order: Order, gateway: Gateway, request) -> tu
     if not order.is_payable:
         raise PaymentCreationError('This order is no longer payable (already paid or expired).')
 
-    adapter = get_adapter(gateway)
+    # Cancel any PENDING transaction left over from an earlier attempt
+    # (buyer closed the gateway tab, switched gateways, retried, ...)
+    # before opening a new one. We never try to "resume" the old one: its
+    # authority belongs to a specific gateway/session that may already be
+    # gone, and each adapter builds its redirect URL differently (some
+    # can't reconstruct one from just an authority at all), so reusing it
+    # is unsafe in general - a fresh `request_payment()` call is the only
+    # thing guaranteed to work for every gateway.
+    order.transactions.filter(status=PaymentTransaction.Status.PENDING).update(
+        status=PaymentTransaction.Status.CANCELED,
+        updated_at=timezone.now(),
+    )
 
-    existing = order.transactions.filter(status=PaymentTransaction.Status.PENDING).first()
-    if existing is not None and existing.authority:
-        return existing, f'{adapter.startpay_url}{existing.authority}'
+    adapter = get_adapter(gateway)
 
     payment_transaction = PaymentTransaction.objects.create(
         order=order,

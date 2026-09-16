@@ -18,7 +18,6 @@ class ZarinpalAdapter(BaseGatewayAdapter):
     SUCCESS_CODE = 100
     ALREADY_VERIFIED_CODE = 101
 
-    # -- credentials / environment -----------------------------------------
     @property
     def merchant_id(self) -> str:
         merchant_id = self.gateway.credentials.get('merchant_id')
@@ -45,8 +44,6 @@ class ZarinpalAdapter(BaseGatewayAdapter):
             access_token=self.access_token,
         )
         return ZarinPal(config)
-
-    # -- public interface -------------------------------------------------
 
     def request_payment(
         self,
@@ -126,15 +123,13 @@ class ZarinpalAdapter(BaseGatewayAdapter):
 
     @classmethod
     def extract_callback_params(cls, request) -> tuple[str, str]:
-        # Zarinpal redirects the buyer's browser with a GET request:
-        # https://yoursite.com/callback/?Authority=...&Status=OK|NOK
+        # Zarinpal redirects via GET: ?Authority=...&Status=OK|NOK
         authority = request.query_params.get('Authority', '')
         status = request.query_params.get('Status', '')
         return authority, status
 
     def inquire_payment(self, *, authority: str) -> dict[str, Any]:
-        """Extra helper exposed by the new SDK: check a transaction's status
-        without triggering verification (useful for support/debugging tools)."""
+        """Check a transaction's status without triggering verification."""
         try:
             return self.client.inquiries.inquire({'authority': authority})
         except Exception as exc:
