@@ -62,13 +62,6 @@ class LoginAPIView(OTPThrottledMixin, APIView):
 
 
 class ResendOTPAPIView(OTPThrottledMixin, APIView):
-    """
-    ارسال مجدد OTP برای شماره‌ای که قبلاً یک درخواست OTP برایش ثبت شده.
-
-    نرخ این Endpoint سخت‌گیرانه‌تر از LoginAPIView است (طبق اسکوپ
-    `otp_resend` در تنظیمات Throttle) تا از ارسال پیاپی پیامک جلوگیری شود.
-    """
-
     permission_classes = [AllowAny]
     throttle_classes = [OTPResendPhoneRateThrottle, OTPRequestAnonRateThrottle]
 
@@ -111,18 +104,35 @@ class ResendOTPAPIView(OTPThrottledMixin, APIView):
 class VerifyOTPAPIView(APIView):
     permission_classes = [AllowAny]
 
-    def _create_user_if_not_exist(self, phone):
-        user, _ = User.objects.get_or_create(phone=phone)
+    def _get_or_create_user(self, phone, full_name):
+        user, created = User.objects.get_or_create(
+            phone=phone,
+            defaults={'full_name': full_name},
+        )
+        # کاربر موجودی که هنوز نام ندارد، با نام ارسالی تکمیل می‌شود
+        if not created and full_name and not user.full_name:
+            user.full_name = full_name
+            user.save(update_fields=['full_name'])
         return user
 
     @extend_schema(
         tags=['Auth'],
         summary='Verify otp',
-        description='Verify the one-time password (OTP).\n',
+        description=(
+            'Verify the one-time password (OTP).\n\n'
+            'Optionally provide `full_name`. It is applied only when the user '
+            'is new or does not have a name yet. Existing names are not changed here.'
+        ),
         request=VerifyOTPSerializer,
         examples=[
             OpenApiExample(
-                name='Request Example',
+                name='Request Example with name',
+                summary='Verify OTP with name',
+                value={'phone': '9123456789', 'code': 123456, 'full_name': 'علی رضایی'},
+                request_only=True,
+            ),
+            OpenApiExample(
+                name='Request Example without name',
                 summary='Verify OTP',
                 value={'phone': '9123456789', 'code': 123456},
                 request_only=True,
@@ -135,13 +145,15 @@ class VerifyOTPAPIView(APIView):
 
         phone = serializer.validated_data['phone']
         code = serializer.validated_data['code']
+        full_name = serializer.validated_data.get('full_name', '')
 
+        # اول OTP بررسی می‌شود؛ قبل از آن هیچ تغییری روی کاربر انجام نمی‌شود
         otp = OTPService.verify(phone, code)
         if not otp:
             d = {'detail': 'invalid or expired code.'}
             return Response(d, status=status.HTTP_400_BAD_REQUEST)
 
-        user = self._create_user_if_not_exist(phone)
+        user = self._get_or_create_user(phone, full_name)
 
         login(request, user)
 
@@ -150,7 +162,11 @@ class VerifyOTPAPIView(APIView):
         if cart_token:
             CartService.merge_cart_from_token(user=user, token=cart_token)
 
-        d = {'id': user.id, 'phone': user.phone}
+        d = {
+            'id': user.id,
+            'phone': user.phone,
+            'full_name': user.full_name,
+        }
         response = Response(d, status=status.HTTP_200_OK)
         response.delete_cookie('cart_token')
 

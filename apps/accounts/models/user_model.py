@@ -37,4 +37,4 @@ class OTPCode(models.Model):
 
     @property
     def is_expired(self):
-        return timezone.now > self.created_at + timedelta(minutes=2)
+        return timezone.now() > self.created_at + timedelta(minutes=2)

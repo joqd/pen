@@ -5,6 +5,16 @@ from rest_framework import serializers
 User = get_user_model()
 
 
+def full_name_field():
+    return serializers.CharField(
+        max_length=150,
+        min_length=2,
+        required=False,
+        allow_blank=True,
+        error_messages={'min_length': _('name must be at least 2 characters.')},
+    )
+
+
 class LoginSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=14)
 
@@ -23,6 +33,7 @@ class UserResponseSerializer(serializers.ModelSerializer):
 class VerifyOTPSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=14)
     code = serializers.CharField(max_length=6)
+    full_name = full_name_field()
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
