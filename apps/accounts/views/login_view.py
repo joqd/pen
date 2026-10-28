@@ -109,7 +109,7 @@ class VerifyOTPAPIView(APIView):
             phone=phone,
             defaults={'full_name': full_name},
         )
-        # کاربر موجودی که هنوز نام ندارد، با نام ارسالی تکمیل می‌شود
+
         if not created and full_name and not user.full_name:
             user.full_name = full_name
             user.save(update_fields=['full_name'])
@@ -147,7 +147,6 @@ class VerifyOTPAPIView(APIView):
         code = serializer.validated_data['code']
         full_name = serializer.validated_data.get('full_name', '')
 
-        # اول OTP بررسی می‌شود؛ قبل از آن هیچ تغییری روی کاربر انجام نمی‌شود
         otp = OTPService.verify(phone, code)
         if not otp:
             d = {'detail': 'invalid or expired code.'}
