@@ -56,7 +56,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Post.published.select_related(
         'author',
         'category',
-    ).prefetch_related('media')
+    ).prefetch_related('media', 'collections')
     lookup_field = 'slug'
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]

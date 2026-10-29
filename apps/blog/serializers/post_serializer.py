@@ -1,10 +1,12 @@
 from rest_framework import serializers
 
 from apps.accounts.models.user_model import User
+from apps.catalog.serializers.product_serializer import ProductListSerializer
 from apps.seo.serializers.metatag_serializer import MetaTagSerializer
 from apps.seo.views.schema_builders_view import ArticleSchemaBuilder, BreadcrumbSchemaBuilder
 
 from ..models.post_model import Post, PostMedia
+from ..services.related_products import get_related_products_queryset
 
 
 class PostMediaSerializer(serializers.ModelSerializer):
@@ -68,6 +70,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
     meta_tag = MetaTagSerializer(read_only=True)
     json_ld = serializers.SerializerMethodField()
     breadcrumb_ld = serializers.SerializerMethodField()
+    related_products = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -87,6 +90,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'meta_tag',
             'json_ld',
             'breadcrumb_ld',
+            'related_products',
             'published_at',
             'updated_at',
         )
@@ -106,3 +110,8 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
     def get_breadcrumb_ld(self, obj) -> dict:
         return BreadcrumbSchemaBuilder.for_post(obj, request=self.context.get('request')).to_json_ld()
+
+    def get_related_products(self, obj) -> list:
+        collection_ids = [collection.id for collection in obj.collections.all()]
+        products = get_related_products_queryset(collection_ids)
+        return ProductListSerializer(products, many=True, context=self.context).data
