@@ -61,7 +61,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
+    category = serializers.SlugRelatedField(read_only=True, slug_field='slug')
     author = AuthorSerializer()
     featured_image = serializers.SerializerMethodField()
     media = PostMediaSerializer(many=True, read_only=True)
