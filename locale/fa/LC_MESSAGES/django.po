@@ -828,3 +828,6 @@ msgstr "قیمت به دلار"
 
 msgid "compare price (USD)"
 msgstr "قیمت قبل به دلار"
+
+msgid "collections list"
+msgstr "لیست کالکشن‌ها"

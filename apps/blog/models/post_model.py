@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from apps.catalog.models import Category
+from apps.catalog.models import Category, Collection
 
 MARKDOWN_EXTENSIONS = [
     'extra',
@@ -105,6 +105,7 @@ class Post(models.Model):
         related_name='posts',
         verbose_name=_('category'),
     )
+    collections = models.ManyToManyField(Collection, related_name='posts', verbose_name=_('collections'))
 
     excerpt = models.CharField(
         _('excerpt'),

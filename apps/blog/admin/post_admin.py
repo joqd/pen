@@ -57,17 +57,18 @@ class PostAdmin(ModelAdmin):
     # --- Unfold list view ---
     list_display = (
         'title',
-        'author',
+        # 'author',
         'category',
+        'collections_list',
         'featured',
         'status_badge',
         'published_at',
-        'view_count',
+        # 'view_count',
     )
     list_filter = ('status', 'category', 'featured', 'created_at')
     list_filter_submit = True
     search_fields = ('title', 'content', 'excerpt')
-    autocomplete_fields = ('author', 'category')
+    autocomplete_fields = ('author', 'category', 'collections')
     date_hierarchy = 'published_at'
     ordering = ('-created_at',)
     readonly_fields = ('created_at', 'updated_at', 'view_count')
@@ -82,7 +83,7 @@ class PostAdmin(ModelAdmin):
         (
             _('main content'),
             {
-                'fields': ('title', 'slug', 'author', 'category', 'featured'),
+                'fields': ('title', 'slug', 'author', 'category', 'collections', 'featured'),
             },
         ),
         (
@@ -129,3 +130,7 @@ class PostAdmin(ModelAdmin):
 
     class Media:
         css = {'all': ('admin/css/custom.css',)}
+
+    @admin.display(description=_('collections list'))
+    def collections_list(self, obj):
+        return ', '.join(obj.collections.values_list('title', flat=True))
