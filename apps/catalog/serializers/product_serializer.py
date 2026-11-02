@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.seo.serializers.metatag_serializer import MetaTagSerializer
 from apps.seo.views.schema_builders_view import BreadcrumbSchemaBuilder, ProductSchemaBuilder
 
-from ..models import Product, ProductImage, ProductSize, ProductVariant, SizeAttribute
+from ..models import Category, Product, ProductImage, ProductSize, ProductVariant, SizeAttribute
 from .audio_serializer import AudioSerializer
 from .collection_serializer import CollectionListSerializer
 
@@ -60,8 +60,16 @@ class ProductListSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class CategoryMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'title', 'slug', 'short_description', 'image', 'image_dark', 'is_active', 'parent']
+        read_only_fields = fields
+
+
 class ProductDetailSerializer(serializers.ModelSerializer):
     collections = CollectionListSerializer(many=True, read_only=True)
+    category = CategoryMinimalSerializer(read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
     audio = serializers.SerializerMethodField()
     variants = ProductVariantSerializer(many=True, read_only=True)
@@ -82,6 +90,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'published_at',
             'featured',
             'collections',
+            'category',
             'images',
             'audio',
             'variants',
