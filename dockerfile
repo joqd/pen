@@ -4,6 +4,9 @@ FROM python:3.13-slim AS builder
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /app
 
+ENV UV_HTTP_TIMEOUT=300
+ENV UV_HTTP_RETRIES=5
+
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --no-dev
 
