@@ -24,9 +24,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
     command: ["celery", "-A", "program", "worker", "--loglevel=info"]
     restart: unless-stopped
-    network: host
     env_file:
       - .env
     volumes:
@@ -39,9 +39,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
     command: ["celery", "-A", "program", "beat", "--loglevel=info"]
     restart: unless-stopped
-    network: host
     env_file:
       - .env
     depends_on:
