@@ -17,7 +17,7 @@ class BaseSchemaBuilder(ABC):
 
     @property
     def site_url(self) -> str:
-        return DEFAULT_SITE_URL.rstrip('/')
+        return DEFAULT_SITE_URL.strip('/')
 
     @abstractmethod
     def build(self) -> dict: ...
