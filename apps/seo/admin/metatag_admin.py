@@ -6,7 +6,7 @@ from ..models.metatag_model import MetaTag
 
 class BaseMetaTagInline(StackedInline):
     model = MetaTag
-    extra = 0
+    extra = 1
     max_num = 1
     can_delete = True
 

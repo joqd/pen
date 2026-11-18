@@ -76,15 +76,14 @@ class MetaTag(models.Model):
             )
         ]
 
+    def _target_ids(self):
+        return [t for t in (self.product_id, self.category_id, self.collection_id, self.post_id) if t is not None]
+
     def clean(self):
-        targets = [self.product_id, self.category_id, self.collection_id, self.post_id]
-        filled = [t for t in targets if t is not None]
-        if len(filled) != 1:
-            raise ValidationError(_('Exactly one of the product/category/collection/post fields must be set.'))
+        if len(self._target_ids()) > 1:
+            raise ValidationError(_('Only one of product/category/collection/post can be set.'))
 
     def save(self, *args, **kwargs):
-        self.full_clean()
-
         if not self.og_title:
             self.og_title = self.title
         if not self.og_description:
